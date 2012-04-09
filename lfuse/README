@@ -1,0 +1,4 @@
+lfuse project
+
+
+mount LDFS locally, use can read files of LDFS just like local files, it is basing on LDFS and LKV.
