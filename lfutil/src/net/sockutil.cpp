@@ -27,6 +27,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <sys/un.h>
+#include <sys/sendfile.h>
 
 #include <iomanip>
 #include <iostream>
@@ -183,11 +184,7 @@ Sock::setupListener(unsigned short port, int& listen_sock,
         return ERR_SOCK_CREATE;
     }
 
-    // Set FD_CLOEXEC flag for the listen socket so it will be closed
-    // automatically in child when a child is forked. This prevents
-    // multiple processes listening on the same port.
-    // There is a time window between socket() and fcntl() in which
-    // the fd will be inherited by forked child, but we ignore the window.
+
     setCloExec(listen_sock);
 
     memset((char *)&s_addr, 0, sizeof(s_addr));
@@ -286,6 +283,7 @@ Sock::createSelector(int notifyFd, int& epfd)
 
     epfd = epoll_create(EPOLL_FDESC);
     if(epfd < 0) {
+
         LOG_ERROR("Sock::createSelector:can't create epoll fd\n");
         return Sock::ERR_EPOLL_CREATE;
     }
@@ -296,6 +294,7 @@ Sock::createSelector(int notifyFd, int& epfd)
     ev.events = EPOLLIN;
     ev.data.fd = notifyFd;
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, notifyFd, &ev) < 0) {
+
         LOG_ERROR("Sock::createSelector:can't add notifyFd socket\n");
         return ERR_EPOLL_ADD;
     }
@@ -479,3 +478,112 @@ Sock::create(int domain, int type, int protocol, int& sockfd)
     return SUCCESS;
 }
 
+int
+Sock::sendfile(int out_fd, const char *path, off_t *offset, size_t count)
+{
+   int fd = open(path, O_RDONLY);
+   if (fd < 0)
+   {
+       LOG_ERROR("Failed to open file %s, rc %d:%s", path, errno, strerror(errno));
+       return -1;
+   }
+
+   int sendCount = ::sendfile(out_fd, fd, offset, count);
+
+   close(fd);
+
+   return sendCount;
+}
+
+int Sock::sendfile(int sock, const char *filename, const unsigned long long offset,
+        const unsigned long long count, long long *sendCount)
+{
+    int fd = open(filename, O_RDONLY);
+    if (fd < 0)
+    {
+        *sendCount = 0;
+        return errno != 0 ? errno : EACCES;
+    }
+
+    int flags = fcntl(sock, F_GETFL, 0);
+    if (flags < 0)
+    {
+        *sendCount = 0;
+        return errno != 0 ? errno : EACCES;
+    }
+
+    if (flags & O_NONBLOCK)
+    {
+        if (fcntl(sock, F_SETFL, flags & ~O_NONBLOCK) == -1)
+        {
+            *sendCount = 0;
+            return errno != 0 ? errno : EACCES;
+        }
+    }
+
+    int   result = 0;
+    off_t sendOffset = offset;
+
+#ifdef LINUX
+    /*
+     result = 1;
+     if (setsockopt(sock, SOL_TCP, TCP_CORK, &result, sizeof(int)) < 0)
+     {
+     logError("file: "__FILE__", line: %d, " \
+                    "setsockopt failed, errno: %d, error info: %s.", \
+                    __LINE__, errno, STRERROR(errno));
+     close(fd);
+     *total_send_bytes = 0;
+     return errno != 0 ? errno : EIO;
+     }
+     */
+
+    u64_t remain = count;
+
+    while (remain > 0)
+    {
+        u64_t sended = 0;
+        if (remain > ONE_GIGA)
+        {
+            sended = ::sendfile(sock, fd, &sendOffset, ONE_GIGA);
+        }
+        else
+        {
+            sended = ::sendfile(sock, fd, &sendOffset, remain);
+        }
+        if (sendCount <= 0)
+        {
+            result = errno != 0 ? errno : EIO;
+            break;
+        }
+
+        remain -= sended;
+    }
+
+    *sendCount = count - remain;
+#else
+#ifdef OS_FREEBSD
+    if (sendfile(fd, sock, offset, count, NULL, NULL, 0) != 0)
+    {
+        *sendCount = 0;
+        result = errno != 0 ? errno : EIO;
+    }
+    else
+    {
+        *sendCount = count;
+        result = 0;
+    }
+#endif
+#endif
+
+    if (flags & O_NONBLOCK)  //restore
+    {
+        if (fcntl(sock, F_SETFL, flags) == -1)
+        {
+            result = errno != 0 ? errno : EACCES;
+        }
+    }
+
+    close(fd);
+    return result;
+}

@@ -44,7 +44,7 @@ public:
      */
     struct vec_t {
         void *base;     //!< pointer of vector buffer
-        size_t size;    //!< size of memory vector
+        int   size;    //!< size of memory vector
     };
 
     //! Enumeration for vector status
@@ -131,6 +131,11 @@ public:
      * Default destructor
      */
     ~IoVec();
+
+    /**
+     * Free all internal memory, this is often used failure case
+     */
+    void cleanup();
 
     //! Set vector base 
     /**

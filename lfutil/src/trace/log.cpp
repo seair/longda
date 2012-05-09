@@ -77,24 +77,6 @@ CLog::CheckParamValid()
     return ;
 }
 
-bool 
-CLog::CheckOutput(const LOG_LEVEL level, const char *module)
-{
-    if ( LOG_LEVEL_LAST > level && level <= mConsoleLevel )
-    {
-        return true;
-    }
-    if ( LOG_LEVEL_LAST > level && level <= mLogLevel )
-    {
-        return true;
-    }
-    if (mDefaultSet.find(module) != mDefaultSet.end())
-    {
-        return true;
-    }
-    return false;
-}
-
 int 
 CLog::Output( const LOG_LEVEL level, const char *module, const char *prefix, const char *f, ...  )
 {

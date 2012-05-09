@@ -36,6 +36,8 @@ static const char FILE_PATH_SPLIT_STR[] = "/";
  */
 int readFromFile(const std::string &fileName, char *&data);
 
+int writeToFile(const std::string &fileName, const char *data, u32_t dataSize, const char *openMode);
+
 /**
  * return the line number which line.strip() isn't empty
  */
@@ -55,6 +57,8 @@ int getFileList(std::vector<std::string> &fileList, const std::string &path,
         const std::string &pattern, bool resusion);
 int getFileNum(u64_t &fileNum, const std::string &path,
         const std::string &pattern, bool resusion);
+int getDirList(std::vector<std::string> &dirList, const std::string &path,
+        const std::string &pattern);
 
 /**
  * extract file name/file director from the fullPath
@@ -67,6 +71,11 @@ std::string getDirName(const std::string &fullPath);
 void        getDirName(const char *path, std::string &parent);
 
 int touch(const std::string &fileName);
+
+/**
+ * get file size
+ */
+int getFileSize(const char *filePath, u64_t &fileLen);
 
 
 #endif /* IO_H_ */

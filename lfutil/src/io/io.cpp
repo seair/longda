@@ -91,6 +91,45 @@ int readFromFile(const std::string &fileName, char *&outputData)
     return 0;
 }
 
+int writeToFile(const std::string &fileName, const char *data, u32_t dataSize, const char *openMode)
+{
+    FILE *file = fopen(fileName.c_str(), openMode);
+    if (file == NULL)
+    {
+        std::cerr << "Failed to open file " << fileName
+                << SYS_OUTPUT_FILE_POS
+                << SYS_OUTPUT_ERROR
+                << std::endl;
+        return -1;
+    }
+
+    u32_t leftSize = dataSize;
+    const char *buffer = data;
+    while(leftSize > 0)
+    {
+        int writeCount = fwrite(buffer, 1, leftSize, file);
+        if (writeCount <= 0)
+        {
+            std::cerr << "Failed to open file " << fileName
+                            << SYS_OUTPUT_FILE_POS
+                            << SYS_OUTPUT_ERROR
+                            << std::endl;
+            fclose(file);
+            return -1;
+        }
+        else
+        {
+            leftSize-= writeCount;
+            buffer += writeCount;
+        }
+    }
+
+
+    fclose(file);
+
+    return 0;
+}
+
 int getFileLines(const std::string &fileName, u64_t &lineNum)
 {
     lineNum = 0;
@@ -286,6 +325,75 @@ int getFileList(std::vector<std::string> &fileList, const std::string &path,
     return -1;
 }
 
+int getDirList(std::vector<std::string> &dirList, const std::string &path,
+        const std::string &pattern)
+{
+    try
+    {
+        DIR* dirp = NULL;
+        dirp = opendir(path.c_str());
+        if (dirp == NULL)
+        {
+            std::cerr << "Failed to opendir " << path
+                      << SYS_OUTPUT_FILE_POS<< SYS_OUTPUT_ERROR
+                      << std::endl;
+            return -1;
+        }
+
+        std::string fullPath;
+        struct dirent* entry = NULL;
+        struct stat fs;
+        while ((entry = readdir(dirp)) != NULL)
+        {
+            //don't care ".", "..", ".****" hidden files
+            if (!strncmp(entry->d_name, ".", 1))
+            {
+                continue;
+            }
+
+            fullPath = path;
+            if (path[path.size() - 1] != FILE_PATH_SPLIT)
+            {
+                fullPath += FILE_PATH_SPLIT;
+            }
+            fullPath += entry->d_name;
+            memset(&fs, 0, sizeof(fs));
+            if (stat(fullPath.c_str(), &fs) < 0)
+            {
+                std::cout << "Failed to stat " << fullPath
+                          << SYS_OUTPUT_FILE_POS << SYS_OUTPUT_ERROR
+                          << std::endl;
+                continue;
+            }
+
+            if ((fs.st_mode & S_IFDIR ) == 0)
+            {
+                continue;
+            }
+
+
+            if (pattern.empty() == false
+                    && regex_match(entry->d_name, pattern.c_str()))
+            {
+                //Don't match
+                continue;
+            }
+
+            dirList.push_back(fullPath);
+        }
+
+        closedir(dirp);
+        return 0;
+    } catch (...)
+    {
+        std::cerr << "Failed to get file list " << path
+                        << SYS_OUTPUT_FILE_POS
+                        << SYS_OUTPUT_ERROR
+                        << std::endl;
+    }
+    return -1;
+}
+
 std::string getFileName(const std::string &fullPath)
 {
     std::string szRt;
@@ -400,5 +508,33 @@ int touch(const std::string &path)
         return -1;
     }
     fclose(file);
+    return 0;
+}
+
+int getFileSize(const char *filePath, u64_t &fileLen)
+{
+    if (filePath == NULL || *filePath == '\0')
+    {
+        std::cerr << "invalid filepath" << std::endl;
+        return -EINVAL;
+    }
+    struct stat statBuf;
+    memset(&statBuf, 0, sizeof(statBuf));
+
+    int rc = stat(filePath, &statBuf);
+    if (rc)
+    {
+        std::cerr << "Failed to get stat of " << filePath << ","
+                << errno << ":" << strerror(errno) << std::endl;
+        return rc;
+    }
+
+    if (S_ISDIR(statBuf.st_mode))
+    {
+        std::cerr << filePath << " is directory " << std::endl;
+        return -EINVAL;
+    }
+
+    fileLen = statBuf.st_size;
     return 0;
 }

@@ -106,7 +106,11 @@ public:
      * it will output whatever output level is lower than mLogLevel or not
      */
     void SetDefaultModule(const std::string &modules);
-    bool CheckOutput(const LOG_LEVEL logLevel, const char *module);
+
+    /**
+     * Making this function as inline is to improve performance
+     */
+    inline bool CheckOutput(const LOG_LEVEL logLevel, const char *module);
 
     int Rotate(const int year = 0, const int month = 0, const int day = 0);
 
@@ -290,6 +294,26 @@ int CLog::Out(const LOG_LEVEL consoleLevel,
     }
 
     return LOG_STATUS_OK;
+}
+
+/**
+ *
+ */
+bool CLog::CheckOutput(const LOG_LEVEL level, const char *module)
+{
+    if ( LOG_LEVEL_LAST > level && level <= mConsoleLevel )
+    {
+        return true;
+    }
+    if ( LOG_LEVEL_LAST > level && level <= mLogLevel )
+    {
+        return true;
+    }
+    if (mDefaultSet.find(module) != mDefaultSet.end())
+    {
+        return true;
+    }
+    return false;
 }
 
 
