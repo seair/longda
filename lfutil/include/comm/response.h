@@ -28,8 +28,13 @@
 class Response : public Message
 {
 public:
-    Response(){}
+    Response():
+        Message(MESSAGE_BASIC_RESPONSE)
+    {
+
+    }
     Response(int status, const char *msg):
+        Message(MESSAGE_BASIC_RESPONSE),
         mStatus(status)
     {
         memset(mErrMsg, 0, sizeof(mErrMsg));

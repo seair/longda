@@ -32,7 +32,7 @@
 
 
 
-int readFromFile(const std::string &fileName, char *&outputData)
+int readFromFile(const std::string &fileName, char *&outputData, size_t &fileSize)
 {
     FILE *file = fopen(fileName.c_str(), "rb");
     if (file == NULL)
@@ -88,6 +88,7 @@ int readFromFile(const std::string &fileName, char *&outputData)
     fclose(file);
 
     outputData = data;
+    fileSize   = readSize;
     return 0;
 }
 

@@ -27,6 +27,8 @@
 #include "seda/stageevent.h"
 #include "seda/callback.h"
 
+#include "net/endpoint.h"
+
 /**
  *
  */
@@ -47,12 +49,19 @@ protected:
     void             callbackEvent(StageEvent* event, CallbackContext* context);
 
 protected:
-    void handleTestEvent(StageEvent *event);
+    void sendRequest();
 
-    void handleCb(StageEvent *event);
+    void recvRequest(StageEvent *event);
+
+    void recvResponse(StageEvent *event);
+
+    void triggerTestEvent(StageEvent *event);
+
+    void retriggerTestEvent(StageEvent *event);
 private:
-    int                       mFrequence;
     Stage                    *mTimerStage;
+    Stage                    *mCommStage;
+    EndPoint                  mPeerEp;
 };
 
 #endif /* CTESTSTAGE_H_ */

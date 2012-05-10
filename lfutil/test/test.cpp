@@ -33,11 +33,20 @@
 #include "os/lsignal.h"
 #include "trace/log.h"
 
+
+#include "io/rollselectdir.h"
+
 #include "seda/stagefactory.h"
 #include "seda/stage.h"
 #include "seda/stageevent.h"
 #include "seda/sedaconfig.h"
+
+#include "comm/commstage.h"
+
+
 #include "teststage.h"
+#include "simpledeserializer.h"
+#include "triggertestevent.h"
 
 
 #include "linit.h"
@@ -48,6 +57,7 @@ void usage()
 }
 
 const char TEST_STAGE_NAME[] = "TestStage";
+const char COMM_STAGE_NAME[] = "CommStage";
 
 int setTestSeda()
 {
@@ -56,7 +66,8 @@ int setTestSeda()
     return 0;
 }
 
-void addTestEvent()
+
+void startTest()
 {
     static Stage *testStage = theSedaConfig()->getStage(TEST_STAGE_NAME);
     if (testStage == NULL)
@@ -65,7 +76,7 @@ void addTestEvent()
         return;
     }
 
-    StageEvent *event = new StageEvent();
+    TriggerTestEvent *event = new TriggerTestEvent(10);
     if (event == NULL)
     {
         LOG_ERROR("Failed to alloc memory for StageEvent");
@@ -78,6 +89,61 @@ void addTestEvent()
     LOG_INFO("Successfully add one event to %s", TEST_STAGE_NAME);
 
     return;
+}
+
+void setDeserializer()
+{
+    static Stage *commStage = theSedaConfig()->getStage(COMM_STAGE_NAME);
+
+    Deserializable *deserializer = new CSimpleDeserializer();
+
+    ((CommStage *)commStage)->setDeserializable(deserializer);
+}
+
+void setSelectDir()
+{
+    static Stage *commStage = theSedaConfig()->getStage(COMM_STAGE_NAME);
+
+    CSelectDir *selector = new CRollSelectDir();
+
+    std::string baseDir = theGlobalProperties()->get("BaseDataDir", "./", "Default");
+
+    selector->setBaseDir(baseDir);
+
+    ((CommStage *)commStage)->setSelectDir(selector);
+}
+
+
+int init()
+{
+    int rc = initUtil(theProcessParam());
+    if (rc)
+    {
+        cleanupUtil();
+        return STATUS_FAILED_INIT;
+    }
+
+    rc = setTestSeda();
+    if (rc)
+    {
+        cleanupUtil();
+        return STATUS_FAILED_INIT;
+    }
+
+    /**
+     * start seda
+     */
+    rc = initSeda(theProcessParam());
+    if (rc)
+    {
+        cleanupUtil();
+        return STATUS_FAILED_INIT;
+    }
+
+    setDeserializer();
+    setSelectDir();
+
+    return 0;
 }
 
 int main(int argc, char** argv)
@@ -135,28 +201,14 @@ int main(int argc, char** argv)
     sigset_t signal_set, oset;
     blockSignalsDefault(&signal_set, &oset);
 
-    rc = initUtil(theProcessParam());
+    rc = init();
     if (rc)
     {
-        cleanupUtil();
-        return STATUS_FAILED_INIT;
+        std::cerr << "Failed to init" << std::endl;
+        return rc;
     }
 
-    rc = setTestSeda();
-    if (rc)
-    {
-        cleanupUtil();
-        return STATUS_FAILED_INIT;
-    }
-
-    rc = initSeda(theProcessParam());
-    if (rc)
-    {
-        cleanupUtil();
-        return STATUS_FAILED_INIT;
-    }
-
-    addTestEvent();
+    startTest();
 
     // wait interrupt signals
     int signal_number = -1;

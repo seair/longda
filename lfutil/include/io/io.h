@@ -34,7 +34,7 @@ static const char FILE_PATH_SPLIT_STR[] = "/";
  * if success, store file continent to data
  * if fail, return -1 and don't change data
  */
-int readFromFile(const std::string &fileName, char *&data);
+int readFromFile(const std::string &fileName, char *&data, size_t &fileSize);
 
 int writeToFile(const std::string &fileName, const char *data, u32_t dataSize, const char *openMode);
 

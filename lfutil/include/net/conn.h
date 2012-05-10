@@ -95,6 +95,7 @@ public:
         CONN_ERR_MISMATCH,      //!< version isn't match
         CONN_ERR_BROKEN,        //!< connection is broken
         CONN_ERR_WRITEFILE,     //!< write file failed
+        CONN_ERR_BUSY,          //!< conn is busy
         CONN_ERR_UNAVAIL        //!< connection is busy (would block)
     } status_t;
 
@@ -201,7 +202,7 @@ public:
      * @return true if connection has been cleaned up, false if another thread
      * has started clean up and will complete it.
      */
-    bool cleanup(cleanup_t how);
+    int cleanup(cleanup_t how);
 
     //! Releases connection
     /**

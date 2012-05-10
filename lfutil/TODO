@@ -1,0 +1,5 @@
+1. Net work parallem, check whether conn can work or not
+2. memory leak, run long time to check whether exist memory leak
+3. check whether need to delete listen in epoll when disconnect
+4. cbp memory
+5. one node's multiple connections

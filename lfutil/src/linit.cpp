@@ -46,6 +46,7 @@
 #include "seda/killthread.h"
 #include "seda/timerstage.h"
 #include "seda/sedastatsstage.h"
+#include "comm/commstage.h"
 
 
 
@@ -245,6 +246,7 @@ int  initUtil(CProcessParam *pProcessCfg)
     static StageFactory killThreadFactory("KillThreads", &KillThreadStage::makeStage);
     static StageFactory timerFactory("TimerStage", &TimerStage::makeStage);
     static StageFactory sedaStatsFactory("SedaStatsStage", &SedaStatsStage::makeStage);
+    static StageFactory commstageFactory("CommStage", &CommStage::makeStage);
 
     //Read Configuration files
     int rc = theGlobalProperties()->load(pProcessCfg->mProperties);

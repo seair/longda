@@ -31,7 +31,14 @@ const char   EndPoint::DEFAULT_SERVICE[]  = "unknown";
 
 EndPoint::EndPoint()
 {
-    EndPoint(DEFAULT_PORT);
+    std::string hostname("localhost");
+
+    getHostname(NULL, hostname);
+
+    setHostName(hostname.c_str());
+    setLocation (DEFAULT_LOCATION);
+    setService (DEFAULT_SERVICE);
+    setPort (DEFAULT_PORT);
 }
 
 EndPoint::EndPoint(s32_t port)
@@ -40,17 +47,26 @@ EndPoint::EndPoint(s32_t port)
 
     getHostname(NULL, hostname);
 
-    EndPoint(hostname.c_str(), port);
+    setHostName(hostname.c_str());
+    setLocation(DEFAULT_LOCATION);
+    setService(DEFAULT_SERVICE);
+    setPort(port);
 }
 
 EndPoint::EndPoint(const char *hostname, s32_t port)
 {
-    EndPoint(hostname, DEFAULT_LOCATION, port);
+    setHostName(hostname);
+    setLocation(DEFAULT_LOCATION);
+    setService(DEFAULT_SERVICE);
+    setPort(port);
 }
 
 EndPoint::EndPoint(const char *hostname, const char *location, s32_t port)
 {
-    EndPoint(hostname, DEFAULT_LOCATION, DEFAULT_SERVICE, port);
+    setHostName(hostname);
+    setLocation(location);
+    setService(DEFAULT_SERVICE);
+    setPort(port);
 }
 
 EndPoint::EndPoint(const char *hostname, const char *location,

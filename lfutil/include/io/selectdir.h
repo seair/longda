@@ -25,8 +25,8 @@
 class CSelectDir
 {
 public:
-    std::string select() {return std::string("");};
-    void setBaseDir(std::string baseDir) {};
+    virtual std::string select() {return std::string("");};
+    virtual void setBaseDir(std::string baseDir) {};
 };
 
 

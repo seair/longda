@@ -7,20 +7,16 @@
 ALL	include/seda/sedastats.h	/^                enum Type {ID, STR, ALL,};$/;"	e	enum:SedaStats::StatsId::Type
 ALL_CATEGORY	include/seda/sedastats.h	/^            ALL_CATEGORY            =    0,$/;"	e	enum:SedaStats::_SEDA_STATS_CATEGORY
 ALL_STATS	include/seda/sedastats.h	/^            ALL_STATS               =   0,$/;"	e	enum:SedaStats::_SEDA_STATS_ID
-ASM_SRCS	Debug/sources.mk	/^ASM_SRCS := $/;"	m
 ASSERT	include/trace/log.h	321;"	d
-ATTACHFILE	include/net/conn.h	/^        ATTACHFILE,             \/\/!< attach file$/;"	e	enum:Conn::__anon8
-ATTACHMENT	include/net/conn.h	/^        ATTACHMENT,             \/\/!< data payload (attachment)$/;"	e	enum:Conn::__anon8
-BADVERMSG	include/net/conn.h	/^        BADVERMSG,              \/\/!< bad message due to version mismatch$/;"	e	enum:Conn::__anon8
+ATTACHFILE	include/net/conn.h	/^        ATTACHFILE,             \/\/!< attach file$/;"	e	enum:Conn::__anon9
+ATTACHMENT	include/net/conn.h	/^        ATTACHMENT,             \/\/!< data payload (attachment)$/;"	e	enum:Conn::__anon9
 BAD_TIMEOUT_VAL	include/comm/commevent.h	/^        BAD_TIMEOUT_VAL,    \/\/!< unacceptable timeout value$/;"	e	enum:CommEvent::__anon1
 BUFFER_OVERFLOW	include/comm/commevent.h	/^        BUFFER_OVERFLOW,    \/\/!< server has replied with more data than posted$/;"	e	enum:CommEvent::__anon1
-CALLBACK_EV	include/seda/stageevent.h	/^        CALLBACK_EV,$/;"	e	enum:StageEvent::__anon27
-CB_ERROR	include/net/iovec.h	/^        CB_ERROR        \/\/!< callback failed with an error$/;"	e	enum:IoVec::__anon15
+CALLBACK_EV	include/seda/stageevent.h	/^        CALLBACK_EV,$/;"	e	enum:StageEvent::__anon25
+CB_ERROR	include/net/iovec.h	/^        CB_ERROR        \/\/!< callback failed with an error$/;"	e	enum:IoVec::__anon16
 CB_ERROR	include/net/net.h	/^        CB_ERROR                \/\/!< callback failed$/;"	e	enum:Net::__anon18
-CB_SUCCESS	include/net/iovec.h	/^        CB_SUCCESS = 0, \/\/!< callback completed successfully$/;"	e	enum:IoVec::__anon15
+CB_SUCCESS	include/net/iovec.h	/^        CB_SUCCESS = 0, \/\/!< callback completed successfully$/;"	e	enum:IoVec::__anon16
 CB_SUCCESS	include/net/net.h	/^        CB_SUCCESS = 0,         \/\/!< callback completed successfully$/;"	e	enum:Net::__anon18
-CC_DEPS	Debug/sources.mk	/^CC_DEPS := $/;"	m
-CC_SRCS	Debug/sources.mk	/^CC_SRCS := $/;"	m
 CFG_COMMENT_TAG	include/conf/ini.h	/^    static const char CFG_COMMENT_TAG = '#';$/;"	m	class:CIni
 CFG_CONTINUE_TAG	include/conf/ini.h	/^    static const char CFG_CONTINUE_TAG = '\\\\';$/;"	m	class:CIni
 CFG_DELIMIT_TAG	include/conf/ini.h	/^    static const char CFG_DELIMIT_TAG = ',';$/;"	m	class:CIni
@@ -28,13 +24,13 @@ CFG_SESSION_END_TAG	include/conf/ini.h	/^    static const char CFG_SESSION_END_T
 CFG_SESSION_START_TAG	include/conf/ini.h	/^    static const char CFG_SESSION_START_TAG = '[';$/;"	m	class:CIni
 CIni	include/conf/ini.h	/^class CIni$/;"	c
 CIni	src/conf/ini.cpp	/^CIni::CIni()$/;"	f	class:CIni
-CLEANUP	include/net/iovec.h	/^        CLEANUP         \/\/!< the vector is being cleaned up$/;"	e	enum:IoVec::__anon13
+CLEANUP	include/net/iovec.h	/^        CLEANUP         \/\/!< the vector is being cleaned up$/;"	e	enum:IoVec::__anon14
 CLIENT_CREATE_OBJ	include/seda/sedastats.h	/^            CLIENT_CREATE_OBJ          =   200,$/;"	e	enum:SedaStats::_SEDA_STATS_ID
 CLIENT_JOB	include/seda/sedastats.h	/^            CLIENT_JOB              =    200,$/;"	e	enum:SedaStats::_SEDA_STATS_CATEGORY
 CLIENT_NS_CREATE_OBJ	include/seda/sedastats.h	/^            CLIENT_NS_CREATE_OBJ       =   201,$/;"	e	enum:SedaStats::_SEDA_STATS_ID
 CLMPOOL_DEFAULT_ADDSIZE	include/mm/lmpool.h	28;"	d
 CLMemTrace	include/mm/lmem.h	/^class CLMemTrace$/;"	c
-CLmpool	include/mm/lmpool.h	/^    CLmpool(mAddSize = CLMPOOL_DEFAULT_ADDSIZE):$/;"	f	class:CLmpool
+CLmpool	include/mm/lmpool.h	/^    CLmpool():$/;"	f	class:CLmpool
 CLmpool	include/mm/lmpool.h	/^class CLmpool$/;"	c
 CLockID	include/os/mutex.h	/^            CLockID(const int threadId, const char *file, const int line):$/;"	f	class:CLockTrace::CLockID
 CLockID	include/os/mutex.h	/^    class CLockID$/;"	c	class:CLockTrace
@@ -43,9 +39,10 @@ CLog	include/trace/log.h	/^class CLog$/;"	c
 CLog	src/trace/log.cpp	/^CLog::CLog(const std::string &logFileName, $/;"	f	class:CLog
 CLstring	include/lang/lstring.h	/^namespace CLstring {$/;"	n
 COMMDATAEVENT_H_	include/comm/commdataevent.h	21;"	d
-COMMEVENT_MAX_RETRYCOUNT	include/comm/commevent.h	111;"	d
+COMMEVENT_MAX_RETRYCOUNT	include/comm/commevent.h	113;"	d
 COMMSTAGE_H_	include/comm/commstage.h	21;"	d
 COMM_CAT	include/seda/sedastats.h	/^            COMM_CAT                =    302,$/;"	e	enum:SedaStats::_SEDA_STATS_CATEGORY
+COMM_STAGE_NAME	test/test.cpp	/^const char COMM_STAGE_NAME[] = "CommStage";$/;"	v
 COMPILE_FLAGS	Makefile	/^COMPILE_FLAGS = -Wall -Werror -Wno-non-virtual-dtor -fPIC$/;"	m
 COND_BRAODCAST	include/os/mutex.h	180;"	d
 COND_BRAODCAST	include/os/mutex.h	84;"	d
@@ -59,31 +56,31 @@ COND_WAIT	include/os/mutex.h	150;"	d
 COND_WAIT	include/os/mutex.h	80;"	d
 COND_WAIT_TIMEOUT	include/os/mutex.h	160;"	d
 COND_WAIT_TIMEOUT	include/os/mutex.h	81;"	d
-CONN_CONNECTING	include/net/conn.h	/^        CONN_CONNECTING,        \/\/!< connect is underway$/;"	e	enum:Conn::__anon7
-CONN_ERR_BROKEN	include/net/conn.h	/^        CONN_ERR_BROKEN,        \/\/!< connection is broken$/;"	e	enum:Conn::__anon7
-CONN_ERR_CONNECT	include/net/conn.h	/^        CONN_ERR_CONNECT,       \/\/!< error in connect operation$/;"	e	enum:Conn::__anon7
-CONN_ERR_CREATE	include/net/conn.h	/^        CONN_ERR_CREATE,        \/\/!< error in create socket$/;"	e	enum:Conn::__anon7
-CONN_ERR_DISCONNECT	include/net/conn.h	/^        CONN_ERR_DISCONNECT,    \/\/!< error in disconnect operation$/;"	e	enum:Conn::__anon7
-CONN_ERR_NOCEV	include/net/conn.h	/^        CONN_ERR_NOCEV,         \/\/!< these is no CommEvent$/;"	e	enum:Conn::__anon7
-CONN_ERR_NOMEM	include/net/conn.h	/^        CONN_ERR_NOMEM,         \/\/!< there is no memory$/;"	e	enum:Conn::__anon7
-CONN_ERR_NOVEC	include/net/conn.h	/^        CONN_ERR_NOVEC,         \/\/!< there is no Iovec in queue$/;"	e	enum:Conn::__anon7
-CONN_ERR_UNAVAIL	include/net/conn.h	/^        CONN_ERR_UNAVAIL        \/\/!< connection is busy (would block)$/;"	e	enum:Conn::__anon7
+CONN_CONNECTING	include/net/conn.h	/^        CONN_CONNECTING,        \/\/!< connect is underway$/;"	e	enum:Conn::__anon8
+CONN_ERR_BROKEN	include/net/conn.h	/^        CONN_ERR_BROKEN,        \/\/!< connection is broken$/;"	e	enum:Conn::__anon8
+CONN_ERR_BUSY	include/net/conn.h	/^        CONN_ERR_BUSY,          \/\/!< conn is busy$/;"	e	enum:Conn::__anon8
+CONN_ERR_CONNECT	include/net/conn.h	/^        CONN_ERR_CONNECT,       \/\/!< error in connect operation$/;"	e	enum:Conn::__anon8
+CONN_ERR_CREATE	include/net/conn.h	/^        CONN_ERR_CREATE,        \/\/!< error in create socket$/;"	e	enum:Conn::__anon8
+CONN_ERR_DISCONNECT	include/net/conn.h	/^        CONN_ERR_DISCONNECT,    \/\/!< error in disconnect operation$/;"	e	enum:Conn::__anon8
+CONN_ERR_MISMATCH	include/net/conn.h	/^        CONN_ERR_MISMATCH,      \/\/!< version isn't match$/;"	e	enum:Conn::__anon8
+CONN_ERR_NOCEV	include/net/conn.h	/^        CONN_ERR_NOCEV,         \/\/!< these is no CommEvent$/;"	e	enum:Conn::__anon8
+CONN_ERR_NOMEM	include/net/conn.h	/^        CONN_ERR_NOMEM,         \/\/!< there is no memory$/;"	e	enum:Conn::__anon8
+CONN_ERR_NOVEC	include/net/conn.h	/^        CONN_ERR_NOVEC,         \/\/!< there is no Iovec in queue$/;"	e	enum:Conn::__anon8
+CONN_ERR_UNAVAIL	include/net/conn.h	/^        CONN_ERR_UNAVAIL        \/\/!< connection is busy (would block)$/;"	e	enum:Conn::__anon8
+CONN_ERR_WRITEFILE	include/net/conn.h	/^        CONN_ERR_WRITEFILE,     \/\/!< write file failed$/;"	e	enum:Conn::__anon8
 CONN_FAILURE	include/comm/commevent.h	/^        CONN_FAILURE,       \/\/!< CommStage failed to connect to peer$/;"	e	enum:CommEvent::__anon1
-CONN_READY	include/net/conn.h	/^        CONN_READY,             \/\/!< connection is still ready$/;"	e	enum:Conn::__anon7
-CPP_DEPS	Debug/sources.mk	/^CPP_DEPS := $/;"	m
-CPP_SRCS	Debug/sources.mk	/^CPP_SRCS := $/;"	m
+CONN_READY	include/net/conn.h	/^        CONN_READY,             \/\/!< connection is still ready$/;"	e	enum:Conn::__anon8
 CProcessParam	include/linit.h	/^    CProcessParam(){}$/;"	f	class:CProcessParam
 CProcessParam	include/linit.h	/^class CProcessParam{$/;"	c
+CRollSelectDir	include/io/rollselectdir.h	/^    CRollSelectDir(){MUTEX_INIT(&mMutex, NULL);}$/;"	f	class:CRollSelectDir
+CRollSelectDir	include/io/rollselectdir.h	/^class CRollSelectDir : public CSelectDir$/;"	c
+CSelectDir	include/io/selectdir.h	/^class CSelectDir$/;"	c
+CSimpleDeserializer	test/simpledeserializer.cpp	/^CSimpleDeserializer::CSimpleDeserializer()$/;"	f	class:CSimpleDeserializer
+CSimpleDeserializer	test/simpledeserializer.h	/^class CSimpleDeserializer : public Deserializable$/;"	c
 CTESTSTAGE_H_	test/teststage.h	20;"	d
 CTestStage	test/teststage.cpp	/^CTestStage::CTestStage(const char* tag) :$/;"	f	class:CTestStage
 CTestStage	test/teststage.h	/^class CTestStage : public Stage$/;"	c
 CXXFLAGS	Makefile	/^CXXFLAGS = $(CFLAGS)$/;"	m
-CXX_DEPS	Debug/sources.mk	/^CXX_DEPS := $/;"	m
-CXX_SRCS	Debug/sources.mk	/^CXX_SRCS := $/;"	m
-C_DEPS	Debug/sources.mk	/^C_DEPS := $/;"	m
-C_SRCS	Debug/sources.mk	/^C_SRCS := $/;"	m
-C_UPPER_DEPS	Debug/sources.mk	/^C_UPPER_DEPS := $/;"	m
-C_UPPER_SRCS	Debug/sources.mk	/^C_UPPER_SRCS := $/;"	m
 CallbackContext	include/seda/callback.h	/^class CallbackContext {$/;"	c
 CallbackContextEvent	include/seda/callback.h	/^    CallbackContextEvent(StageEvent *event = NULL):ev(event){}$/;"	f	class:CallbackContextEvent
 CallbackContextEvent	include/seda/callback.h	/^class CallbackContextEvent : public CallbackContext$/;"	c
@@ -98,9 +95,9 @@ CommEvent	include/comm/commevent.h	/^class CommEvent : public StageEvent$/;"	c
 CommEvent	src/comm/commevent.cpp	/^CommEvent::CommEvent() :$/;"	f	class:CommEvent
 CommEvent	src/comm/commevent.cpp	/^CommEvent::CommEvent(Message* reqMsg, Message* respMsg) :$/;"	f	class:CommEvent
 CommEvent	src/comm/commevent.cpp	/^CommEvent::CommEvent(MsgDesc *req, MsgDesc *resp) :$/;"	f	class:CommEvent
-CommRecvEvent	include/comm/commdataevent.h	/^    CommRecvEvent(int fd):mSocket(fd){};$/;"	f	class:CommRecvEvent
-CommRecvEvent	include/comm/commdataevent.h	/^class CommRecvEvent : public StageEvent$/;"	c
-CommSendEvent	include/comm/commdataevent.h	/^    CommSendEvent(Conn *conn):mConn(conn){};$/;"	f	class:CommSendEvent
+CommRecvEvent	include/comm/commdataevent.h	/^    CommRecvEvent(int sock): mSocket(sock) {}$/;"	f	class:CommRecvEvent
+CommRecvEvent	include/comm/commdataevent.h	/^class CommRecvEvent: public StageEvent$/;"	c
+CommSendEvent	include/comm/commdataevent.h	/^    CommSendEvent(void *conn):$/;"	f	class:CommSendEvent
 CommSendEvent	include/comm/commdataevent.h	/^class CommSendEvent : public StageEvent$/;"	c
 CommStage	include/comm/commstage.h	/^class CommStage : public Stage$/;"	c
 CommStage	src/comm/commstage.cpp	/^CommStage::CommStage(const char* tag) :$/;"	f	class:CommStage
@@ -112,17 +109,19 @@ ConnMgr	include/net/connmgr.h	/^class ConnMgr$/;"	c
 ConnMgr	src/net/connmgr.cpp	/^ConnMgr::ConnMgr() :$/;"	f	class:ConnMgr
 DEBUG_NEW	include/mm/debug_new.h	28;"	d
 DEBUG_NEW	include/mm/lmem.h	140;"	d
-DEFAULT_LOCATION	include/net/endpoint.h	/^    static const char   DEFAULT_LOCATION[] = "default";$/;"	m	class:EndPoint
+DEFAULT_LOCATION	include/net/endpoint.h	/^    static const char   DEFAULT_LOCATION[MAX_LOCATION_LEN];$/;"	m	class:EndPoint
+DEFAULT_LOCATION	src/net/endpoint.cpp	/^const char   EndPoint::DEFAULT_LOCATION[] = "default";$/;"	m	class:EndPoint	file:
 DEFAULT_PORT	include/net/endpoint.h	/^    static const s32_t  DEFAULT_PORT = -1;$/;"	m	class:EndPoint
 DEFAULT_SECTION	include/conf/ini.h	/^    static const std::string DEFAULT_SECTION;$/;"	m	class:CIni
 DEFAULT_SECTION	src/conf/ini.cpp	/^const std::string                        CIni::DEFAULT_SECTION = std::string("");$/;"	m	class:CIni	file:
-DEFAULT_SERVICE	include/net/endpoint.h	/^    static const char   DEFAULT_SERVICE[]  = "unknown";$/;"	m	class:EndPoint
+DEFAULT_SERVICE	include/net/endpoint.h	/^    static const char   DEFAULT_SERVICE[MAX_SERVICE_LEN];$/;"	m	class:EndPoint
+DEFAULT_SERVICE	src/net/endpoint.cpp	/^const char   EndPoint::DEFAULT_SERVICE[]  = "unknown";$/;"	m	class:EndPoint	file:
 DEF_FLAGS	Makefile	/^DEF_FLAGS = -D_REENTRANT -DLINUX $(DBG_FLAGS) $/;"	m
-DIR_IN	include/net/sockutil.h	/^        DIR_IN = 0,     \/\/!< read epoll events$/;"	e	enum:Sock::__anon23
-DIR_OUT	include/net/sockutil.h	/^        DIR_OUT         \/\/!< write epoll events$/;"	e	enum:Sock::__anon23
-DISCONNECTED	include/net/sockutil.h	/^        DISCONNECTED = -1,   \/\/!< indicates that the socket is disconnected$/;"	e	enum:Sock::__anon24
-DONE	include/net/iovec.h	/^        DONE = 0,       \/\/!< vector is completed successfully$/;"	e	enum:IoVec::__anon13
-DRAIN	include/net/conn.h	/^        DRAIN                   \/\/!< draining the socket$/;"	e	enum:Conn::__anon8
+DIR_IN	include/net/sockutil.h	/^        DIR_IN = 0,     \/\/!< read epoll events$/;"	e	enum:Sock::__anon21
+DIR_OUT	include/net/sockutil.h	/^        DIR_OUT         \/\/!< write epoll events$/;"	e	enum:Sock::__anon21
+DISCONNECTED	include/net/sockutil.h	/^        DISCONNECTED = -1,   \/\/!< indicates that the socket is disconnected$/;"	e	enum:Sock::__anon22
+DONE	include/net/iovec.h	/^        DONE = 0,       \/\/!< vector is completed successfully$/;"	e	enum:IoVec::__anon14
+DRAIN	include/net/conn.h	/^        DRAIN                   \/\/!< draining the socket$/;"	e	enum:Conn::__anon9
 DUMMY_END_CATEGORY	include/seda/sedastats.h	/^            DUMMY_END_CATEGORY      =   MAX_NUM_CATEGORY$/;"	e	enum:SedaStats::_SEDA_STATS_CATEGORY
 DUMMY_END_STAT	include/seda/sedastats.h	/^            DUMMY_END_STAT             =  MAX_NUM_STATS \/\/ = 1200 defined above$/;"	e	enum:SedaStats::_SEDA_STATS_ID
 Date	include/time/datetime.h	/^  Date( const DateTime& val )$/;"	f	class:Date
@@ -142,29 +141,29 @@ DefaultSet	include/trace/log.h	/^    typedef std::set< std::string > DefaultSet;
 Deserializable	include/lang/serializable.h	/^class Deserializable$/;"	c
 DispatchContext	include/seda/eventdispatcher.h	/^class DispatchContext {$/;"	c
 ENDPOINT_H_	include/net/endpoint.h	21;"	d
-EPOLL_FDESC	include/net/sockutil.h	/^        EPOLL_FDESC = 1024, \/\/!< number of epoll socket descriptors$/;"	e	enum:Sock::__anon24
-ERROR	include/net/iovec.h	/^        ERROR,          \/\/!< an error has occured during vector processing$/;"	e	enum:IoVec::__anon13
-ERR_AINSERTED	include/net/connmgr.h	/^        ERR_AINSERTED,      \/\/!< connection is already inserted$/;"	e	enum:ConnMgr::__anon12
-ERR_BUF_SIZE	include/net/net.h	/^        ERR_BUF_SIZE = 256    \/\/!< size of error buffer$/;"	e	enum:Net::__anon21
-ERR_EPOLL_ADD	include/net/sockutil.h	/^        ERR_EPOLL_ADD,      \/\/!< error in adding a socket to an epoll descriptor$/;"	e	enum:Sock::__anon22
-ERR_EPOLL_CREATE	include/net/sockutil.h	/^        ERR_EPOLL_CREATE,   \/\/!< error in creating an epoll descriptor$/;"	e	enum:Sock::__anon22
-ERR_EPOLL_DEL	include/net/sockutil.h	/^        ERR_EPOLL_DEL       \/\/!< error in removing a socket from an epoll fd$/;"	e	enum:Sock::__anon22
-ERR_LOCK	include/net/connmgr.h	/^        ERR_LOCK            \/\/!< some other locking error$/;"	e	enum:ConnMgr::__anon12
-ERR_LOCK_AOWNED	include/net/connmgr.h	/^        ERR_LOCK_AOWNED,    \/\/!< attempt to lock an already owned lock$/;"	e	enum:ConnMgr::__anon12
-ERR_LOCK_BUSY	include/net/connmgr.h	/^        ERR_LOCK_BUSY,      \/\/!< lock is busy, taken by another thread$/;"	e	enum:ConnMgr::__anon12
-ERR_LOCK_NOTOWNED	include/net/connmgr.h	/^        ERR_LOCK_NOTOWNED,  \/\/!< attempt to unlock without a prior lock$/;"	e	enum:ConnMgr::__anon12
-ERR_NOT_FOUND	include/net/connmgr.h	/^        ERR_NOT_FOUND,      \/\/!< connection not found$/;"	e	enum:ConnMgr::__anon12
-ERR_SOCK_ACCEPT	include/net/sockutil.h	/^        ERR_SOCK_ACCEPT,    \/\/!< error in accepting a socket connection request$/;"	e	enum:Sock::__anon22
-ERR_SOCK_BIND	include/net/sockutil.h	/^        ERR_SOCK_BIND,      \/\/!< error in binding a socket to a server address$/;"	e	enum:Sock::__anon22
-ERR_SOCK_CONNECT	include/net/sockutil.h	/^        ERR_SOCK_CONNECT,   \/\/!< error in client socket connect operation$/;"	e	enum:Sock::__anon22
-ERR_SOCK_CREATE	include/net/sockutil.h	/^        ERR_SOCK_CREATE,    \/\/!< error in creating socket$/;"	e	enum:Sock::__anon22
-ERR_SOCK_DISCONNECT	include/net/sockutil.h	/^        ERR_SOCK_DISCONNECT,     \/\/!< error in disconnecting socket$/;"	e	enum:Sock::__anon22
-ERR_SOCK_INVALID	include/net/sockutil.h	/^        ERR_SOCK_INVALID,   \/\/!< invalid socket$/;"	e	enum:Sock::__anon22
-ERR_SOCK_LISTEN	include/net/sockutil.h	/^        ERR_SOCK_LISTEN,    \/\/!< error in listening on a socket$/;"	e	enum:Sock::__anon22
-ERR_SOCK_READ	include/net/sockutil.h	/^        ERR_SOCK_READ,      \/\/!< error in reading from a socket$/;"	e	enum:Sock::__anon22
-ERR_SOCK_RESOLVE	include/net/sockutil.h	/^        ERR_SOCK_RESOLVE,   \/\/!< error in resolving hostname$/;"	e	enum:Sock::__anon22
-ERR_SOCK_SETOPT	include/net/sockutil.h	/^        ERR_SOCK_SETOPT,    \/\/!< error in setting socket options$/;"	e	enum:Sock::__anon22
-ERR_SOCK_WRITE	include/net/sockutil.h	/^        ERR_SOCK_WRITE,     \/\/!< error in writing to a socket$/;"	e	enum:Sock::__anon22
+EPOLL_FDESC	include/net/sockutil.h	/^        EPOLL_FDESC = 1024, \/\/!< number of epoll socket descriptors$/;"	e	enum:Sock::__anon22
+ERROR	include/net/iovec.h	/^        ERROR,          \/\/!< an error has occured during vector processing$/;"	e	enum:IoVec::__anon14
+ERR_AINSERTED	include/net/connmgr.h	/^        ERR_AINSERTED,      \/\/!< connection is already inserted$/;"	e	enum:ConnMgr::__anon13
+ERR_BUF_SIZE	include/net/net.h	/^        ERR_BUF_SIZE = 256    \/\/!< size of error buffer$/;"	e	enum:Net::__anon19
+ERR_EPOLL_ADD	include/net/sockutil.h	/^        ERR_EPOLL_ADD,      \/\/!< error in adding a socket to an epoll descriptor$/;"	e	enum:Sock::__anon20
+ERR_EPOLL_CREATE	include/net/sockutil.h	/^        ERR_EPOLL_CREATE,   \/\/!< error in creating an epoll descriptor$/;"	e	enum:Sock::__anon20
+ERR_EPOLL_DEL	include/net/sockutil.h	/^        ERR_EPOLL_DEL       \/\/!< error in removing a socket from an epoll fd$/;"	e	enum:Sock::__anon20
+ERR_LOCK	include/net/connmgr.h	/^        ERR_LOCK            \/\/!< some other locking error$/;"	e	enum:ConnMgr::__anon13
+ERR_LOCK_AOWNED	include/net/connmgr.h	/^        ERR_LOCK_AOWNED,    \/\/!< attempt to lock an already owned lock$/;"	e	enum:ConnMgr::__anon13
+ERR_LOCK_BUSY	include/net/connmgr.h	/^        ERR_LOCK_BUSY,      \/\/!< lock is busy, taken by another thread$/;"	e	enum:ConnMgr::__anon13
+ERR_LOCK_NOTOWNED	include/net/connmgr.h	/^        ERR_LOCK_NOTOWNED,  \/\/!< attempt to unlock without a prior lock$/;"	e	enum:ConnMgr::__anon13
+ERR_NOT_FOUND	include/net/connmgr.h	/^        ERR_NOT_FOUND,      \/\/!< connection not found$/;"	e	enum:ConnMgr::__anon13
+ERR_SOCK_ACCEPT	include/net/sockutil.h	/^        ERR_SOCK_ACCEPT,    \/\/!< error in accepting a socket connection request$/;"	e	enum:Sock::__anon20
+ERR_SOCK_BIND	include/net/sockutil.h	/^        ERR_SOCK_BIND,      \/\/!< error in binding a socket to a server address$/;"	e	enum:Sock::__anon20
+ERR_SOCK_CONNECT	include/net/sockutil.h	/^        ERR_SOCK_CONNECT,   \/\/!< error in client socket connect operation$/;"	e	enum:Sock::__anon20
+ERR_SOCK_CREATE	include/net/sockutil.h	/^        ERR_SOCK_CREATE,    \/\/!< error in creating socket$/;"	e	enum:Sock::__anon20
+ERR_SOCK_DISCONNECT	include/net/sockutil.h	/^        ERR_SOCK_DISCONNECT,     \/\/!< error in disconnecting socket$/;"	e	enum:Sock::__anon20
+ERR_SOCK_INVALID	include/net/sockutil.h	/^        ERR_SOCK_INVALID,   \/\/!< invalid socket$/;"	e	enum:Sock::__anon20
+ERR_SOCK_LISTEN	include/net/sockutil.h	/^        ERR_SOCK_LISTEN,    \/\/!< error in listening on a socket$/;"	e	enum:Sock::__anon20
+ERR_SOCK_READ	include/net/sockutil.h	/^        ERR_SOCK_READ,      \/\/!< error in reading from a socket$/;"	e	enum:Sock::__anon20
+ERR_SOCK_RESOLVE	include/net/sockutil.h	/^        ERR_SOCK_RESOLVE,   \/\/!< error in resolving hostname$/;"	e	enum:Sock::__anon20
+ERR_SOCK_SETOPT	include/net/sockutil.h	/^        ERR_SOCK_SETOPT,    \/\/!< error in setting socket options$/;"	e	enum:Sock::__anon20
+ERR_SOCK_WRITE	include/net/sockutil.h	/^        ERR_SOCK_WRITE,     \/\/!< error in writing to a socket$/;"	e	enum:Sock::__anon20
 Encode	src/math/md5.cpp	/^Encode(unsigned char  *output, UINT4  *input, unsigned int    len)$/;"	f	file:
 EndPoint	include/net/endpoint.h	/^class EndPoint : public Serializable$/;"	c
 EndPoint	src/net/endpoint.cpp	/^EndPoint::EndPoint()$/;"	f	class:EndPoint
@@ -172,13 +171,13 @@ EndPoint	src/net/endpoint.cpp	/^EndPoint::EndPoint(const char *hostname, const c
 EndPoint	src/net/endpoint.cpp	/^EndPoint::EndPoint(const char *hostname, const char *location,$/;"	f	class:EndPoint
 EndPoint	src/net/endpoint.cpp	/^EndPoint::EndPoint(const char *hostname, s32_t port)$/;"	f	class:EndPoint
 EndPoint	src/net/endpoint.cpp	/^EndPoint::EndPoint(s32_t port)$/;"	f	class:EndPoint
-EpSockMap	include/net/connmgr.h	/^    typedef std::map<std::string, std::set<int>> EpSockMap;$/;"	t	class:ConnMgr
+EpSockMap	include/net/connmgr.h	/^    typedef std::map<std::string, std::set<int> > EpSockMap;$/;"	t	class:ConnMgr
 Error	include/trace/log.h	/^int CLog::Error(T message)$/;"	f	class:CLog
 EventDispatcher	include/seda/eventdispatcher.h	/^class EventDispatcher : public Stage {$/;"	c
 EventDispatcher	src/seda/eventdispatcher.cpp	/^EventDispatcher::EventDispatcher(const char* tag) :$/;"	f	class:EventDispatcher
 EventHash	include/seda/eventdispatcher.h	/^    typedef std::map<std::string, std::list<StoredEvent> > EventHash;$/;"	t	class:EventDispatcher
 F	src/math/md5.cpp	40;"	d	file:
-FAIL_EVENT	include/seda/eventdispatcher.h	/^        FAIL_EVENT$/;"	e	enum:EventDispatcher::__anon25
+FAIL_EVENT	include/seda/eventdispatcher.h	/^        FAIL_EVENT$/;"	e	enum:EventDispatcher::__anon23
 FF	src/math/md5.cpp	54;"	d	file:
 FILENAME_LENGTH_MAX	include/defs.h	/^const unsigned int FILENAME_LENGTH_MAX = 256; \/\/the max filename length$/;"	v
 FILE_PATH_SPLIT	include/io/io.h	/^static const char FILE_PATH_SPLIT = '\/';$/;"	v
@@ -191,39 +190,31 @@ GetEvent	include/seda/callback.h	/^    StageEvent *GetEvent(){return ev;}$/;"	f	
 GetLogLevel	src/trace/log.cpp	/^CLog::GetLogLevel()$/;"	f	class:CLog
 GetRotateType	src/trace/log.cpp	/^CLog::GetRotateType()$/;"	f	class:CLog
 H	src/math/md5.cpp	42;"	d	file:
-HANDLE_EV	include/seda/stageevent.h	/^        HANDLE_EV = 0,$/;"	e	enum:StageEvent::__anon27
+HANDLE_EV	include/seda/stageevent.h	/^        HANDLE_EV = 0,$/;"	e	enum:StageEvent::__anon25
 HDR_ATT_LEN	include/comm/packageinfo.h	/^    HDR_ATT_LEN = HDR_NUM_PRECISION + 1,$/;"	e	enum:__anon2
-HDR_ATT_LEN	include/net/net.h	/^        HDR_ATT_LEN = HDR_NUM_PRECISION + 1,$/;"	e	enum:Net::__anon17
 HDR_ATT_LEN_POS	include/comm/packageinfo.h	/^    HDR_ATT_LEN_POS = HDR_MSG_LEN_POS + HDR_MSG_LEN,$/;"	e	enum:__anon2
-HDR_ATT_LEN_POS	include/net/net.h	/^        HDR_ATT_LEN_POS = HDR_MSG_LEN_POS + HDR_MSG_LEN$/;"	e	enum:Net::__anon17
 HDR_FILE_LEN	include/comm/packageinfo.h	/^    HDR_FILE_LEN = HDR_NUM_PRECISION + 1,$/;"	e	enum:__anon2
 HDR_FILE_LEN_POS	include/comm/packageinfo.h	/^    HDR_FILE_LEN_POS = HDR_ATT_LEN_POS + HDR_ATT_LEN$/;"	e	enum:__anon2
 HDR_LEN	include/comm/packageinfo.h	/^    HDR_LEN = HDR_TYPE_LEN + HDR_MSG_LEN + HDR_ATT_LEN + HDR_FILE_LEN,$/;"	e	enum:__anon2
-HDR_LEN	include/net/net.h	/^        HDR_LEN = HDR_TYPE_LEN + HDR_MSG_LEN + HDR_ATT_LEN,$/;"	e	enum:Net::__anon17
 HDR_MSG_LEN	include/comm/packageinfo.h	/^    HDR_MSG_LEN = HDR_NUM_PRECISION + 1,$/;"	e	enum:__anon2
-HDR_MSG_LEN	include/net/net.h	/^        HDR_MSG_LEN = HDR_NUM_PRECISION + 1,$/;"	e	enum:Net::__anon17
 HDR_MSG_LEN_POS	include/comm/packageinfo.h	/^    HDR_MSG_LEN_POS = HDR_TYPE_POS + HDR_TYPE_LEN,$/;"	e	enum:__anon2
-HDR_MSG_LEN_POS	include/net/net.h	/^        HDR_MSG_LEN_POS = HDR_TYPE_POS + HDR_TYPE_LEN,$/;"	e	enum:Net::__anon17
 HDR_NUM_PRECISION	include/comm/packageinfo.h	/^    HDR_NUM_PRECISION = 7,$/;"	e	enum:__anon2
-HDR_NUM_PRECISION	include/net/net.h	/^        HDR_NUM_PRECISION = 15,$/;"	e	enum:Net::__anon17
 HDR_TYPE_LEN	include/comm/packageinfo.h	/^    HDR_TYPE_LEN = 8,$/;"	e	enum:__anon2
-HDR_TYPE_LEN	include/net/net.h	/^        HDR_TYPE_LEN = 8,$/;"	e	enum:Net::__anon17
 HDR_TYPE_POS	include/comm/packageinfo.h	/^    HDR_TYPE_POS = 0,$/;"	e	enum:__anon2
-HDR_TYPE_POS	include/net/net.h	/^        HDR_TYPE_POS = 0,$/;"	e	enum:Net::__anon17
-HEADER	include/net/conn.h	/^        HEADER = 0,             \/\/!< processing packet header$/;"	e	enum:Conn::__anon8
+HEADER	include/net/conn.h	/^        HEADER = 0,             \/\/!< processing packet header$/;"	e	enum:Conn::__anon9
 HH	src/math/md5.cpp	64;"	d	file:
-HOST_BUF_SIZE	include/net/sockutil.h	/^        HOST_BUF_SIZE = 4096, \/\/!< auxiliary data buf size in gethostbyname_r$/;"	e	enum:Sock::__anon24
+HOST_BUF_SIZE	include/net/sockutil.h	/^        HOST_BUF_SIZE = 4096, \/\/!< auxiliary data buf size in gethostbyname_r$/;"	e	enum:Sock::__anon22
 HistEntry	include/seda/stageevent.h	/^    typedef std::pair<Stage*, HistType> HistEntry;$/;"	t	class:StageEvent
-HistType	include/seda/stageevent.h	/^    } HistType;$/;"	t	class:StageEvent	typeref:enum:StageEvent::__anon27
+HistType	include/seda/stageevent.h	/^    } HistType;$/;"	t	class:StageEvent	typeref:enum:StageEvent::__anon25
 I	src/math/md5.cpp	43;"	d	file:
 ID	include/seda/sedastats.h	/^                enum Type {ID, STR, ALL,};$/;"	e	enum:SedaStats::StatsId::Type
 IDStoreMap	include/seda/sedastatsstage.h	/^                                                       IDStoreMap;$/;"	t	class:SedaStatsMap
 ID_STR	include/comm/commevent.h	15;"	d
 ID_STR	include/seda/sedastats.h	22;"	d
 II	src/math/md5.cpp	69;"	d	file:
-INET_SOCK	include/net/conn.h	/^        INET_SOCK = 1,      \/\/!< connection is inet socket type:1$/;"	e	enum:Conn::__anon10
-INITFAIL	include/seda/sedaconfig.h	/^        INITFAIL,$/;"	e	enum:SedaConfig::__anon26
+INITFAIL	include/seda/sedaconfig.h	/^        INITFAIL,$/;"	e	enum:SedaConfig::__anon24
 INVALID_PARAMETER	include/comm/commevent.h	/^        INVALID_PARAMETER,  \/\/!< invalid parameter$/;"	e	enum:CommEvent::__anon1
+IOVUTIL_H_	include/net/iovutil.h	21;"	d
 IO_H_	include/io/io.h	20;"	d
 Info	include/trace/log.h	/^int CLog::Info(T message)$/;"	f	class:CLog
 IoVec	include/net/iovec.h	/^class IoVec {$/;"	c
@@ -231,13 +222,11 @@ IoVec	src/net/iovec.cpp	/^IoVec::IoVec(alloc_t alloc) :$/;"	f	class:IoVec
 IoVec	src/net/iovec.cpp	/^IoVec::IoVec(vec_t *vec, alloc_t alloc) :$/;"	f	class:IoVec
 IoVec	src/net/iovec.cpp	/^IoVec::IoVec(void *base, size_t size, alloc_t alloc) :$/;"	f	class:IoVec
 IoVec	src/net/iovec.cpp	/^IoVec::IoVec(void *base, size_t size, callback_t callback, void *param,$/;"	f	class:IoVec
-JULIAN_19700101	include/time/datetime.h	/^    JULIAN_19700101 = 2440588$/;"	e	enum:DateTime::__anon28
+JULIAN_19700101	include/time/datetime.h	/^    JULIAN_19700101 = 2440588$/;"	e	enum:DateTime::__anon26
 KillThreadStage	include/seda/killthread.h	/^    KillThreadStage(const char* tag) :$/;"	f	class:KillThreadStage
 KillThreadStage	include/seda/killthread.h	/^class KillThreadStage : public Stage {$/;"	c
-LIBRARIES	Debug/sources.mk	/^LIBRARIES := $/;"	m
-LIBS	Debug/objects.mk	/^LIBS :=$/;"	m
 LIB_LINKLIBS	Makefile	/^LIB_LINKLIBS = -shared -ldl -lpthread -lrt$/;"	m
-LISTEN_BACKLOG	include/net/sockutil.h	/^        LISTEN_BACKLOG = 4096, \/\/!< length of listen backlog socket queue$/;"	e	enum:Sock::__anon24
+LISTEN_BACKLOG	include/net/sockutil.h	/^        LISTEN_BACKLOG = 4096, \/\/!< length of listen backlog socket queue$/;"	e	enum:Sock::__anon22
 LMATH_H_	include/math/lmath.h	21;"	d
 LMPOOL_H_	include/mm/lmpool.h	21;"	d
 LNET_H_	include/net/lnet.h	21;"	d
@@ -247,21 +236,21 @@ LOG_ERROR	include/trace/log.h	208;"	d
 LOG_HEAD	include/trace/log.h	161;"	d
 LOG_HEAD	include/trace/log.h	180;"	d
 LOG_INFO	include/trace/log.h	210;"	d
-LOG_LEVEL	include/trace/log.h	/^}LOG_LEVEL;$/;"	t	typeref:enum:__anon30
-LOG_LEVEL_DEBUG	include/trace/log.h	/^    LOG_LEVEL_DEBUG         = 4,$/;"	e	enum:__anon30
-LOG_LEVEL_ERR	include/trace/log.h	/^    LOG_LEVEL_ERR           = 1,$/;"	e	enum:__anon30
-LOG_LEVEL_INFO	include/trace/log.h	/^    LOG_LEVEL_INFO          = 3,$/;"	e	enum:__anon30
-LOG_LEVEL_LAST	include/trace/log.h	/^    LOG_LEVEL_LAST$/;"	e	enum:__anon30
-LOG_LEVEL_PANIC	include/trace/log.h	/^    LOG_LEVEL_PANIC         = 0,$/;"	e	enum:__anon30
-LOG_LEVEL_TRACE	include/trace/log.h	/^    LOG_LEVEL_TRACE         = 5,$/;"	e	enum:__anon30
-LOG_LEVEL_WARN	include/trace/log.h	/^    LOG_LEVEL_WARN          = 2,$/;"	e	enum:__anon30
+LOG_LEVEL	include/trace/log.h	/^}LOG_LEVEL;$/;"	t	typeref:enum:__anon28
+LOG_LEVEL_DEBUG	include/trace/log.h	/^    LOG_LEVEL_DEBUG         = 4,$/;"	e	enum:__anon28
+LOG_LEVEL_ERR	include/trace/log.h	/^    LOG_LEVEL_ERR           = 1,$/;"	e	enum:__anon28
+LOG_LEVEL_INFO	include/trace/log.h	/^    LOG_LEVEL_INFO          = 3,$/;"	e	enum:__anon28
+LOG_LEVEL_LAST	include/trace/log.h	/^    LOG_LEVEL_LAST$/;"	e	enum:__anon28
+LOG_LEVEL_PANIC	include/trace/log.h	/^    LOG_LEVEL_PANIC         = 0,$/;"	e	enum:__anon28
+LOG_LEVEL_TRACE	include/trace/log.h	/^    LOG_LEVEL_TRACE         = 5,$/;"	e	enum:__anon28
+LOG_LEVEL_WARN	include/trace/log.h	/^    LOG_LEVEL_WARN          = 2,$/;"	e	enum:__anon28
 LOG_MAX_LINE	include/trace/log.h	/^const int          LOG_MAX_LINE    = 100000;$/;"	v
 LOG_OUTPUT	include/trace/log.h	199;"	d
 LOG_PANIC	include/trace/log.h	207;"	d
-LOG_ROTATE	include/trace/log.h	/^}LOG_ROTATE;$/;"	t	typeref:enum:__anon31
-LOG_ROTATE_BYDAY	include/trace/log.h	/^        LOG_ROTATE_BYDAY         = 0,$/;"	e	enum:__anon31
-LOG_ROTATE_BYSIZE	include/trace/log.h	/^        LOG_ROTATE_BYSIZE,$/;"	e	enum:__anon31
-LOG_ROTATE_LAST	include/trace/log.h	/^        LOG_ROTATE_LAST$/;"	e	enum:__anon31
+LOG_ROTATE	include/trace/log.h	/^}LOG_ROTATE;$/;"	t	typeref:enum:__anon29
+LOG_ROTATE_BYDAY	include/trace/log.h	/^        LOG_ROTATE_BYDAY         = 0,$/;"	e	enum:__anon29
+LOG_ROTATE_BYSIZE	include/trace/log.h	/^        LOG_ROTATE_BYSIZE,$/;"	e	enum:__anon29
+LOG_ROTATE_LAST	include/trace/log.h	/^        LOG_ROTATE_LAST$/;"	e	enum:__anon29
 LOG_STATUS_ERR	include/trace/log.h	/^const int          LOG_STATUS_ERR  = 1;$/;"	v
 LOG_STATUS_OK	include/trace/log.h	/^const int          LOG_STATUS_OK   = 0;$/;"	v
 LOG_TRACE	include/trace/log.h	212;"	d
@@ -275,7 +264,7 @@ MAKE_RPC_MSG_STAT	include/seda/sedastats.h	/^            MAKE_RPC_MSG_STAT      
 MALFORMED_MESSAGE	include/comm/commevent.h	/^        MALFORMED_MESSAGE,  \/\/!< message contained in event is malformed$/;"	e	enum:CommEvent::__anon1
 MAX_CFG_LINE_LEN	include/conf/ini.h	/^    static const int MAX_CFG_LINE_LEN = 1024;$/;"	m	class:CIni
 MAX_CONNECTION_NUM	include/defs.h	/^const unsigned int MAX_CONNECTION_NUM  = 12;$/;"	v
-MAX_EPOLL_EVENTS	include/net/net.h	/^        MAX_EPOLL_EVENTS = 64,    \/\/!< maximum epoll events at a time$/;"	e	enum:Net::__anon21
+MAX_EPOLL_EVENTS	include/net/net.h	/^        MAX_EPOLL_EVENTS = 64,    \/\/!< maximum epoll events at a time$/;"	e	enum:Net::__anon19
 MAX_ERROR_MSG_LEN	include/comm/response.h	/^        MAX_ERROR_MSG_LEN = 128$/;"	e	enum:Response::__anon4
 MAX_ERR_OUTPUT	src/os/lprocess.cpp	29;"	d	file:
 MAX_HOSTNAME_LEN	include/net/endpoint.h	26;"	d
@@ -293,36 +282,39 @@ MD5Init	src/math/md5.cpp	/^MD5Init(MD5_CTX *context)$/;"	f
 MD5String	src/math/md5.cpp	/^int MD5String(const char *string,unsigned char digest[16])$/;"	f
 MD5Transform	src/math/md5.cpp	/^MD5Transform(UINT4           state[4], const unsigned char   block[64])$/;"	f	file:
 MD5Update	src/math/md5.cpp	/^MD5Update(MD5_CTX        *context, const unsigned char  *input, unsigned int    inputLen)$/;"	f
-MD5_CTX	include/math/md5.h	/^} MD5_CTX;$/;"	t	typeref:struct:__anon6
+MD5_CTX	include/math/md5.h	/^} MD5_CTX;$/;"	t	typeref:struct:__anon7
 MD5_memcpy	src/math/md5.cpp	/^MD5_memcpy(POINTER         output, const POINTER         input, unsigned int    len)$/;"	f	file:
 MD5_memset	src/math/md5.cpp	/^MD5_memset(POINTER         output, int             value, unsigned int    len)$/;"	f	file:
 MEM_FILENAME_LEN	include/mm/lmem.h	/^    const static int MEM_FILENAME_LEN  = 32;$/;"	m	struct:MemID_t
 MEM_HASHTABLE_SIZE	include/mm/lmem.h	/^    const static int MEM_HASHTABLE_SIZE = 16384;$/;"	m	class:CLMemTrace
-MESSAGE	include/net/conn.h	/^        MESSAGE,                \/\/!< processing packetg control part$/;"	e	enum:Conn::__anon8
+MESSAGE	include/net/conn.h	/^        MESSAGE,                \/\/!< processing packetg control part$/;"	e	enum:Conn::__anon9
+MESSAGE_BASIC	include/lang/serializable.h	/^    MESSAGE_BASIC          = 100,$/;"	e	enum:__anon6
+MESSAGE_BASIC_REQUEST	include/lang/serializable.h	/^    MESSAGE_BASIC_REQUEST  = 1000,$/;"	e	enum:__anon6
+MESSAGE_BASIC_RESPONSE	include/lang/serializable.h	/^    MESSAGE_BASIC_RESPONSE = -1000$/;"	e	enum:__anon6
 MESSAGE_H_	include/comm/message.h	21;"	d
-MILLIS_PER_DAY	include/time/datetime.h	/^    MILLIS_PER_DAY = 86400000,$/;"	e	enum:DateTime::__anon28
-MILLIS_PER_HOUR	include/time/datetime.h	/^    MILLIS_PER_HOUR = 3600000,$/;"	e	enum:DateTime::__anon28
-MILLIS_PER_MIN	include/time/datetime.h	/^    MILLIS_PER_MIN = 60000,$/;"	e	enum:DateTime::__anon28
-MILLIS_PER_SEC	include/time/datetime.h	/^    MILLIS_PER_SEC = 1000,$/;"	e	enum:DateTime::__anon28
+MILLIS_PER_DAY	include/time/datetime.h	/^    MILLIS_PER_DAY = 86400000,$/;"	e	enum:DateTime::__anon26
+MILLIS_PER_HOUR	include/time/datetime.h	/^    MILLIS_PER_HOUR = 3600000,$/;"	e	enum:DateTime::__anon26
+MILLIS_PER_MIN	include/time/datetime.h	/^    MILLIS_PER_MIN = 60000,$/;"	e	enum:DateTime::__anon26
+MILLIS_PER_SEC	include/time/datetime.h	/^    MILLIS_PER_SEC = 1000,$/;"	e	enum:DateTime::__anon26
 MINOR_VER	include/version.h	22;"	d
-MINUTES_PER_HOUR	include/time/datetime.h	/^    MINUTES_PER_HOUR = 60,$/;"	e	enum:DateTime::__anon28
-MON_APR	include/time/datetime.h	/^      MON_APR = 4,$/;"	e	enum:DateTime::__anon29
-MON_AUG	include/time/datetime.h	/^      MON_AUG = 8,$/;"	e	enum:DateTime::__anon29
-MON_DEC	include/time/datetime.h	/^      MON_DEC = 12$/;"	e	enum:DateTime::__anon29
-MON_FEB	include/time/datetime.h	/^      MON_FEB = 2,$/;"	e	enum:DateTime::__anon29
-MON_JAN	include/time/datetime.h	/^      MON_JAN = 1,$/;"	e	enum:DateTime::__anon29
-MON_JUL	include/time/datetime.h	/^      MON_JUL = 7,$/;"	e	enum:DateTime::__anon29
-MON_JUN	include/time/datetime.h	/^      MON_JUN = 6,$/;"	e	enum:DateTime::__anon29
-MON_MAR	include/time/datetime.h	/^      MON_MAR = 3,$/;"	e	enum:DateTime::__anon29
-MON_MAY	include/time/datetime.h	/^      MON_MAY = 5,$/;"	e	enum:DateTime::__anon29
-MON_NOV	include/time/datetime.h	/^      MON_NOV = 11,$/;"	e	enum:DateTime::__anon29
-MON_OCT	include/time/datetime.h	/^      MON_OCT = 10,$/;"	e	enum:DateTime::__anon29
-MON_SEP	include/time/datetime.h	/^      MON_SEP = 9,$/;"	e	enum:DateTime::__anon29
-MSG_TYPE_DATA	include/net/net.h	27;"	d
-MSG_TYPE_ECHO	include/net/net.h	26;"	d
-MSG_TYPE_PING	include/net/net.h	25;"	d
-MSG_TYPE_RPC	include/net/net.h	28;"	d
-MSG_TYPE_RPC_LEN	include/net/net.h	32;"	d
+MINUTES_PER_HOUR	include/time/datetime.h	/^    MINUTES_PER_HOUR = 60,$/;"	e	enum:DateTime::__anon26
+MON_APR	include/time/datetime.h	/^      MON_APR = 4,$/;"	e	enum:DateTime::__anon27
+MON_AUG	include/time/datetime.h	/^      MON_AUG = 8,$/;"	e	enum:DateTime::__anon27
+MON_DEC	include/time/datetime.h	/^      MON_DEC = 12$/;"	e	enum:DateTime::__anon27
+MON_FEB	include/time/datetime.h	/^      MON_FEB = 2,$/;"	e	enum:DateTime::__anon27
+MON_JAN	include/time/datetime.h	/^      MON_JAN = 1,$/;"	e	enum:DateTime::__anon27
+MON_JUL	include/time/datetime.h	/^      MON_JUL = 7,$/;"	e	enum:DateTime::__anon27
+MON_JUN	include/time/datetime.h	/^      MON_JUN = 6,$/;"	e	enum:DateTime::__anon27
+MON_MAR	include/time/datetime.h	/^      MON_MAR = 3,$/;"	e	enum:DateTime::__anon27
+MON_MAY	include/time/datetime.h	/^      MON_MAY = 5,$/;"	e	enum:DateTime::__anon27
+MON_NOV	include/time/datetime.h	/^      MON_NOV = 11,$/;"	e	enum:DateTime::__anon27
+MON_OCT	include/time/datetime.h	/^      MON_OCT = 10,$/;"	e	enum:DateTime::__anon27
+MON_SEP	include/time/datetime.h	/^      MON_SEP = 9,$/;"	e	enum:DateTime::__anon27
+MSG_TYPE_DATA	include/net/net.h	32;"	d
+MSG_TYPE_ECHO	include/net/net.h	31;"	d
+MSG_TYPE_PING	include/net/net.h	30;"	d
+MSG_TYPE_RPC	include/net/net.h	33;"	d
+MSG_TYPE_RPC_LEN	include/net/net.h	37;"	d
 MUTEXT_STATIC_INIT	include/os/mutex.h	70;"	d
 MUTEX_DESTROY	include/os/mutex.h	103;"	d
 MUTEX_DESTROY	include/os/mutex.h	72;"	d
@@ -338,6 +330,7 @@ MUTEX_UNLOCK	include/os/mutex.h	74;"	d
 MYLIB	Makefile	/^MYLIB      = liblutil.so$/;"	m
 MemID	include/mm/lmem.h	/^}MemID;$/;"	t	typeref:struct:MemID_t
 MemID_t	include/mm/lmem.h	/^typedef struct MemID_t$/;"	s
+Message	include/comm/message.h	/^    Message(int type):mType(type){}$/;"	f	class:Message
 Message	include/comm/message.h	/^class Message : public Serializable$/;"	c
 MetricHistory	include/seda/sedametric.h	/^    MetricHistory(size_t capacity) : max_num(capacity) {}$/;"	f	class:MetricHistory
 MetricHistory	include/seda/sedametric.h	/^class MetricHistory$/;"	c
@@ -346,22 +339,21 @@ MsgDesc	include/comm/commevent.h	/^    MsgDesc(Message* msg): message(msg), atta
 MsgDesc	include/comm/commevent.h	/^struct MsgDesc {$/;"	s
 NETEX_H_	include/net/netex.h	21;"	d
 NETSERVER_H_	include/net/netserver.h	21;"	d
-NET_ERR_ASETUP	include/net/net.h	/^        NET_ERR_ASETUP,\/\/!< Net has already been setup by caller$/;"	e	enum:Net::__anon16
-NET_ERR_ASHUTDOWN	include/net/net.h	/^        NET_ERR_ASHUTDOWN,\/\/!< Net has already been shutdown$/;"	e	enum:Net::__anon16
-NET_ERR_CONNECT	include/net/net.h	/^        NET_ERR_CONNECT,\/\/!< error in connecting to server$/;"	e	enum:Net::__anon16
-NET_ERR_CONN_EXISTS	include/net/net.h	/^        NET_ERR_CONN_EXISTS,\/\/!< connection already exists$/;"	e	enum:Net::__anon16
-NET_ERR_CONN_NOTFOUND	include/net/net.h	/^        NET_ERR_CONN_NOTFOUND,\/\/!< connection not found$/;"	e	enum:Net::__anon16
-NET_ERR_DISCONNECT	include/net/net.h	/^        NET_ERR_DISCONNECT,\/\/!< error in disconnecting$/;"	e	enum:Net::__anon16
-NET_ERR_EPOLL	include/net/net.h	/^        NET_ERR_EPOLL,\/\/!< error reported by epoll descriptors$/;"	e	enum:Net::__anon16
-NET_ERR_LISTENER	include/net/net.h	/^        NET_ERR_LISTENER,\/\/!< error in setup listener socket at server$/;"	e	enum:Net::__anon16
-NET_ERR_PIPE	include/net/net.h	/^        NET_ERR_PIPE,\/\/!< error in pipe descriptor$/;"	e	enum:Net::__anon16
-NET_ERR_SHUTDOWN	include/net/net.h	/^        NET_ERR_SHUTDOWN,\/\/!< error in shutdown$/;"	e	enum:Net::__anon16
-NET_ERR_SRVCB	include/net/net.h	/^        NET_ERR_SRVCB\/\/!< connection callback required by server$/;"	e	enum:Net::__anon16
-NET_ERR_SRVPORT	include/net/net.h	/^        NET_ERR_SRVPORT,\/\/!< server port required$/;"	e	enum:Net::__anon16
-NET_ERR_THREAD	include/net/net.h	/^        NET_ERR_THREAD,\/\/!< error in starting send and receive threads$/;"	e	enum:Net::__anon16
+NET_ERR_ASETUP	include/net/net.h	/^        NET_ERR_ASETUP,\/\/!< Net has already been setup by caller$/;"	e	enum:Net::__anon17
+NET_ERR_ASHUTDOWN	include/net/net.h	/^        NET_ERR_ASHUTDOWN,\/\/!< Net has already been shutdown$/;"	e	enum:Net::__anon17
+NET_ERR_CONNECT	include/net/net.h	/^        NET_ERR_CONNECT,\/\/!< error in connecting to server$/;"	e	enum:Net::__anon17
+NET_ERR_CONN_EXISTS	include/net/net.h	/^        NET_ERR_CONN_EXISTS,\/\/!< connection already exists$/;"	e	enum:Net::__anon17
+NET_ERR_CONN_NOTFOUND	include/net/net.h	/^        NET_ERR_CONN_NOTFOUND,\/\/!< connection not found$/;"	e	enum:Net::__anon17
+NET_ERR_DISCONNECT	include/net/net.h	/^        NET_ERR_DISCONNECT,\/\/!< error in disconnecting$/;"	e	enum:Net::__anon17
+NET_ERR_EPOLL	include/net/net.h	/^        NET_ERR_EPOLL,\/\/!< error reported by epoll descriptors$/;"	e	enum:Net::__anon17
+NET_ERR_LISTENER	include/net/net.h	/^        NET_ERR_LISTENER,\/\/!< error in setup listener socket at server$/;"	e	enum:Net::__anon17
+NET_ERR_PIPE	include/net/net.h	/^        NET_ERR_PIPE,\/\/!< error in pipe descriptor$/;"	e	enum:Net::__anon17
+NET_ERR_SHUTDOWN	include/net/net.h	/^        NET_ERR_SHUTDOWN,\/\/!< error in shutdown$/;"	e	enum:Net::__anon17
+NET_ERR_SRVCB	include/net/net.h	/^        NET_ERR_SRVCB\/\/!< connection callback required by server$/;"	e	enum:Net::__anon17
+NET_ERR_SRVPORT	include/net/net.h	/^        NET_ERR_SRVPORT,\/\/!< server port required$/;"	e	enum:Net::__anon17
+NET_ERR_THREAD	include/net/net.h	/^        NET_ERR_THREAD,\/\/!< error in starting send and receive threads$/;"	e	enum:Net::__anon17
 NET_LATENCY_CAT	include/seda/sedastats.h	/^            NET_LATENCY_CAT         =    300,$/;"	e	enum:SedaStats::_SEDA_STATS_CATEGORY
 NET_LATENCY_STAT	include/seda/sedastats.h	/^            NET_LATENCY_STAT           =   300,$/;"	e	enum:SedaStats::_SEDA_STATS_ID
-NONE_TYPE	include/net/conn.h	/^        NONE_TYPE = 0,      \/\/!< connection is not established$/;"	e	enum:Conn::__anon10
 NSEC_PER_SEC	include/seda/timerstage.h	26;"	d
 NSEC_PER_USEC	include/seda/timerstage.h	28;"	d
 NUM_REMOVE_INACTIVE	src/net/connmgr.cpp	/^static size_t NUM_REMOVE_INACTIVE = 64;$/;"	v	file:
@@ -374,23 +366,20 @@ NetServer	include/net/netserver.h	/^class NetServer : public Net {$/;"	c
 NetServer	src/net/netserver.cpp	/^NetServer::NetServer(Stage *commStage) :$/;"	f	class:NetServer
 NetServer	src/net/netserver.cpp	/^NetServer::NetServer(Stage *commStage, unsigned short Port) :$/;"	f	class:NetServer
 Now	include/time/datetime.h	/^class Now {$/;"	c
-OBJS	Debug/sources.mk	/^OBJS := $/;"	m
 OBJ_ID_TIMESTMP_DIGITS	src/time/datetime.cpp	363;"	d	file:
-OBJ_SRCS	Debug/sources.mk	/^OBJ_SRCS := $/;"	m
 ONE_GIGA	include/defs.h	/^const unsigned int ONE_GIGA            = ONE_MILLION * ONE_KILO;$/;"	v
 ONE_KILO	include/defs.h	/^const unsigned int ONE_KILO            = 1024;$/;"	v
 ONE_MILLION	include/defs.h	/^const unsigned int ONE_MILLION         = ONE_KILO * ONE_KILO;$/;"	v
-ON_CLEANUP	include/net/conn.h	/^        ON_CLEANUP = 0,         \/\/!< connection is closed on cleanup$/;"	e	enum:Conn::__anon9
-ON_CONNECT	include/net/net.h	/^        ON_CONNECT = 0,         \/\/!< callback is invoked during connect$/;"	e	enum:Net::__anon20
-ON_DISCONNECT	include/net/net.h	/^        ON_DISCONNECT         \/\/!< callback is invoked during disconnect$/;"	e	enum:Net::__anon20
-ON_ERROR	include/net/conn.h	/^        ON_ERROR                \/\/!< connection is closed on error$/;"	e	enum:Conn::__anon9
+ON_CLEANUP	include/net/conn.h	/^        ON_CLEANUP = 0,         \/\/!< connection is closed on cleanup$/;"	e	enum:Conn::__anon10
+ON_CONNECT	include/net/conn.h	/^        ON_CONNECT = 0,         \/\/!< callback is invoked during connect$/;"	e	enum:Conn::__anon12
+ON_DISCONNECT	include/net/conn.h	/^        ON_DISCONNECT         \/\/!< callback is invoked during disconnect$/;"	e	enum:Conn::__anon12
+ON_ERROR	include/net/conn.h	/^        ON_ERROR                \/\/!< connection is closed on error$/;"	e	enum:Conn::__anon10
 OTHER_VER	include/version.h	24;"	d
-O_SRCS	Debug/sources.mk	/^O_SRCS := $/;"	m
 Out	include/trace/log.h	/^int CLog::Out(const LOG_LEVEL consoleLevel,$/;"	f	class:CLog
 Output	src/trace/log.cpp	/^CLog::Output( const LOG_LEVEL level, const char *module, const char *prefix, const char *f, ...  )$/;"	f	class:CLog
 PACKAGEINFO_H_	include/comm/packageinfo.h	21;"	d
 PADDING	src/math/md5.cpp	/^static unsigned char PADDING[64] = {$/;"	v	file:
-PARSEFAIL	include/seda/sedaconfig.h	/^        PARSEFAIL$/;"	e	enum:SedaConfig::__anon26
+PARSEFAIL	include/seda/sedaconfig.h	/^        PARSEFAIL$/;"	e	enum:SedaConfig::__anon24
 PATCH_VER	include/version.h	23;"	d
 PENDING	include/comm/commevent.h	/^        PENDING,            \/\/!< event is being processed$/;"	e	enum:CommEvent::__anon1
 POINTER	include/math/md5.h	/^typedef unsigned char *POINTER;$/;"	t
@@ -400,14 +389,14 @@ PrefixMsg	src/trace/log.cpp	/^CLog::PrefixMsg(LOG_LEVEL level)$/;"	f	class:CLog
 REQUEST_H_	include/comm/request.h	21;"	d
 RESOURCE_FAILURE	include/comm/commevent.h	/^        RESOURCE_FAILURE,   \/\/!< local resource failure$/;"	e	enum:CommEvent::__anon1
 RESPONSE_H_	include/comm/response.h	21;"	d
-RM	Debug/makefile	/^RM := rm -rf$/;"	m
 ROTATE_LEFT	src/math/md5.cpp	48;"	d	file:
 RWRR	src/os/lprocess.cpp	32;"	d	file:
 RecvThread	src/net/net.cpp	/^Net::RecvThread(void *arg)$/;"	f	class:Net
 RenameOldLogs	src/trace/log.cpp	/^CLog::RenameOldLogs()$/;"	f	class:CLog
-Request	include/comm/request.h	/^    Request(){}$/;"	f	class:Request
+Request	include/comm/request.h	/^    Request():$/;"	f	class:Request
 Request	include/comm/request.h	/^class Request : public Message$/;"	c
-Response	include/comm/response.h	/^    Response(){}$/;"	f	class:Response
+Response	include/comm/response.h	/^    Response():$/;"	f	class:Response
+Response	include/comm/response.h	/^    Response(int status, const char *msg):$/;"	f	class:Response
 Response	include/comm/response.h	/^class Response : public Message$/;"	c
 Rotate	src/trace/log.cpp	/^CLog::Rotate(const int year, const int month, const int day)$/;"	f	class:CLog
 RotateByDay	src/trace/log.cpp	/^CLog::RotateByDay(const int year, const int month, const int day)$/;"	f	class:CLog
@@ -428,22 +417,24 @@ S41	src/math/md5.cpp	20;"	d	file:
 S42	src/math/md5.cpp	21;"	d	file:
 S43	src/math/md5.cpp	22;"	d	file:
 S44	src/math/md5.cpp	23;"	d	file:
-SECONDS_PER_DAY	include/time/datetime.h	/^    SECONDS_PER_DAY = 86400,$/;"	e	enum:DateTime::__anon28
-SECONDS_PER_HOUR	include/time/datetime.h	/^    SECONDS_PER_HOUR = 3600,$/;"	e	enum:DateTime::__anon28
-SECONDS_PER_MIN	include/time/datetime.h	/^    SECONDS_PER_MIN = 60,$/;"	e	enum:DateTime::__anon28
+SECONDS_PER_DAY	include/time/datetime.h	/^    SECONDS_PER_DAY = 86400,$/;"	e	enum:DateTime::__anon26
+SECONDS_PER_HOUR	include/time/datetime.h	/^    SECONDS_PER_HOUR = 3600,$/;"	e	enum:DateTime::__anon26
+SECONDS_PER_MIN	include/time/datetime.h	/^    SECONDS_PER_MIN = 60,$/;"	e	enum:DateTime::__anon26
 SEDASTATS_MANAGE	include/seda/sedastatsstage.h	36;"	d
 SEDA_BASE_NAME	include/seda/sedaconfig.h	/^    const static std::string SEDA_BASE_NAME;$/;"	m	class:SedaConfig
 SEDA_BASE_NAME	src/seda/sedaconfig.cpp	/^const std::string SedaConfig::SEDA_BASE_NAME = std::string("SEDA_BASE");$/;"	m	class:SedaConfig	file:
-SEND_EVENT	include/seda/eventdispatcher.h	/^        SEND_EVENT = 0,$/;"	e	enum:EventDispatcher::__anon25
+SELECTDIR_H_	include/io/selectdir.h	21;"	d
+SEND_EVENT	include/seda/eventdispatcher.h	/^        SEND_EVENT = 0,$/;"	e	enum:EventDispatcher::__anon23
 SEND_FAILURE	include/comm/commevent.h	/^        SEND_FAILURE,       \/\/!< CommStage reported transmission failure$/;"	e	enum:CommEvent::__anon1
 SERIALIZABLE_H_	include/lang/serializable.h	21;"	d
 SERVER_CREATE_OBJ	include/seda/sedastats.h	/^            SERVER_CREATE_OBJ          =   100,$/;"	e	enum:SedaStats::_SEDA_STATS_ID
 SERVER_JOB	include/seda/sedastats.h	/^            SERVER_JOB              =    100,$/;"	e	enum:SedaStats::_SEDA_STATS_CATEGORY
 SERVER_NS_CREATE_OBJ	include/seda/sedastats.h	/^            SERVER_NS_CREATE_OBJ       =   101,$/;"	e	enum:SedaStats::_SEDA_STATS_ID
-SOCK_CONNECTING	include/net/sockutil.h	/^        SOCK_CONNECTING,    \/\/!< socket is connecting$/;"	e	enum:Sock::__anon22
-SOCK_RECV_BUF_SIZE	include/net/sockutil.h	/^        SOCK_RECV_BUF_SIZE = 16384   \/\/!< size of socket read kernel buffers$/;"	e	enum:Sock::__anon24
-SOCK_SEND_BUF_SIZE	include/net/sockutil.h	/^        SOCK_SEND_BUF_SIZE = 262144, \/\/!< size of socket write kernel buffers$/;"	e	enum:Sock::__anon24
-SOCK_TIMEOUT	include/net/sockutil.h	/^        SOCK_TIMEOUT = 30,   \/\/!< socket timeout$/;"	e	enum:Sock::__anon24
+SIMPLEDESERIALIZER_H_	test/simpledeserializer.h	20;"	d
+SOCK_CONNECTING	include/net/sockutil.h	/^        SOCK_CONNECTING,    \/\/!< socket is connecting$/;"	e	enum:Sock::__anon20
+SOCK_RECV_BUF_SIZE	include/net/sockutil.h	/^        SOCK_RECV_BUF_SIZE = 16384   \/\/!< size of socket read kernel buffers$/;"	e	enum:Sock::__anon22
+SOCK_SEND_BUF_SIZE	include/net/sockutil.h	/^        SOCK_SEND_BUF_SIZE = 262144, \/\/!< size of socket write kernel buffers$/;"	e	enum:Sock::__anon22
+SOCK_TIMEOUT	include/net/sockutil.h	/^        SOCK_TIMEOUT = 30,   \/\/!< socket timeout$/;"	e	enum:Sock::__anon22
 STAGE_CLEANUP	include/comm/commevent.h	/^        STAGE_CLEANUP,      \/\/!< CommStage is in a cleanup mode$/;"	e	enum:CommEvent::__anon1
 STATUS_FAILED_INIT	include/defs.h	/^    STATUS_FAILED_INIT,             \/\/!< Failed to init program$/;"	e	enum:__anon5
 STATUS_INIT_LOG	include/defs.h	/^    STATUS_INIT_LOG,                \/\/!< log error$/;"	e	enum:__anon5
@@ -454,24 +445,20 @@ STATUS_LAST_ERR	include/defs.h	/^    STATUS_LAST_ERR                 \/\/!< last
 STATUS_PROPERTY_ERR	include/defs.h	/^    STATUS_PROPERTY_ERR,            \/\/!< Property error$/;"	e	enum:__anon5
 STATUS_SUCCESS	include/defs.h	/^    STATUS_SUCCESS              = 0,\/\/!< Success status should be zero,$/;"	e	enum:__anon5
 STATUS_UNKNOW_ERROR	include/defs.h	/^    STATUS_UNKNOW_ERROR,            \/\/!< unknown error$/;"	e	enum:__anon5
-STORE_EVENT	include/seda/eventdispatcher.h	/^        STORE_EVENT,$/;"	e	enum:EventDispatcher::__anon25
+STORE_EVENT	include/seda/eventdispatcher.h	/^        STORE_EVENT,$/;"	e	enum:EventDispatcher::__anon23
 STR	include/seda/sedastats.h	/^                enum Type {ID, STR, ALL,};$/;"	e	enum:SedaStats::StatsId::Type
-SUBDIRS	Debug/sources.mk	/^SUBDIRS := \\$/;"	m
 SUCCESS	include/comm/commevent.h	/^        SUCCESS = 0,        \/\/!< successful local completion$/;"	e	enum:CommEvent::__anon1
-SUCCESS	include/net/conn.h	/^        SUCCESS = 0,            \/\/!< operation completed successfully$/;"	e	enum:Conn::__anon7
-SUCCESS	include/net/connmgr.h	/^        SUCCESS = 0,        \/\/!< successful operation$/;"	e	enum:ConnMgr::__anon12
-SUCCESS	include/net/net.h	/^        SUCCESS = 0,            \/\/!< successful completion$/;"	e	enum:Net::__anon16
-SUCCESS	include/net/sockutil.h	/^        SUCCESS = 0,        \/\/!< successful completion$/;"	e	enum:Sock::__anon22
-SUCCESS	include/seda/sedaconfig.h	/^        SUCCESS = 0,$/;"	e	enum:SedaConfig::__anon26
-SUPPORT_INET_ONLY	include/net/net.h	/^        SUPPORT_INET_ONLY$/;"	e	enum:Net::__anon19
-SUPPORT_UDS_AND_INET	include/net/net.h	/^        SUPPORT_UDS_AND_INET = 0,$/;"	e	enum:Net::__anon19
+SUCCESS	include/net/conn.h	/^        SUCCESS = 0,            \/\/!< operation completed successfully$/;"	e	enum:Conn::__anon8
+SUCCESS	include/net/connmgr.h	/^        SUCCESS = 0,        \/\/!< successful operation$/;"	e	enum:ConnMgr::__anon13
+SUCCESS	include/net/net.h	/^        SUCCESS = 0,            \/\/!< successful completion$/;"	e	enum:Net::__anon17
+SUCCESS	include/net/sockutil.h	/^        SUCCESS = 0,        \/\/!< successful completion$/;"	e	enum:Sock::__anon20
+SUCCESS	include/seda/sedaconfig.h	/^        SUCCESS = 0,$/;"	e	enum:SedaConfig::__anon24
 SVC_CAT	include/seda/sedastats.h	/^            SVC_CAT                 =    303,$/;"	e	enum:SedaStats::_SEDA_STATS_CATEGORY
 SVC_LATENCY_CAT	include/seda/sedastats.h	/^            SVC_LATENCY_CAT         =    301,$/;"	e	enum:SedaStats::_SEDA_STATS_CATEGORY
 SVC_LATENCY_STAT	include/seda/sedastats.h	/^            SVC_LATENCY_STAT           =   302,$/;"	e	enum:SedaStats::_SEDA_STATS_ID
-SYS_ALLOC	include/net/iovec.h	/^        SYS_ALLOC = 0,  \/\/!< System allocated$/;"	e	enum:IoVec::__anon14
+SYS_ALLOC	include/net/iovec.h	/^        SYS_ALLOC = 0,  \/\/!< System allocated$/;"	e	enum:IoVec::__anon15
 SYS_OUTPUT_ERROR	include/trace/log.h	338;"	d
 SYS_OUTPUT_FILE_POS	include/trace/log.h	335;"	d
-S_UPPER_SRCS	Debug/sources.mk	/^S_UPPER_SRCS := $/;"	m
 SedaConfig	include/seda/sedaconfig.h	/^class SedaConfig {$/;"	c
 SedaConfig	src/seda/sedaconfig.cpp	/^SedaConfig::SedaConfig() $/;"	f	class:SedaConfig
 SedaMetric	include/seda/sedametric.h	/^class SedaMetric$/;"	c
@@ -518,17 +505,17 @@ StrtoTimeTStr	src/time/datetime.cpp	/^std::string DateTime::StrtoTimeTStr(std::s
 TEST_BIN	Makefile	/^TEST_BIN  = ltest$/;"	m
 TEST_CPP	Makefile	/^TEST_CPP  =  $(foreach dir, $(CUR_DIR), $(shell cd $(CUR_DIR); ls -1 test\/*.cpp)) $/;"	m
 TEST_OBJ	Makefile	/^TEST_OBJ  =  $(addprefix $(TARGET_DIR)\/, $(TEST_CPP:.cpp=.o))$/;"	m
-TEST_STAGE_FREQUENCE	src/comm/commstage.cpp	37;"	d	file:
-TEST_STAGE_FREQUENCE	test/teststage.cpp	24;"	d	file:
 TEST_STAGE_NAME	test/test.cpp	/^const char TEST_STAGE_NAME[] = "TestStage";$/;"	v
-THREAD_INFO_EXIT	include/net/net.h	22;"	d
-THREAD_INFO_LEN	include/net/net.h	/^        THREAD_INFO_LEN = 8,    \/\/!< size of thread notification message$/;"	e	enum:Net::__anon21
+THREAD_INFO_EXIT	include/net/net.h	27;"	d
+THREAD_INFO_LEN	include/net/net.h	/^        THREAD_INFO_LEN = 8,    \/\/!< size of thread notification message$/;"	e	enum:Net::__anon19
 THREAD_POOLS_NAME	include/seda/sedaconfig.h	/^    const static std::string THREAD_POOLS_NAME;$/;"	m	class:SedaConfig
 THREAD_POOLS_NAME	src/seda/sedaconfig.cpp	/^const std::string SedaConfig::THREAD_POOLS_NAME = std::string("ThreadPools");$/;"	m	class:SedaConfig	file:
 TIMEDOUT	include/comm/commevent.h	/^        TIMEDOUT            \/\/!< event has timedout$/;"	e	enum:CommEvent::__anon1
-TIMEOUT_EV	include/seda/stageevent.h	/^        TIMEOUT_EV$/;"	e	enum:StageEvent::__anon27
+TIMEOUT_EV	include/seda/stageevent.h	/^        TIMEOUT_EV$/;"	e	enum:StageEvent::__anon25
 TIMEVAL_EQUAL	src/seda/timerstage.cpp	25;"	d	file:
 TIMEVAL_LESS_THAN	src/seda/timerstage.cpp	27;"	d	file:
+TRAVERSESELECTDIR_H_	include/io/rollselectdir.h	21;"	d
+TRIGGERTESTEVENT_H_	test/triggertestevent.h	21;"	d
 Threadpool	include/seda/threadpool.h	/^class Threadpool {$/;"	c
 Threadpool	src/seda/threadpool.cpp	/^ Threadpool::Threadpool(unsigned int threads,$/;"	f	class:Threadpool
 Time	include/time/datetime.h	/^  Time( const DateTime& val )$/;"	f	class:Time
@@ -561,15 +548,16 @@ TimerToken	src/seda/timerstage.cpp	/^TimerToken::TimerToken()$/;"	f	class:TimerT
 TimerToken	src/seda/timerstage.cpp	/^TimerToken::TimerToken(const TimerToken& tt)$/;"	f	class:TimerToken
 TimerToken	src/seda/timerstage.cpp	/^TimerToken::TimerToken(const struct timeval& t)$/;"	f	class:TimerToken
 Trace	include/trace/log.h	/^int CLog::Trace(T message)$/;"	f	class:CLog
+TriggerTestEvent	test/triggertestevent.h	/^    TriggerTestEvent(int sleepTime):mSleepTime(sleepTime){};$/;"	f	class:TriggerTestEvent
+TriggerTestEvent	test/triggertestevent.h	/^class TriggerTestEvent : public StageEvent$/;"	c
 Type	include/seda/sedastats.h	/^                enum Type {ID, STR, ALL,};$/;"	g	class:SedaStats::StatsId
-UD_SOCK	include/net/conn.h	/^        UD_SOCK             \/\/!< connection is unix domain socket type:2$/;"	e	enum:Conn::__anon10
 UINT2	include/math/md5.h	/^typedef unsigned short int UINT2;$/;"	t
 UINT4	include/math/md5.h	/^typedef unsigned int UINT4;$/;"	t
 USEC_PER_SEC	include/seda/timerstage.h	27;"	d
-USER_ALLOC	include/net/iovec.h	/^        USER_ALLOC      \/\/!< User allocated$/;"	e	enum:IoVec::__anon14
-USER_OBJS	Debug/objects.mk	/^USER_OBJS :=$/;"	m
+USER_ALLOC	include/net/iovec.h	/^        USER_ALLOC      \/\/!< User allocated$/;"	e	enum:IoVec::__anon15
 UserData	include/seda/stageevent.h	/^class UserData$/;"	c
 VEC_BATCH_NUM	include/net/conn.h	/^        VEC_BATCH_NUM = 5$/;"	e	enum:Conn::__anon11
+VERSION_MISMATCH	include/comm/commevent.h	/^        VERSION_MISMATCH,   \/\/!< version not match$/;"	e	enum:CommEvent::__anon1
 VERSION_NUM	include/version.h	27;"	d
 VERSION_STR	include/version.h	26;"	d
 Warnning	include/trace/log.h	/^int CLog::Warnning(T message)$/;"	f	class:CLog
@@ -615,6 +603,7 @@ _avgIncrement	include/seda/sedastatsstage.h	/^        long long int _avgIncremen
 _category	include/seda/sedastats.h	/^        sedaStatsCategory_t _category;$/;"	m	class:SedaStats
 _category	include/seda/sedastatsevent.h	/^    SedaStats::sedaStatsCategory_t     _category;   \/**< \\brief Category of event *\/$/;"	m	class:SedaStatsEvent
 _category	include/seda/sedastatsstage.h	/^    SedaStats::sedaStatsCategory_t  _category;  \/**< \\brief category for this map *\/$/;"	m	class:SedaStatsMap
+_cb_param_t	include/net/conn.h	/^typedef struct _cb_param_t$/;"	s
 _clearStats	src/seda/sedastatsstage.cpp	/^SedaStatsStage::_clearStats(SedaStats::sedaStatsCategory_t  category,$/;"	f	class:SedaStatsStage
 _countCollected	include/seda/sedastatsevent.h	/^    bool _countCollected; \/**< \\brief Was a count collected as part of stat *\/$/;"	m	class:SedaStatsEvent
 _counterCount	include/seda/sedastatsstage.h	/^        unsigned long long  _counterCount; \/**< \\brief No of counters sent  *\/$/;"	m	class:SedaStatsStore
@@ -655,27 +644,26 @@ acceptConns	src/net/netserver.cpp	/^void NetServer::acceptConns()$/;"	f	class:Ne
 acquire	src/net/conn.cpp	/^void Conn::acquire()$/;"	f	class:Conn
 add	include/mm/lmpool.h	/^    int add(int addSize)$/;"	f	class:CLmpool
 add	include/seda/sedametric.h	/^    void add(const T& elem)$/;"	f	class:MetricHistory
-addConn	src/net/net.cpp	/^Net::addConn(Conn* conn, EndPoint& ep, int sock)$/;"	f	class:Net
+addConn	src/net/net.cpp	/^void Net::addConn(Conn* conn, EndPoint& ep, int sock)$/;"	f	class:Net
 addDuration	src/time/datetime.cpp	/^time_t DateTime::addDuration(std::string xmlDuration)$/;"	f	class:DateTime
 addDurationDateTime	src/time/datetime.cpp	/^void DateTime::addDurationDateTime(std::string xmlDuration)$/;"	f	class:DateTime
 addEvent	src/seda/stage.cpp	/^Stage::addEvent(StageEvent* event)$/;"	f	class:Stage
-addEventEntry	src/net/conn.cpp	/^int Conn::addEventEntry(u32_t msgId, CommEvent *event)$/;"	f	class:Conn
+addEventEntry	src/net/conn.cpp	/^void Conn::addEventEntry(u32_t msgId, CommEvent *event)$/;"	f	class:Conn
 addStatsEvent	src/seda/sedastatsstage.cpp	/^SedaStatsStage::addStatsEvent(StageEvent *event)$/;"	f	class:SedaStatsStage
-addTestEvent	test/test.cpp	/^void addTestEvent()$/;"	f
 addThreads	src/seda/threadpool.cpp	/^Threadpool::addThreads(unsigned int threads)$/;"	f	class:Threadpool
 addTimeval	src/seda/timerstage.cpp	/^struct timeval addTimeval(const struct timeval *t1, const struct timeval* t2)$/;"	f
-addToRecvSelector	src/net/net.cpp	/^Net::addToRecvSelector(int sock)$/;"	f	class:Net
+addToRecvSelector	src/net/net.cpp	/^Net::status_t Net::addToRecvSelector(int sock)$/;"	f	class:Net
 addToSelector	src/net/sockutil.cpp	/^Sock::addToSelector(int sock, dir_t dir, int epfd) $/;"	f	class:Sock
-addToSendSelector	src/net/net.cpp	/^Net::addToSendSelector(int sock)$/;"	f	class:Net
+addToSendSelector	src/net/net.cpp	/^Net::status_t Net::addToSendSelector(int sock)$/;"	f	class:Net
 adoptCallbackEvent	src/seda/timerstage.cpp	/^TimerRegisterEvent::adoptCallbackEvent()$/;"	f	class:TimerRegisterEvent
 adoptRequest	src/comm/commevent.cpp	/^MsgDesc CommEvent::adoptRequest()$/;"	f	class:CommEvent
 adoptResponse	src/comm/commevent.cpp	/^MsgDesc CommEvent::adoptResponse()$/;"	f	class:CommEvent
 alloc	include/net/iovec.h	/^    alloc_t alloc;          \/\/!< type of memory allocation$/;"	m	class:IoVec
-allocAttachIoVecs	src/net/conn.cpp	/^int Conn::allocAttachIoVecs(MsgDesc &md, const size_t baseLen)$/;"	f	class:Conn
+allocAttachIoVecs	src/net/conncb.cpp	/^int Conn::allocAttachIoVecs(MsgDesc &md, const size_t baseLen)$/;"	f	class:Conn
 allocConn	src/net/connmgr.cpp	/^Conn* ConnMgr::allocConn()$/;"	f	class:ConnMgr
-allocIoVecs	src/net/conn.cpp	/^IoVec** Conn::allocIoVecs(const size_t baseLen, IoVec *iov, int &blockNum)$/;"	f	class:Conn
-alloc_t	include/net/iovec.h	/^    } alloc_t;$/;"	t	class:IoVec	typeref:enum:IoVec::__anon14
-attLen	include/net/conn.h	/^    u32_t       attLen;      \/\/<! total length of all attachments$/;"	m	struct:cb_param_t
+allocIoVecs	src/net/conncb.cpp	/^IoVec** Conn::allocIoVecs(const size_t baseLen, IoVec *iov, int &blockNum)$/;"	f	class:Conn
+alloc_t	include/net/iovec.h	/^    } alloc_t;$/;"	t	class:IoVec	typeref:enum:IoVec::__anon15
+attLen	include/net/conn.h	/^    u32_t       attLen;      \/\/<! total length of all attachments$/;"	m	struct:_cb_param_t
 attach	src/time/timeoutinfo.cpp	/^TimeoutInfo::attach()$/;"	f	class:TimeoutInfo
 attachFileLen	include/comm/commevent.h	/^    u64_t                         attachFileLen;     \/\/!< attach file send count$/;"	m	struct:MsgDesc
 attachFileOffset	include/comm/commevent.h	/^    u64_t                         attachFileOffset;  \/\/!< attach file offset$/;"	m	struct:MsgDesc
@@ -686,7 +674,7 @@ base	include/net/iovec.h	/^    void *base;             \/\/!< memory vectror bas
 begin	include/seda/sedaconfig.h	/^inline std::map<std::string, Stage *>::iterator SedaConfig::begin()$/;"	f	class:SedaConfig
 bin2hex	src/lang/lstring.cpp	/^char *CLstring::bin2hex(const char *s, const int len, char *szHexBuff)$/;"	f	class:CLstring
 blockSignalsDefault	src/os/lsignal.cpp	/^void blockSignalsDefault(sigset_t *signal_set, sigset_t *old_set)$/;"	f
-buffer	include/math/md5.h	/^  unsigned char buffer[64]; \/* input buffer *\/$/;"	m	struct:__anon6
+buffer	include/math/md5.h	/^  unsigned char buffer[64]; \/* input buffer *\/$/;"	m	struct:__anon7
 callback	include/net/iovec.h	/^    callback_t callback;    \/\/!< user registered vector completion callback$/;"	m	class:IoVec
 callbackEvent	include/seda/killthread.h	/^    void callbackEvent(StageEvent* event, CallbackContext* context)$/;"	f	class:KillThreadStage
 callbackEvent	include/seda/sedastatsstage.h	/^    void callbackEvent(StageEvent* event, CallbackContext* context){$/;"	f	class:SedaStatsStage
@@ -702,29 +690,30 @@ categoryMap	include/seda/sedastatsstage.h	/^    CateMap categoryMap;$/;"	m	class
 categoryStr	include/seda/sedastats.h	/^        static std::string categoryStr(int category){$/;"	f	class:SedaStats
 cbFlag	include/seda/stageevent.h	/^    bool cbFlag;                \/\/!< true if this event is a callback$/;"	m	class:StageEvent
 cbParam	include/net/iovec.h	/^    void* cbParam;          \/\/!< opaque callback context$/;"	m	class:IoVec
-cb_param_t	include/net/conn.h	/^struct cb_param_t$/;"	s
-cev	include/net/conn.h	/^    CommEvent  *cev;         \/\/!< event on which current processing is being done$/;"	m	struct:cb_param_t
+cb_param_t	include/net/conn.h	/^}cb_param_t;$/;"	t	typeref:struct:_cb_param_t
+cev	include/net/conn.h	/^    CommEvent  *cev;         \/\/!< event on which current processing is being done$/;"	m	struct:_cb_param_t
 check	src/os/mutex.cpp	/^void CLockTrace::check(pthread_mutex_t *mutex, const int threadId, const char *file, const int line)$/;"	f	class:CLockTrace
-checkAttachFile	src/comm/commstage.cpp	/^bool CommStage::checkAttachFile(MsgDesc& md)$/;"	f	class:CommStage
+checkAttachFile	src/net/iovutil.cpp	/^bool checkAttachFile(MsgDesc& md)$/;"	f
+checkEventReady	src/net/conncb.cpp	/^void Conn::checkEventReady(bool eventReady, Conn *conn, IoVec *iov, cb_param_t *cbp)$/;"	f	class:Conn
 checkTimer	src/seda/timerstage.cpp	/^TimerStage::checkTimer()$/;"	f	class:TimerStage
 cleanFile	include/comm/commevent.h	/^    void cleanFile()$/;"	f	struct:MsgDesc
-cleanMdAttach	src/net/conn.cpp	/^void Conn::cleanMdAttach(MsgDesc &md)$/;"	f	class:Conn
+cleanMdAttach	src/net/conncb.cpp	/^void Conn::cleanMdAttach(MsgDesc &md)$/;"	f	class:Conn
 cleanup	include/comm/commevent.h	/^    void cleanup()$/;"	f	struct:MsgDesc
 cleanup	include/seda/stage.h	/^    virtual void cleanup() { return; }$/;"	f	class:Stage
 cleanup	src/comm/commstage.cpp	/^void CommStage::cleanup()$/;"	f	class:CommStage
-cleanup	src/net/conn.cpp	/^bool Conn::cleanup(cleanup_t how)$/;"	f	class:Conn
+cleanup	src/net/conn.cpp	/^int Conn::cleanup(cleanup_t how)$/;"	f	class:Conn
 cleanup	src/net/iovec.cpp	/^void IoVec::cleanup()$/;"	f	class:IoVec
 cleanup	src/seda/eventdispatcher.cpp	/^EventDispatcher::cleanup()$/;"	f	class:EventDispatcher
 cleanup	src/seda/sedaconfig.cpp	/^SedaConfig::cleanup()$/;"	f	class:SedaConfig
 cleanup	test/teststage.cpp	/^void CTestStage::cleanup()$/;"	f	class:CTestStage
 cleanupAttachMem	include/comm/commevent.h	/^    void cleanupAttachMem()$/;"	f	struct:MsgDesc
 cleanupContainer	include/comm/commevent.h	/^    void cleanupContainer()$/;"	f	struct:MsgDesc
-cleanupFailedReq	src/comm/commstage.cpp	/^void CommStage::cleanupFailedReq(MsgDesc &md, CommEvent* cev, Conn *conn, int errCode)$/;"	f	class:CommStage
-cleanupFailedResp	src/comm/commstage.cpp	/^void CommStage::cleanupFailedResp(MsgDesc &md, CommEvent* cev, Conn *conn, int errCode)$/;"	f	class:CommStage
+cleanupFailedReq	src/comm/commstage.cpp	/^void CommStage::cleanupFailedReq(MsgDesc &md, CommEvent* cev, Conn *conn,$/;"	f	class:CommStage
+cleanupFailedResp	src/comm/commstage.cpp	/^void CommStage::cleanupFailedResp(MsgDesc &md, CommEvent* cev, Conn *conn,$/;"	f	class:CommStage
 cleanupLog	src/linit.cpp	/^void cleanupLog()$/;"	f
 cleanupUtil	src/linit.cpp	/^void cleanupUtil()$/;"	f
 cleanupVec	src/net/conn.cpp	/^void Conn::cleanupVec(IoVec *iov, cleanup_t how)$/;"	f	class:Conn
-cleanup_t	include/net/conn.h	/^    } cleanup_t;$/;"	t	class:Conn	typeref:enum:Conn::__anon9
+cleanup_t	include/net/conn.h	/^    } cleanup_t;$/;"	t	class:Conn	typeref:enum:Conn::__anon10
 clear	include/seda/sedametric.h	/^    void clear() { metric_history.clear(); }         $/;"	f	class:MetricHistory
 clearCallback	include/seda/stageevent.h	/^    void clearCallback() { cbFlag = false; }$/;"	f	class:StageEvent
 clearDate	include/time/datetime.h	/^  void clearDate() $/;"	f	struct:DateTime
@@ -738,11 +727,11 @@ collectEnabled	include/seda/sedastatsstage.h	/^    static bool collectEnabled;$/
 collectEnabled	src/seda/sedastatsstage.cpp	/^bool SedaStatsStage::collectEnabled = false;$/;"	m	class:SedaStatsStage	file:
 compCB	include/seda/stageevent.h	/^    CompletionCallback* compCB; \/\/!< completion callback stack for this event$/;"	m	class:StageEvent
 completeEvent	src/comm/commevent.cpp	/^void CommEvent::completeEvent(CommEvent::status_t stev)$/;"	f	class:CommEvent
-conn	include/net/conn.h	/^    Conn       *conn;        \/\/!< connection on which message is arriving$/;"	m	struct:cb_param_t
-connCallback	src/net/conn.cpp	/^int Conn::connCallback(Net::state_t state)$/;"	f	class:Conn
+conn	include/net/conn.h	/^    Conn       *conn;        \/\/!< connection on which message is arriving$/;"	m	struct:_cb_param_t
+connCallback	src/net/conncb.cpp	/^int Conn::connCallback(Conn::conn_t state)$/;"	f	class:Conn
 connMgr	include/net/net.h	/^    ConnMgr         connMgr;               \/\/!< connection manager object$/;"	m	class:Net
 connPool	include/net/connmgr.h	/^    CLmpool<Conn > connPool;$/;"	m	class:ConnMgr
-conn_t	include/net/conn.h	/^    } conn_t;$/;"	t	class:Conn	typeref:enum:Conn::__anon10
+conn_t	include/net/conn.h	/^    } conn_t;$/;"	t	class:Conn	typeref:enum:Conn::__anon12
 conncb_t	include/net/conn.h	/^    typedef bool (*conncb_t)(Conn* conn, void* param);$/;"	t	class:Conn
 connect	src/net/conn.cpp	/^Conn::status_t Conn::connect(EndPoint& ep, int &sock)$/;"	f	class:Conn
 connect	src/seda/stage.cpp	/^Stage::connect()$/;"	f	class:Stage
@@ -752,11 +741,11 @@ connectToUdServer	src/net/sockutil.cpp	/^Sock::connectToUdServer(const char* pat
 connected	include/seda/stage.h	/^    bool                    connected;      \/\/!< is stage connected to pool?$/;"	m	class:Stage
 connected	src/net/conn.cpp	/^bool Conn::connected()$/;"	f	class:Conn
 context	include/seda/callback.h	/^    CallbackContext*    context;     \/\/!< argument to pass when invoking cb$/;"	m	class:CompletionCallback
-count	include/math/md5.h	/^  UINT4 count[2];       \/* number of bits, modulo 2^64 (lsb first) *\/$/;"	m	struct:__anon6
+count	include/math/md5.h	/^  UINT4 count[2];       \/* number of bits, modulo 2^64 (lsb first) *\/$/;"	m	struct:__anon7
 create	src/net/sockutil.cpp	/^Sock::create(int domain, int type, int protocol, int& sockfd)$/;"	f	class:Sock
 createPoolKey	src/seda/threadpool.cpp	/^Threadpool::createPoolKey()$/;"	f	class:Threadpool
 createSelector	src/net/sockutil.cpp	/^Sock::createSelector(int notifyFd, int& epfd)$/;"	f	class:Sock
-cs	include/net/conn.h	/^    CommStage  *cs;          \/\/!< pointer to the CommStage instance$/;"	m	struct:cb_param_t
+cs	include/net/conn.h	/^    Stage      *cs;          \/\/!< pointer to the CommStage instance$/;"	m	struct:_cb_param_t
 curPtr	src/net/iovec.cpp	/^IoVec::curPtr()$/;"	f	class:IoVec
 daemonizeService	src/os/lprocess.cpp	/^int daemonizeService(bool closeStdStreams)$/;"	f
 daemonizeService	src/os/lprocess.cpp	/^int daemonizeService(const char *stdOutFile, const char *stdErrFile)$/;"	f
@@ -765,16 +754,23 @@ debug_new	include/mm/debug_new.h	29;"	d
 debug_new	include/mm/debug_new.h	31;"	d
 debug_new	include/mm/lmem.h	141;"	d
 decCount	src/seda/sedastats.cpp	/^void SedaStats::decCount()$/;"	f	class:SedaStats
-delConn	src/net/net.cpp	/^Net::delConn(EndPoint& ep)$/;"	f	class:Net
+delConn	src/net/net.cpp	/^Net::status_t Net::delConn(EndPoint& ep)$/;"	f	class:Net
 delPoolKey	src/seda/threadpool.cpp	/^Threadpool::delPoolKey()$/;"	f	class:Threadpool
+delRecvSelector	src/net/net.cpp	/^void Net::delRecvSelector(int sock)$/;"	f	class:Net
+delSendSelector	src/net/net.cpp	/^void Net::delSendSelector(int sock)$/;"	f	class:Net
+deserialize	include/comm/message.h	/^    int deserialize(const char *buffer, int bufferLen)$/;"	f	class:Message
+deserialize	include/comm/request.h	/^    int deserialize(const char *buffer, int bufferLen)$/;"	f	class:Request
+deserialize	include/comm/response.h	/^    int deserialize(const char *buffer, int bufferLen)$/;"	f	class:Response
 deserialize	src/net/endpoint.cpp	/^int EndPoint::deserialize(const char *buffer, int bufferLen)$/;"	f	class:EndPoint
+deserialize	test/simpledeserializer.cpp	/^void* CSimpleDeserializer::deserialize(const char *buffer, int bufLen)$/;"	f	class:CSimpleDeserializer
+deserializeRequest	test/simpledeserializer.cpp	/^void* CSimpleDeserializer::deserializeRequest(const char *buffer, int bufLen)$/;"	f	class:CSimpleDeserializer
+deserializeResponse	test/simpledeserializer.cpp	/^void* CSimpleDeserializer::deserializeResponse(const char *buffer, int bufLen)$/;"	f	class:CSimpleDeserializer
 detach	src/time/timeoutinfo.cpp	/^TimeoutInfo::detach()$/;"	f	class:TimeoutInfo
-dir_t	include/net/sockutil.h	/^    } dir_t;$/;"	t	class:Sock	typeref:enum:Sock::__anon23
+dir_t	include/net/sockutil.h	/^    } dir_t;$/;"	t	class:Sock	typeref:enum:Sock::__anon21
 disableCategory	src/seda/sedastatsstage.cpp	/^SedaStatsStage::disableCategory(SedaStats::sedaStatsCategory_t category)$/;"	f	class:SedaStatsStage
 disableCategory	src/seda/sedastatsstage.cpp	/^SedaStatsStage::disableCategory(StageEvent* ev)$/;"	f	class:SedaStatsStage
 disconnect	src/net/conn.cpp	/^Conn::status_t Conn::disconnect()$/;"	f	class:Conn
 disconnect	src/seda/stage.cpp	/^Stage::disconnect()$/;"	f	class:Stage
-disconnectCb	src/net/net.cpp	/^Net::disconnectCb(Conn* conn, void* param)$/;"	f	class:Net
 disconnectCond	include/seda/stage.h	/^    pthread_cond_t          disconnectCond; \/\/!< wait here for disconnect$/;"	m	class:Stage
 disconnectPrepare	include/seda/stage.h	/^    virtual void disconnectPrepare() { return; }$/;"	f	class:Stage
 disconnectPrepare	src/seda/timerstage.cpp	/^TimerStage::disconnectPrepare()$/;"	f	class:TimerStage
@@ -782,7 +778,8 @@ done	src/net/iovec.cpp	/^bool IoVec::done()$/;"	f	class:IoVec
 done	src/seda/stageevent.cpp	/^StageEvent::done()$/;"	f	class:StageEvent
 doneImmediate	src/seda/stageevent.cpp	/^StageEvent::doneImmediate()$/;"	f	class:StageEvent
 doneTimeout	src/seda/stageevent.cpp	/^StageEvent::doneTimeout()$/;"	f	class:StageEvent
-doneWithErrorResponse	src/comm/commevent.cpp	/^bool CommEvent::doneWithErrorResponse(int eventErrCode, int rspErrCode,$/;"	f	class:CommEvent
+doneWithErrorResponse	src/comm/commevent.cpp	/^bool CommEvent::doneWithErrorResponse(CommEvent::status_t eventErrCode, int rspErrCode,$/;"	f	class:CommEvent
+drainLen	include/net/conn.h	/^    u64_t       drainLen;    \/\/<! drain length$/;"	m	struct:_cb_param_t
 dump	include/seda/sedametric.h	/^    void dump(std::ostream& os, size_t num) const$/;"	f	class:MetricHistory
 dump	src/seda/sedametric.cpp	/^void SedaQueueInfo::dump(std::ostream& os) const$/;"	f	class:SedaQueueInfo
 dumpStats	src/seda/sedastatsstage.cpp	/^SedaStatsStage::dumpStats(SedaStats::sedaStatsCategory_t   category,$/;"	f	class:SedaStatsStage
@@ -795,7 +792,8 @@ epSockMap	include/net/connmgr.h	/^    EpSockMap epSockMap; \/\/!< map between En
 errorResponse	src/seda/sedastatsstage.cpp	/^SedaStatsStage::errorResponse(StageEvent* ev, $/;"	f	class:SedaStatsStage
 ev	include/seda/callback.h	/^    StageEvent *ev;$/;"	m	class:CallbackContextEvent
 evHistFlag	include/seda/callback.h	/^    bool                evHistFlag;  \/\/!< true if event histories are enabled$/;"	m	class:CompletionCallback
-eventDone	include/net/conn.h	/^    bool        eventDone;   \/\/!< indicates whether event has been completed$/;"	m	struct:cb_param_t
+eventDone	include/net/conn.h	/^    bool        eventDone;   \/\/!< indicates whether event has been completed$/;"	m	struct:_cb_param_t
+eventDone	src/net/conncb.cpp	/^void Conn::eventDone(CommEvent *cev, Conn *conn)$/;"	f	class:Conn
 eventDone	src/seda/callback.cpp	/^CompletionCallback::eventDone(StageEvent* ev)$/;"	f	class:CompletionCallback
 eventList	include/seda/stage.h	/^    std::deque<StageEvent*> eventList;      \/\/!< event queue$/;"	m	class:Stage
 eventLock	include/seda/eventdispatcher.h	/^    pthread_mutex_t eventLock;    \/\/!< protects access to eventStore$/;"	m	class:EventDispatcher
@@ -808,18 +806,21 @@ externalCategoryEnableMap	include/seda/sedastatsstage.h	/^    static bool extern
 externalCategoryEnableMap	src/seda/sedastatsstage.cpp	/^bool SedaStatsStage::externalCategoryEnableMap[MAX_NUM_CATEGORY] = {false};$/;"	m	class:SedaStatsStage	file:
 factFunc	include/seda/classfactory.h	/^    FactoryFunc      factFunc;         \/\/!< factory function for this class$/;"	m	class:ClassFactory
 factListHead	include/seda/classfactory.h	/^ClassFactory<T>::factListHead()$/;"	f	class:ClassFactory
-fileOffset	include/net/conn.h	/^    u64_t       fileOffset;  \/\/<! file offset$/;"	m	struct:cb_param_t
-filePath	include/net/conn.h	/^    std::string filePath;    \/\/<! file path$/;"	m	struct:cb_param_t
-fileSendLen	include/net/conn.h	/^    u64_t       fileSendLen; \/\/<! attach file length$/;"	m	struct:cb_param_t
-finalized	src/net/net.cpp	/^Net::finalized()$/;"	f	class:Net
-find	src/net/connmgr.cpp	/^ConnMgr::find(const EndPoint& ep)$/;"	f	class:ConnMgr
+fileLen	include/net/conn.h	/^    u64_t       fileLen;     \/\/<! attach file length$/;"	m	struct:_cb_param_t
+fileOffset	include/net/conn.h	/^    u64_t       fileOffset;  \/\/<! file offset$/;"	m	struct:_cb_param_t
+filePath	include/net/conn.h	/^    char        filePath[FILENAME_LENGTH_MAX];    \/\/<! file path$/;"	m	struct:_cb_param_t
+finalized	src/net/net.cpp	/^bool Net::finalized()$/;"	f	class:Net
+find	src/net/connmgr.cpp	/^ConnMgr::find(EndPoint& ep)$/;"	f	class:ConnMgr
 find	src/net/connmgr.cpp	/^ConnMgr::find(const int& sock)$/;"	f	class:ConnMgr
 free	include/mm/debug_new.h	36;"	d
 freeConn	src/net/connmgr.cpp	/^void ConnMgr::freeConn(Conn * conn)$/;"	f	class:ConnMgr
 fromTimeT	include/time/datetime.h	/^  static DateTime fromTimeT( time_t t, int millis = 0 ) $/;"	f	struct:DateTime
 fromTm	include/time/datetime.h	/^  static DateTime fromTm( const tm& tm, int millis = 0 )$/;"	f	struct:DateTime
+gBaseDataPath	include/net/conn.h	/^    static std::string gBaseDataPath;     \/\/$/;"	m	class:Conn
 gCommStage	include/net/conn.h	/^    static Stage    *gCommStage;          \/\/ !< CommStage instance$/;"	m	class:Conn
 gCommStage	src/net/conn.cpp	/^Stage* Conn::gCommStage = NULL;$/;"	m	class:Conn	file:
+gDeserializable	include/net/conn.h	/^    static Deserializable *gDeserializable; \/\/  !< Deserializer$/;"	m	class:Conn
+gDeserializable	src/net/conn.cpp	/^Deserializable *Conn::gDeserializable = NULL;$/;"	m	class:Conn	file:
 gListenRcvBufSize	include/net/conn.h	/^    static int       gListenRcvBufSize;   \/\/!< listen socket receive buffer size$/;"	m	class:Conn
 gListenRcvBufSize	src/net/conn.cpp	/^int Conn::gListenRcvBufSize = Sock::SOCK_RECV_BUF_SIZE;$/;"	m	class:Conn	file:
 gListenSendBufSize	include/net/conn.h	/^    static int       gListenSendBufSize;  \/\/!< listen socket send buffer size$/;"	m	class:Conn
@@ -829,6 +830,8 @@ gLocalEp	src/net/conn.cpp	/^EndPoint Conn::gLocalEp;$/;"	m	class:Conn	file:
 gLog	src/linit.cpp	/^CLog *gLog = NULL;$/;"	v
 gMaxBlockSize	include/net/conn.h	/^    static int      gMaxBlockSize;          \/\/!< one block buffer size$/;"	m	class:Conn
 gMaxBlockSize	src/net/conn.cpp	/^int Conn::gMaxBlockSize    = 64 * ONE_MILLION;$/;"	m	class:Conn	file:
+gSelectDir	include/net/conn.h	/^    static CSelectDir     *gSelectDir;$/;"	m	class:Conn
+gSelectDir	src/net/conn.cpp	/^CSelectDir     *Conn::gSelectDir      = NULL;$/;"	m	class:Conn	file:
 gSocketRcvBufSize	include/net/conn.h	/^    static int       gSocketRcvBufSize;   \/\/!< socket receive buffer size$/;"	m	class:Conn
 gSocketRcvBufSize	src/net/conn.cpp	/^int Conn::gSocketRcvBufSize = Sock::SOCK_RECV_BUF_SIZE;$/;"	m	class:Conn	file:
 gSocketSendBufSize	include/net/conn.h	/^    static int       gSocketSendBufSize;  \/\/!< socket send buffer size$/;"	m	class:Conn
@@ -837,11 +840,13 @@ gTimeout	include/net/conn.h	/^    static int       gTimeout;            \/\/!< s
 gTimeout	src/net/conn.cpp	/^int Conn::gTimeout = Sock::SOCK_TIMEOUT;$/;"	m	class:Conn	file:
 genKillThreadEvents	src/seda/threadpool.cpp	/^Threadpool::genKillThreadEvents(unsigned int toKill)$/;"	f	class:Threadpool
 genNextStages	src/seda/sedaconfig.cpp	/^SedaConfig::genNextStages()$/;"	f	class:SedaConfig
+generateRcvFileName	src/net/conncb.cpp	/^void Conn::generateRcvFileName(std::string &fileName, CommEvent *cev)$/;"	f	class:Conn
 get	include/mm/lmpool.h	/^    T* get()$/;"	f	class:CLmpool
 get	src/conf/ini.cpp	/^const std::map<std::string, std::string>& CIni::get(const std::string &section)$/;"	f	class:CIni
 get	src/conf/ini.cpp	/^std::string CIni::get(const std::string &key, const std::string &defaultValue,$/;"	f	class:CIni
 getActSn	include/net/conn.h	/^    u64_t getActSn() const$/;"	f	class:Conn
 getAllocType	src/net/iovec.cpp	/^IoVec::alloc_t IoVec::getAllocType()$/;"	f	class:IoVec
+getAndRmEvent	src/net/conn.cpp	/^CommEvent* Conn::getAndRmEvent(u32_t msgId)$/;"	f	class:Conn
 getAvgIncrement	include/seda/sedastatsstage.h	/^            getAvgIncrement()       $/;"	f	class:SedaStatsStore
 getAvgTime	include/seda/sedastatsstage.h	/^            getAvgTime()        $/;"	f	class:SedaStatsStore
 getBase	src/net/iovec.cpp	/^IoVec::getBase()$/;"	f	class:IoVec
@@ -851,9 +856,12 @@ getCallbackParam	src/net/iovec.cpp	/^IoVec::getCallbackParam()$/;"	f	class:IoVec
 getCancelToken	src/seda/timerstage.cpp	/^TimerRegisterEvent::getCancelToken()$/;"	f	class:TimerRegisterEvent
 getCategory	include/seda/sedastats.h	/^        sedaStatsCategory_t getCategory() const { return _category; }$/;"	f	class:SedaStats
 getCategory	src/seda/sedastatsevent.cpp	/^SedaStats::sedaStatsCategory_t SedaStatsEvent::getCategory() const$/;"	f	class:SedaStatsEvent
-getConn	src/net/net.cpp	/^Net::getConn(EndPoint& ep, bool serverSide)$/;"	f	class:Net
+getCommStage	src/net/net.cpp	/^Stage *Net::getCommStage()$/;"	f	class:Net
+getConn	src/net/net.cpp	/^Conn* Net::getConn(EndPoint& ep, bool serverSide)$/;"	f	class:Net
 getConnMgr	src/net/net.cpp	/^ConnMgr& Net::getConnMgr()$/;"	f	class:Net
 getCounterCount	include/seda/sedastatsstage.h	/^            getCounterCount()   {   return  _counterCount   ;}$/;"	f	class:SedaStatsStore
+getDeserializable	src/net/conn.cpp	/^Deserializable * Conn::getDeserializable()$/;"	f	class:Conn
+getDirList	src/io/io.cpp	/^int getDirList(std::vector<std::string> &dirList, const std::string &path,$/;"	f
 getDirName	src/io/io.cpp	/^std::string getDirName(const std::string &fullPath)$/;"	f
 getDirName	src/io/io.cpp	/^void getDirName(const char *path, std::string &parent)$/;"	f
 getFileLines	src/io/io.cpp	/^int getFileLines(const std::string &fileName, u64_t &lineNum)$/;"	f
@@ -881,23 +889,30 @@ getMinTime	include/seda/sedastatsstage.h	/^            getMinTime()        {   r
 getName	include/seda/stage.h	/^inline const char*  Stage::getName() {$/;"	f	class:Stage
 getName	src/seda/threadpool.cpp	/^Threadpool::getName()$/;"	f	class:Threadpool
 getNextRecv	src/net/conn.cpp	/^Conn::nextrecv_t Conn::getNextRecv()$/;"	f	class:Conn
+getNextStage	src/comm/commstage.cpp	/^Stage *CommStage::getNextStage()$/;"	f	class:CommStage
 getNonce	src/seda/timerstage.cpp	/^TimerToken::getNonce() const$/;"	f	class:TimerToken
 getNumEvents	src/seda/timerstage.cpp	/^TimerStage::getNumEvents()$/;"	f	class:TimerStage
 getNumStats	include/seda/sedastatsstage.h	/^            getNumStats()       {   return  _numStat   ;}$/;"	f	class:SedaStatsStore
+getPeerEp	include/net/conn.h	/^    EndPoint &getPeerEp() { return mPeerEp; }$/;"	f	class:Conn
 getPeerName	src/net/sockutil.cpp	/^Sock::getPeerName(int sock, std::string& ipaddr, unsigned short& port)$/;"	f	class:Sock
 getPool	include/seda/stage.h	/^    Threadpool* getPool()$/;"	f	class:Stage
 getPort	src/net/endpoint.cpp	/^s32_t  EndPoint::getPort() const$/;"	f	class:EndPoint
 getPort	src/net/netserver.cpp	/^unsigned short NetServer::getPort() const$/;"	f	class:NetServer
 getProcessName	src/os/lprocess.cpp	/^std::string getProcessName(const char *progName)$/;"	f
 getRcvBufSz	src/net/conn.cpp	/^int Conn::getRcvBufSz()$/;"	f	class:Conn
-getRequest	src/comm/commevent.cpp	/^MsgDesc CommEvent::getRequest()$/;"	f	class:CommEvent
+getRequest	src/comm/commevent.cpp	/^MsgDesc& CommEvent::getRequest()$/;"	f	class:CommEvent
 getRequestId	src/comm/commevent.cpp	/^unsigned int CommEvent::getRequestId()$/;"	f	class:CommEvent
 getRequestMsg	src/comm/commevent.cpp	/^Message*  CommEvent::getRequestMsg()$/;"	f	class:CommEvent
-getResponse	src/comm/commevent.cpp	/^MsgDesc CommEvent::getResponse()$/;"	f	class:CommEvent
+getResponse	src/comm/commevent.cpp	/^MsgDesc& CommEvent::getResponse()$/;"	f	class:CommEvent
 getResponseMsg	src/comm/commevent.cpp	/^Message* CommEvent::getResponseMsg()$/;"	f	class:CommEvent
+getSelectDir	src/net/conn.cpp	/^CSelectDir *Conn::getSelectDir()$/;"	f	class:Conn
+getSerialSize	include/comm/message.h	/^    int getSerialSize()$/;"	f	class:Message
+getSerialSize	include/comm/request.h	/^    int getSerialSize()$/;"	f	class:Request
+getSerialSize	include/comm/response.h	/^    int getSerialSize()$/;"	f	class:Response
 getSerialSize	src/net/endpoint.cpp	/^int EndPoint::getSerialSize()$/;"	f	class:EndPoint
 getService	src/net/endpoint.cpp	/^const char* EndPoint::getService() const$/;"	f	class:EndPoint
 getSize	src/net/iovec.cpp	/^size_t IoVec::getSize()$/;"	f	class:IoVec
+getSleepTime	test/triggertestevent.h	/^    int getSleepTime() const$/;"	f	class:TriggerTestEvent
 getSndBufSz	src/net/conn.cpp	/^int Conn::getSndBufSz()$/;"	f	class:Conn
 getSockName	src/net/sockutil.cpp	/^Sock::getSockName(int sock, std::string& ipaddr, unsigned short& port)$/;"	f	class:Sock
 getSocket	src/net/conn.cpp	/^int Conn::getSocket()$/;"	f	class:Conn
@@ -928,14 +943,12 @@ getYMD	include/time/datetime.h	/^  static void getYMD( int jday, int& year, int&
 gettid	include/defs.h	31;"	d
 globalActSn	include/net/conn.h	/^    static u64_t     globalActSn;        \/\/!< serial number of connect activities$/;"	m	class:Conn
 globalActSn	src/net/conn.cpp	/^u64_t Conn::globalActSn = 0;$/;"	m	class:Conn	file:
-handleCb	test/teststage.cpp	/^void CTestStage::handleCb(StageEvent *event)$/;"	f	class:CTestStage
 handleEvent	src/comm/commstage.cpp	/^void CommStage::handleEvent(StageEvent* event)$/;"	f	class:CommStage
 handleEvent	src/seda/eventdispatcher.cpp	/^EventDispatcher::handleEvent(StageEvent* event)$/;"	f	class:EventDispatcher
 handleEvent	src/seda/killthread.cpp	/^KillThreadStage::handleEvent(StageEvent* event)$/;"	f	class:KillThreadStage
 handleEvent	src/seda/sedastatsstage.cpp	/^SedaStatsStage::handleEvent(StageEvent* event)$/;"	f	class:SedaStatsStage
 handleEvent	src/seda/timerstage.cpp	/^TimerStage::handleEvent(StageEvent* event)$/;"	f	class:TimerStage
 handleEvent	test/teststage.cpp	/^void CTestStage::handleEvent(StageEvent* event)$/;"	f	class:CTestStage
-handleTestEvent	test/teststage.cpp	/^void CTestStage::handleTestEvent(StageEvent *event)$/;"	f	class:CTestStage
 hasCount	src/seda/sedastatsevent.cpp	/^bool SedaStatsEvent::hasCount() const$/;"	f	class:SedaStatsEvent
 hasTime	src/seda/sedastatsevent.cpp	/^bool SedaStatsEvent::hasTime() const$/;"	f	class:SedaStatsEvent
 hasTimedOut	src/seda/stageevent.cpp	/^StageEvent::hasTimedOut()$/;"	f	class:StageEvent
@@ -954,7 +967,8 @@ incXferred	src/net/iovec.cpp	/^void IoVec::incXferred(size_t inc)$/;"	f	class:Io
 init	include/linit.h	/^    void init(std::string processName)$/;"	f	class:CProcessParam
 init	include/mm/lmpool.h	/^    int init(int initSize)$/;"	f	class:CLmpool
 init	src/seda/sedaconfig.cpp	/^SedaConfig::init()$/;"	f	class:SedaConfig
-initConnPool	src/net/connmgr.cpp	/^int ConnMgr::initConnPool(int initSzie)$/;"	f	class:ConnMgr
+init	test/test.cpp	/^int init()$/;"	f
+initConnPool	src/net/connmgr.cpp	/^int ConnMgr::initConnPool(int initSize)$/;"	f	class:ConnMgr
 initEventHistory	src/seda/sedaconfig.cpp	/^SedaConfig::initEventHistory()$/;"	f	class:SedaConfig
 initFlag	include/net/net.h	/^    bool            initFlag;              \/\/!< flag indicating if Net has been initialized$/;"	m	class:Net
 initLog	src/linit.cpp	/^int initLog(CProcessParam *pProcessCfg, CIni &gProperties)$/;"	f
@@ -969,8 +983,8 @@ initialize	src/seda/eventdispatcher.cpp	/^EventDispatcher::initialize()$/;"	f	cl
 initialize	src/seda/sedastatsstage.cpp	/^SedaStatsStage::initialize()$/;"	f	class:SedaStatsStage
 initialize	src/seda/timerstage.cpp	/^TimerStage::initialize()$/;"	f	class:TimerStage
 initialize	test/teststage.cpp	/^bool CTestStage::initialize()$/;"	f	class:CTestStage
-initialized	src/net/net.cpp	/^Net::initialized()$/;"	f	class:Net
-insert	src/net/connmgr.cpp	/^ConnMgr::status_t ConnMgr::insert(const EndPoint& ep, const int sock,$/;"	f	class:ConnMgr
+initialized	src/net/net.cpp	/^bool Net::initialized()$/;"	f	class:Net
+insert	src/net/connmgr.cpp	/^ConnMgr::status_t ConnMgr::insert(EndPoint& ep, const int sock,$/;"	f	class:ConnMgr
 insertEntry	src/conf/ini.cpp	/^int CIni::insertEntry(std::map<std::string, std::string>* sessionMap, const std::string &line)$/;"	f	class:CIni
 insertSession	src/conf/ini.cpp	/^void CIni::insertSession(const std::string &sessionName)$/;"	f	class:CIni
 instance	include/seda/sedaconfig.h	/^    static SedaConfig* instance;$/;"	m	class:SedaConfig
@@ -1000,7 +1014,6 @@ lfree	include/mm/lmem.h	30;"	d
 lfree	include/mm/lmem.h	91;"	d
 list	src/net/connmgr.cpp	/^void ConnMgr::list()$/;"	f	class:ConnMgr
 listMutex	include/seda/stage.h	/^    mutable pthread_mutex_t listMutex;      \/\/!< protects the event queue$/;"	m	class:Stage
-listenSock	include/net/netserver.h	/^    int listenSock;             \/\/!< socket for accepting new connections$/;"	m	class:NetServer
 lmalloc	include/mm/lmem.h	29;"	d
 lmalloc	include/mm/lmem.h	87;"	d
 load	src/conf/ini.cpp	/^int CIni::load(const std::string &fileName)$/;"	f	class:CIni
@@ -1012,12 +1025,14 @@ lrealloc	include/mm/lmem.h	89;"	d
 mActivitySn	include/net/conn.h	/^    u64_t            mActivitySn;        \/\/!< serial number of last connect activity$/;"	m	class:Conn
 mAddSize	include/mm/lmpool.h	/^    int                  mAddSize;$/;"	m	class:CLmpool
 mAttLen	include/comm/packageinfo.h	/^    char        mAttLen[HDR_ATT_LEN];$/;"	m	struct:_packHeader
+mBaseDir	include/io/rollselectdir.h	/^    std::string                 mBaseDir;$/;"	m	class:CRollSelectDir
 mCfgFile	include/seda/sedaconfig.h	/^    std::string mCfgFile;$/;"	m	class:SedaConfig
 mCfgStr	include/seda/sedaconfig.h	/^    std::string mCfgStr;$/;"	m	class:SedaConfig
 mCleanType	include/net/conn.h	/^    cleanup_t        mCleanType;         \/\/!< cleanup type for disconnect$/;"	m	class:Conn
 mCleaning	include/net/conn.h	/^    bool             mCleaning;          \/\/!< connection is being cleaned up$/;"	m	class:Conn
 mCommStage	include/net/net.h	/^    Stage          *mCommStage;$/;"	m	class:Net
-mConn	include/comm/commdataevent.h	/^    Conn*   mConn;$/;"	m	class:CommSendEvent
+mCommStage	test/teststage.h	/^    Stage                    *mCommStage;$/;"	m	class:CTestStage
+mConn	include/comm/commdataevent.h	/^    void *mConn;        \/\/ this is Conn*$/;"	m	class:CommSendEvent
 mConnState	include/net/conn.h	/^    status_t         mConnState;         \/\/!< connection state$/;"	m	class:Conn
 mConsoleLevel	include/trace/log.h	/^    LOG_LEVEL       mConsoleLevel; $/;"	m	class:CLog
 mCounterMutex	include/comm/commstage.h	/^    pthread_mutex_t             mCounterMutex;   \/\/!< counter lock$/;"	m	class:CommStage
@@ -1026,21 +1041,19 @@ mCurSendBlock	include/net/conn.h	/^    IoVec              *mCurSendBlock;  \/\/!
 mDay	include/trace/log.h	/^        int         mDay;$/;"	m	struct:CLog::_LogDate
 mDefaultSet	include/trace/log.h	/^    DefaultSet        mDefaultSet;$/;"	m	class:CLog
 mDemon	include/linit.h	/^    bool        mDemon;        \/\/ whether demon or not$/;"	m	class:CProcessParam
-mDeserializer	include/comm/commstage.h	/^    Deserializable             *mDeserializer;$/;"	m	class:CommStage
 mEmptyMap	include/conf/ini.h	/^    static const std::map<std::string, std::string>    mEmptyMap;$/;"	m	class:CIni
 mEmptyMap	src/conf/ini.cpp	/^const std::map<std::string, std::string> CIni::mEmptyMap;$/;"	m	class:CIni	file:
 mErrMsg	include/comm/response.h	/^    char  mErrMsg[MAX_ERROR_MSG_LEN];$/;"	m	class:Response
-mEventMap	include/net/conn.h	/^    std::map<u32_t, CommEvent*> mEventMap;        \/\/!< map(requestID, event map)$/;"	m	class:Conn
 mEventMapMutex	include/net/conn.h	/^    pthread_mutex_t             mEventMapMutex;$/;"	m	class:Conn
 mFile	include/mm/lmem.h	/^    char mFile[MEM_FILENAME_LEN];$/;"	m	struct:MemID_t
 mFile	include/os/mutex.h	/^            std::string mFile;$/;"	m	class:CLockTrace::CLockID
 mFileLen	include/comm/packageinfo.h	/^    char        mFileLen[HDR_FILE_LEN];$/;"	m	struct:_packHeader
 mFileNames	include/conf/ini.h	/^    std::set<std::string> mFileNames;$/;"	m	class:CIni
-mFrequence	test/teststage.h	/^    int                       mFrequence;$/;"	m	class:CTestStage
 mHostName	include/net/endpoint.h	/^    char        mHostName[MAX_HOSTNAME_LEN];$/;"	m	class:EndPoint
 mId	include/comm/message.h	/^    u64_t       mId;$/;"	m	class:Message
 mLine	include/mm/lmem.h	/^    u32_t mLine;$/;"	m	struct:MemID_t
 mLine	include/os/mutex.h	/^            int mLine;$/;"	m	class:CLockTrace::CLockID
+mListenSock	include/net/netserver.h	/^    int mListenSock;             \/\/!< socket for accepting new connections$/;"	m	class:NetServer
 mLocation	include/net/endpoint.h	/^    char        mLocation[MAX_LOCATION_LEN];$/;"	m	class:EndPoint
 mLock	include/mm/lmpool.h	/^    pthread_mutex_t      mLock;$/;"	m	class:CLmpool
 mLock	include/trace/log.h	/^    pthread_mutex_t mLock;$/;"	m	class:CLog
@@ -1056,6 +1069,7 @@ mMon	include/trace/log.h	/^        int         mMon;$/;"	m	struct:CLog::_LogDate
 mMsgCounter	include/comm/commstage.h	/^    u32_t                       mMsgCounter;    \/\/!< a counter for the messages$/;"	m	class:CommStage
 mMsgCounter	include/net/conn.h	/^    msg_cntr_t       mMsgCounter;        \/\/!< counter for messages$/;"	m	class:Conn
 mMsgLen	include/comm/packageinfo.h	/^    char        mMsgLen[HDR_MSG_LEN];$/;"	m	struct:_packHeader
+mMutex	include/io/rollselectdir.h	/^    pthread_mutex_t             mMutex;$/;"	m	class:CRollSelectDir
 mMutex	include/mm/lmem.h	/^    static pthread_mutex_t          mMutex;$/;"	m	class:CLMemTrace
 mMutex	include/net/conn.h	/^    pthread_mutex_t  mMutex;             \/\/!< mutex protecting the Conn members$/;"	m	class:Conn
 mNet	include/comm/commstage.h	/^    Net                        *mNet;$/;"	m	class:CommStage
@@ -1064,36 +1078,43 @@ mNextRecvPart	include/net/conn.h	/^    nextrecv_t       mNextRecvPart;      \/\/
 mNextStage	include/comm/commstage.h	/^    Stage                      *mNextStage;$/;"	m	class:CommStage
 mOfs	include/trace/log.h	/^    std::ofstream   mOfs;$/;"	m	class:CLog
 mPeerEp	include/net/conn.h	/^    EndPoint         mPeerEp;            \/\/!< peer's EndPoint$/;"	m	class:Conn
+mPeerEp	test/teststage.h	/^    EndPoint                  mPeerEp;$/;"	m	class:CTestStage
 mPort	include/net/endpoint.h	/^    s32_t       mPort;$/;"	m	class:EndPoint
+mPort	include/net/netserver.h	/^    unsigned short mPort;        \/\/!< port to listen on for new connections$/;"	m	class:NetServer
+mPos	include/io/rollselectdir.h	/^    u32_t                       mPos;$/;"	m	class:CRollSelectDir
 mPrefixMap	include/trace/log.h	/^    LogPrefixMap  mPrefixMap;$/;"	m	class:CLog
 mProcessName	include/linit.h	/^    std::string mProcessName;  \/\/! The process name$/;"	m	class:CProcessParam
 mProperties	include/linit.h	/^    std::string mProperties;   \/\/! The properties config file$/;"	m	class:CProcessParam
-mProtocal	include/comm/request.h	/^    char        mProtocal[MAX_PROTOCAL_LEN];$/;"	m	class:Request
+mProtocal	include/comm/request.h	/^    char     mProtocal[MAX_PROTOCAL_LEN];$/;"	m	class:Request
 mQueue	include/mm/lmpool.h	/^    std::queue<T *>      mQueue;$/;"	m	class:CLmpool
 mReadyRecv	include/net/conn.h	/^    bool                mReadyRecv;     \/\/!< flag that data is available for read$/;"	m	class:Conn
 mReadyToSend	include/net/conn.h	/^    bool                mReadyToSend;   \/\/!< indicates that socket is ready for send$/;"	m	class:Conn
+mRecvCb	include/net/conn.h	/^    cb_param_t         *mRecvCb;        \/\/!< recv callback parameter, won't free until cleanup Connection$/;"	m	class:Conn
 mRecvMutex	include/net/conn.h	/^    pthread_mutex_t     mRecvMutex;     \/\/!< receive queue mutex$/;"	m	class:Conn
 mRecvQ	include/net/conn.h	/^    std::deque<IoVec *> mRecvQ;         \/\/!< queue of receive vectors$/;"	m	class:Conn
 mRefCount	include/net/conn.h	/^    int              mRefCount;          \/\/!< reference count of connection references$/;"	m	class:Conn
 mRotateType	include/trace/log.h	/^    LOG_ROTATE      mRotateType;$/;"	m	class:CLog
 mSections	include/conf/ini.h	/^    SessionsMap           mSections;$/;"	m	class:CIni
+mSendEventMap	include/net/conn.h	/^    std::map<u32_t, CommEvent*> mSendEventMap;        \/\/!< map(requestID, send event)$/;"	m	class:Conn
 mSendMutex	include/net/conn.h	/^    pthread_mutex_t     mSendMutex;     \/\/!< send queue mutex$/;"	m	class:Conn
 mSendQ	include/net/conn.h	/^    std::deque<IoVec *> mSendQ;         \/\/!< queue for vectors to be sent$/;"	m	class:Conn
 mServer	include/comm/commstage.h	/^    bool                        mServer;$/;"	m	class:CommStage
 mService	include/net/endpoint.h	/^    char        mService[MAX_SERVICE_LEN];$/;"	m	class:EndPoint
 mSize	include/mm/lmem.h	/^    u64_t mSize;$/;"	m	struct:MemID_t
+mSleepTime	test/triggertestevent.h	/^    int mSleepTime;$/;"	m	class:TriggerTestEvent
 mSock	include/net/conn.h	/^    int              mSock;              \/\/!< connection socket$/;"	m	class:Conn
-mSocket	include/comm/commdataevent.h	/^    int    mSocket;$/;"	m	class:CommRecvEvent
+mSocket	include/comm/commdataevent.h	/^    int mSocket;$/;"	m	class:CommRecvEvent
 mSourceEp	include/comm/request.h	/^    EndPoint mSourceEp;$/;"	m	class:Request
 mStageNames	include/seda/sedaconfig.h	/^    std::vector<std::string>            mStageNames;$/;"	m	class:SedaConfig
 mStages	include/seda/sedaconfig.h	/^    std::map<std::string, Stage *>      mStages;$/;"	m	class:SedaConfig
-mStatus	include/comm/response.h	/^    u32_t mStatus;$/;"	m	class:Response
+mStatus	include/comm/response.h	/^    int   mStatus;$/;"	m	class:Response
 mStdErr	include/linit.h	/^    std::string mStdErr;       \/\/! The err output file$/;"	m	class:CProcessParam
 mStdOut	include/linit.h	/^    std::string mStdOut;       \/\/! The output file$/;"	m	class:CProcessParam
+mSubdirs	include/io/rollselectdir.h	/^    std::vector<std::string>    mSubdirs;$/;"	m	class:CRollSelectDir
 mThreadId	include/os/mutex.h	/^            int mThreadId;$/;"	m	class:CLockTrace::CLockID
 mThreadPools	include/seda/sedaconfig.h	/^    std::map<std::string, Threadpool *> mThreadPools;$/;"	m	class:SedaConfig
 mTimerStage	test/teststage.h	/^    Stage                    *mTimerStage;$/;"	m	class:CTestStage
-mType	include/comm/message.h	/^    u32_t       mType;$/;"	m	class:Message
+mType	include/comm/message.h	/^    const s32_t mType;$/;"	m	class:Message
 mType	include/comm/packageinfo.h	/^    char        mType[HDR_TYPE_LEN];$/;"	m	struct:_packHeader
 mUsedSize	include/mm/lmem.h	/^    static u64_t                    mUsedSize;$/;"	m	class:CLMemTrace
 mVerbose	include/mm/lmem.h	/^    static bool                     mVerbose;$/;"	m	class:CLMemTrace
@@ -1104,7 +1125,7 @@ m_time	include/time/datetime.h	/^  int m_time;$/;"	m	struct:DateTime
 main	test/test.cpp	/^int main(int argc, char** argv)$/;"	f
 makeHMS	include/time/datetime.h	/^  static int makeHMS( int hour, int minute, int second, int millis )$/;"	f	struct:DateTime
 makeInstance	include/seda/classfactory.h	/^ClassFactory<T>::makeInstance(const std::string& tag)$/;"	f	class:ClassFactory
-makeRpcMessage	src/comm/commstage.cpp	/^IoVec* CommStage::makeRpcMessage(MsgDesc& md)$/;"	f	class:CommStage
+makeRpcMessage	src/net/iovutil.cpp	/^IoVec* makeRpcMessage(MsgDesc& md)$/;"	f
 makeStage	src/comm/commstage.cpp	/^Stage* CommStage::makeStage(const std::string& tag)$/;"	f	class:CommStage
 makeStage	src/seda/killthread.cpp	/^KillThreadStage::makeStage(const std::string& tag)$/;"	f	class:KillThreadStage
 makeStage	src/seda/sedastatsstage.cpp	/^SedaStatsStage::makeStage(const std::string& tag)$/;"	f	class:SedaStatsStage
@@ -1135,7 +1156,7 @@ nextCb	include/seda/callback.h	/^    CompletionCallback* nextCb;      \/\/!< nex
 nextNonce	src/seda/timerstage.cpp	/^TimerToken::nextNonce()$/;"	f	class:TimerToken
 nextStage	include/seda/eventdispatcher.h	/^    Stage*          nextStage;    \/\/!< target for dispatched events$/;"	m	class:EventDispatcher
 nextStageList	include/seda/stage.h	/^    std::list<Stage*> nextStageList;   \/\/!< next stage(s) in the pipeline$/;"	m	class:Stage
-nextrecv_t	include/net/conn.h	/^    } nextrecv_t;$/;"	t	class:Conn	typeref:enum:Conn::__anon8
+nextrecv_t	include/net/conn.h	/^    } nextrecv_t;$/;"	t	class:Conn	typeref:enum:Conn::__anon9
 nonce	include/seda/timerstage.h	/^    u64_t nonce;$/;"	m	class:TimerToken
 now	src/time/datetime.cpp	/^DateTime DateTime::now()$/;"	f	class:DateTime
 nowtimet	src/time/datetime.cpp	/^time_t DateTime::nowtimet()$/;"	f	class:DateTime
@@ -1165,18 +1186,16 @@ path	src/os/pidfile.cpp	/^static std::ostringstream path;$/;"	v	file:
 poolPtrKey	include/seda/threadpool.h	/^    static pthread_key_t poolPtrKey;$/;"	m	class:Threadpool
 poolPtrKey	src/seda/threadpool.cpp	/^pthread_key_t Threadpool::poolPtrKey;$/;"	m	class:Threadpool	file:
 popCallback	src/seda/callback.cpp	/^CompletionCallback::popCallback()$/;"	f	class:CompletionCallback
-port	include/net/netserver.h	/^    unsigned short port;        \/\/!< port to listen on for new connections$/;"	m	class:NetServer
 postRecv	src/net/conn.cpp	/^Conn::status_t Conn::postRecv(IoVec* msgVec)$/;"	f	class:Conn
 postRecv	src/net/conn.cpp	/^Conn::status_t Conn::postRecv(int numVecs, IoVec* msgVecs[])$/;"	f	class:Conn
 postSend	src/net/conn.cpp	/^Conn::status_t Conn::postSend(IoVec* msgVec)$/;"	f	class:Conn
 postSend	src/net/conn.cpp	/^Conn::status_t Conn::postSend(int numVecs, IoVec* msgVecs[])$/;"	f	class:Conn
-prepare2Drain	src/net/conn.cpp	/^int Conn::prepare2Drain(IoVec *iov, cb_param_t* cbp, Conn *conn)$/;"	f	class:Conn
-prepareIovecs	src/comm/commstage.cpp	/^int CommStage::prepareIovecs(MsgDesc &md, IoVec** iovs, CommEvent* cev)$/;"	f	class:CommStage
-prepareRecvHeader	src/net/conn.cpp	/^IoVec* Conn::prepareRecvHeader(Conn* conn)$/;"	f	class:Conn
-prepareReqIovecs	src/comm/commstage.cpp	/^int CommStage::prepareReqIovecs(MsgDesc &md, IoVec** iovs, CommEvent* cev)$/;"	f	class:CommStage
-prepareRespIovecs	src/comm/commstage.cpp	/^int CommStage::prepareRespIovecs(MsgDesc &md, IoVec** iovs, CommEvent* cev)$/;"	f	class:CommStage
-pushAttachMessage	src/net/conn.cpp	/^int Conn::pushAttachMessage(Conn *conn, MsgDesc &md)$/;"	f	class:Conn
-pushAttachMessage	src/net/conn.cpp	/^int Conn::pushAttachMessage(Conn *conn, MsgDesc &md, cb_param_t* cbp)$/;"	f	class:Conn
+prepare2Drain	src/net/conncb.cpp	/^void Conn::prepare2Drain(IoVec *iov, cb_param_t* cbp, Conn *conn, u64_t leftSize)$/;"	f	class:Conn
+prepareIovecs	src/net/iovutil.cpp	/^int prepareIovecs(MsgDesc &md, IoVec** iovs, CommEvent* cev)$/;"	f
+prepareRecvHeader	src/net/iovutil.cpp	/^IoVec* prepareRecvHeader(Conn* conn, Stage *cs)$/;"	f
+prepareReqIovecs	src/net/iovutil.cpp	/^int prepareReqIovecs(MsgDesc &md, IoVec** iovs, CommEvent* cev, Conn *conn, Stage *cs)$/;"	f
+prepareRespIovecs	src/net/iovutil.cpp	/^int prepareRespIovecs(MsgDesc &md, IoVec** iovs, CommEvent* cev, Stage *cs)$/;"	f
+pushAttachMessage	src/net/conncb.cpp	/^int Conn::pushAttachMessage(Conn *conn, MsgDesc &md, cb_param_t* cbp)$/;"	f	class:Conn
 pushCallback	src/seda/callback.cpp	/^CompletionCallback::pushCallback(CompletionCallback* next)$/;"	f	class:CompletionCallback
 pushCallback	src/seda/stageevent.cpp	/^StageEvent::pushCallback(CompletionCallback* cb)$/;"	f	class:StageEvent
 pushStage	include/seda/stage.h	/^inline void Stage::pushStage(Stage* st) {$/;"	f	class:Stage
@@ -1186,19 +1205,26 @@ qempty	src/seda/stage.cpp	/^Stage::qempty() const$/;"	f	class:Stage
 qlen	src/seda/stage.cpp	/^Stage::qlen() const$/;"	f	class:Stage
 queue_info	include/seda/sedametric.h	/^    std::vector<int> queue_info;$/;"	m	class:SedaQueueInfo
 readBlocking	src/net/sockutil.cpp	/^Sock::readBlocking(int fd, char *buf, int buflen, int& nread)$/;"	f	class:Sock
-readFromFile	src/io/io.cpp	/^int readFromFile(const std::string &fileName, char *&outputData)$/;"	f
+readFromFile	src/io/io.cpp	/^int readFromFile(const std::string &fileName, char *&outputData, size_t &fileSize)$/;"	f
 realtimeToMonotonic	src/seda/timerstage.cpp	/^void realtimeToMonotonic(const struct timeval* time_RT, struct timeval* time_Mono)$/;"	f
-recevData	src/comm/commstage.cpp	/^void CommStage::recevData(CommRecvEvent *event)$/;"	f	class:CommStage
 recordCount	src/seda/sedastats.cpp	/^SedaStats::recordCount(sedaStatsCategory_t category,$/;"	f	class:SedaStats
 recv	src/net/conn.cpp	/^Conn::status_t Conn::recv(int numVecs, IoVec* msgVecs[])$/;"	f	class:Conn
-recvCallback	src/net/conn.cpp	/^int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)$/;"	f	class:Conn
+recvAttach	src/net/conncb.cpp	/^int Conn::recvAttach(IoVec *iov, cb_param_t* cbp, Conn *conn)$/;"	f	class:Conn
+recvCallback	src/net/conncb.cpp	/^int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)$/;"	f	class:Conn
+recvData	src/comm/commstage.cpp	/^void CommStage::recvData(CommRecvEvent *event)$/;"	f	class:CommStage
+recvDrain	src/net/conncb.cpp	/^int Conn::recvDrain(IoVec *iov, cb_param_t* cbp, Conn *conn)$/;"	f	class:Conn
 recvEpfd	include/net/net.h	/^    int       recvEpfd,     sendEpfd;       \/\/!< receive and send epoll file descriptors$/;"	m	class:Net
-recvErrCb	src/net/conn.cpp	/^int Conn::recvErrCb(IoVec *iov, cb_param_t* cbp, IoVec::state_t state)$/;"	f	class:Conn
-recvHeaderCb	src/net/conn.cpp	/^int Conn::recvHeaderCb(IoVec *iov, cb_param_t* cbp, IoVec::state_t state)$/;"	f	class:Conn
+recvErrCb	src/net/conncb.cpp	/^int Conn::recvErrCb(IoVec *iov, cb_param_t* cbp, IoVec::state_t state, bool freeIov)$/;"	f	class:Conn
+recvFile	src/net/conncb.cpp	/^int Conn::recvFile(IoVec *iov, cb_param_t* cbp, Conn *conn)$/;"	f	class:Conn
+recvHeaderCb	src/net/conncb.cpp	/^int Conn::recvHeaderCb(IoVec *iov, cb_param_t* cbp, IoVec::state_t state)$/;"	f	class:Conn
 recvPfd	include/net/net.h	/^    int       recvPfd[2],   sendPfd[2];     \/\/!< notification pipe descriptors$/;"	m	class:Net
+recvPrepareFileIov	src/net/conncb.cpp	/^int Conn::recvPrepareFileIov(cb_param_t* cbp, Conn *conn)$/;"	f	class:Conn
+recvPrepareRspAttach	src/net/conncb.cpp	/^int Conn::recvPrepareRspAttach(MsgDesc &mdresp, cb_param_t* cbp, Conn *conn)$/;"	f	class:Conn
 recvProgress	src/net/conn.cpp	/^Conn::status_t Conn::recvProgress(bool ready)$/;"	f	class:Conn
-recvReqMsg	src/net/conn.cpp	/^int Conn::recvReqMsg(IoVec *iov, cb_param_t* cbp, Conn *conn, MsgDesc &md, bool &eventReady)$/;"	f	class:Conn
-recvRspMsg	src/net/conn.cpp	/^int Conn::recvRspMsg(IoVec *iov, cb_param_t* cbp, Conn *conn, MsgDesc &md)$/;"	f	class:Conn
+recvReqMsg	src/net/conncb.cpp	/^int Conn::recvReqMsg(Request *msg, IoVec *iov, cb_param_t* cbp, Conn *conn)$/;"	f	class:Conn
+recvRequest	test/teststage.cpp	/^void CTestStage::recvRequest(StageEvent *event)$/;"	f	class:CTestStage
+recvResponse	test/teststage.cpp	/^void CTestStage::recvResponse(StageEvent *event)$/;"	f	class:CTestStage
+recvRspMsg	src/net/conncb.cpp	/^int Conn::recvRspMsg(Response *rsp, IoVec *iov, cb_param_t* cbp, Conn *conn)$/;"	f	class:Conn
 recvThreadId	include/net/net.h	/^    pthread_t recvThreadId, sendThreadId;   \/\/!< receive and send thread id's$/;"	m	class:Net
 recvvecProgress	src/net/conn.cpp	/^Conn::status_t Conn::recvvecProgress()$/;"	f	class:Conn
 refCnt	include/time/timeoutinfo.h	/^    int refCnt;             \/\/!< reference count of this object$/;"	m	class:TimeoutInfo
@@ -1207,21 +1233,24 @@ registerTimer	src/seda/timerstage.cpp	/^TimerStage::registerTimer(TimerRegisterE
 release	src/net/conn.cpp	/^void Conn::release()$/;"	f	class:Conn
 releaseEvent	src/seda/stage.cpp	/^Stage::releaseEvent()$/;"	f	class:Stage
 remain	src/net/iovec.cpp	/^size_t IoVec::remain()$/;"	f	class:IoVec
-remainVecs	include/net/conn.h	/^    int         remainVecs;  \/\/!< number of remaining vectors to be processes$/;"	m	struct:cb_param_t
+remainVecs	include/net/conn.h	/^    u32_t       remainVecs;  \/\/!< in ATTACH\/FILE\/DRAIN stage, remain vec number$/;"	m	struct:_cb_param_t
 remove	src/net/connmgr.cpp	/^ConnMgr::status_t ConnMgr::remove(Conn* conn)$/;"	f	class:ConnMgr
 remove	src/net/connmgr.cpp	/^ConnMgr::status_t ConnMgr::remove(const int& sock)$/;"	f	class:ConnMgr
-removeConn	src/net/net.cpp	/^Net::removeConn(Conn* conn)$/;"	f	class:Net
+removeConn	src/net/net.cpp	/^Net::status_t Net::removeConn(Conn* conn)$/;"	f	class:Net
+removeConn	src/net/net.cpp	/^Net::status_t Net::removeConn(int sock)$/;"	f	class:Net
 removeEvent	src/seda/stage.cpp	/^Stage::removeEvent()$/;"	f	class:Stage
+removeEventEntry	src/net/conn.cpp	/^void Conn::removeEventEntry(u32_t msgId)$/;"	f	class:Conn
 removeInactive	src/net/connmgr.cpp	/^size_t ConnMgr::removeInactive()$/;"	f	class:ConnMgr
 removeInactive	src/net/net.cpp	/^size_t Net::removeInactive()$/;"	f	class:Net
 removePidFile	src/os/pidfile.cpp	/^void removePidFile(void)$/;"	f
 replace	src/lang/lstring.cpp	/^void CLstring::replace(std::string &str, const std::string &old, const std::string &newStr)$/;"	f	class:CLstring
-repostIoVec	src/net/conn.cpp	/^int Conn::repostIoVec(Conn* conn, IoVec* iov, size_t baseLen)$/;"	f	class:Conn
-repostIoVecs	src/net/conn.cpp	/^int Conn::repostIoVecs(Conn* conn, IoVec* iov, const size_t baseLen)$/;"	f	class:Conn
-reqId	include/net/conn.h	/^    u32_t       reqId;       \/\/<! request id of the client event$/;"	m	struct:cb_param_t
-reqIdStored	include/net/conn.h	/^    bool        reqIdStored; \/\/<! indicates if the reqId field is valid$/;"	m	struct:cb_param_t
+repostIoVec	src/net/conncb.cpp	/^int Conn::repostIoVec(Conn* conn, IoVec* iov, size_t baseLen)$/;"	f	class:Conn
+repostIoVecs	src/net/conncb.cpp	/^int Conn::repostIoVecs(Conn* conn, IoVec* iov, const size_t baseLen)$/;"	f	class:Conn
+repostReusedIoVec	src/net/conncb.cpp	/^int Conn::repostReusedIoVec(const size_t baseLen, IoVec *iov, cb_param_t* cbp)$/;"	f	class:Conn
+reqId	include/net/conn.h	/^    u32_t       reqId;       \/\/<! request id of the client event$/;"	m	struct:_cb_param_t
 request	include/comm/commevent.h	/^    MsgDesc           request;        \/\/!< descriptor of request message$/;"	m	class:CommEvent
 requestId	include/comm/commevent.h	/^    u32_t             requestId;      \/\/!< at server carries the incoming request id$/;"	m	class:CommEvent
+reset	include/net/conn.h	/^    void reset()$/;"	f	struct:_cb_param_t
 reset	include/seda/sedastatsstage.h	/^            reset()$/;"	f	class:SedaStatsStore
 reset	src/net/iovec.cpp	/^void IoVec::reset()$/;"	f	class:IoVec
 resetCount	src/seda/sedastats.cpp	/^void SedaStats::resetCount(int count)$/;"	f	class:SedaStats
@@ -1229,6 +1258,7 @@ resetCount	src/seda/sedastatsevent.cpp	/^bool SedaStatsEvent::resetCount() const
 resetCount	src/seda/sedastatsevent.cpp	/^void SedaStatsEvent::resetCount(bool flag)$/;"	f	class:SedaStatsEvent
 resetCounter	include/seda/sedastatsstage.h	/^            resetCounter ( long long int count)$/;"	f	class:SedaStatsStore
 response	include/comm/commevent.h	/^    MsgDesc           response;       \/\/!< descriptor of response message$/;"	m	class:CommEvent
+retriggerTestEvent	test/teststage.cpp	/^void CTestStage::retriggerTestEvent(StageEvent *event)$/;"	f	class:CTestStage
 runCond	include/seda/threadpool.h	/^    pthread_cond_t     runCond;    \/\/!< wait here for stage to be scheduled$/;"	m	class:Threadpool
 runMutex	include/seda/threadpool.h	/^    pthread_mutex_t    runMutex;   \/\/!< protects the run queue$/;"	m	class:Threadpool
 runQueue	include/seda/threadpool.h	/^    std::deque<Stage*> runQueue;   \/\/!< list of stages with work to do$/;"	m	class:Threadpool
@@ -1245,21 +1275,28 @@ sedaStageLock	src/seda/sedastatsstage.cpp	/^pthread_mutex_t SedaStatsStage::seda
 sedaStatsCategory_t	include/seda/sedastats.h	/^        } sedaStatsCategory_t;$/;"	t	class:SedaStats	typeref:enum:SedaStats::_SEDA_STATS_CATEGORY
 sedaStatsIdentifier_t	include/seda/sedastats.h	/^        } sedaStatsIdentifier_t;$/;"	t	class:SedaStats	typeref:enum:SedaStats::_SEDA_STATS_ID
 seedRandom	src/math/lmath.cpp	/^void seedRandom()$/;"	f
+select	include/io/selectdir.h	/^    virtual std::string select() {return std::string("");};$/;"	f	class:CSelectDir
+select	src/io/rollselectdir.cpp	/^std::string CRollSelectDir::select()$/;"	f	class:CRollSelectDir
 send	src/net/conn.cpp	/^Conn::status_t Conn::send(IoVec* msgVec)$/;"	f	class:Conn
 send	src/net/conn.cpp	/^Conn::status_t Conn::send(int numVecs, IoVec* msgVecs[])$/;"	f	class:Conn
-sendCallback	src/net/conn.cpp	/^int Conn::sendCallback(IoVec *iov, void *param, IoVec::state_t state)$/;"	f	class:Conn
+sendBadMsgErr	src/net/conncb.cpp	/^void Conn::sendBadMsgErr(Conn* conn, CommEvent::status_t errCode, const char *errMsg)$/;"	f	class:Conn
+sendCallback	src/net/conncb.cpp	/^int Conn::sendCallback(IoVec *iov, void *param, IoVec::state_t state)$/;"	f	class:Conn
 sendData	src/comm/commstage.cpp	/^void CommStage::sendData(CommSendEvent *event)$/;"	f	class:CommStage
 sendEpfd	include/net/net.h	/^    int       recvEpfd,     sendEpfd;       \/\/!< receive and send epoll file descriptors$/;"	m	class:Net
 sendPfd	include/net/net.h	/^    int       recvPfd[2],   sendPfd[2];     \/\/!< notification pipe descriptors$/;"	m	class:Net
 sendProgress	src/net/conn.cpp	/^Conn::status_t Conn::sendProgress(bool ready)$/;"	f	class:Conn
-sendReqCallback	src/net/conn.cpp	/^int Conn::sendReqCallback(cb_param_t* cbp, IoVec::state_t state)$/;"	f	class:Conn
+sendReqCallback	src/net/conncb.cpp	/^int Conn::sendReqCallback(cb_param_t* cbp, IoVec::state_t state)$/;"	f	class:Conn
 sendRequest	src/comm/commstage.cpp	/^void CommStage::sendRequest(CommEvent *cev)$/;"	f	class:CommStage
+sendRequest	test/teststage.cpp	/^void CTestStage::sendRequest()$/;"	f	class:CTestStage
 sendResponse	src/comm/commstage.cpp	/^void CommStage::sendResponse(CommEvent* cev)$/;"	f	class:CommStage
-sendRspCallback	src/net/conn.cpp	/^int Conn::sendRspCallback(cb_param_t* cbp, IoVec::state_t state)$/;"	f	class:Conn
+sendRspCallback	src/net/conncb.cpp	/^int Conn::sendRspCallback(cb_param_t* cbp, IoVec::state_t state)$/;"	f	class:Conn
 sendThreadId	include/net/net.h	/^    pthread_t recvThreadId, sendThreadId;   \/\/!< receive and send thread id's$/;"	m	class:Net
 sendfile	src/net/sockutil.cpp	/^Sock::sendfile(int out_fd, const char *path, off_t *offset, size_t count)$/;"	f	class:Sock
-sendfile	src/net/sockutil.cpp	/^int Sock::sendfile(int sock, const char *filename, const u64_t offset,$/;"	f	class:Sock
+sendfile	src/net/sockutil.cpp	/^int Sock::sendfile(int sock, const char *filename, const unsigned long long offset,$/;"	f	class:Sock
 sendvecProgress	src/net/conn.cpp	/^Conn::status_t Conn::sendvecProgress()$/;"	f	class:Conn
+serialize	include/comm/message.h	/^    int serialize(char *buffer, int bufferLen)$/;"	f	class:Message
+serialize	include/comm/request.h	/^    int serialize(char *buffer, int bufferLen)$/;"	f	class:Request
+serialize	include/comm/response.h	/^    int serialize(char *buffer, int bufferLen)$/;"	f	class:Response
 serialize	src/net/endpoint.cpp	/^int EndPoint::serialize(char *buffer, int bufferLen)$/;"	f	class:EndPoint
 serverGen	include/comm/commevent.h	/^    bool              serverGen;      \/\/!< is event creted by the server side$/;"	m	class:CommEvent
 set	include/time/datetime.h	/^  void set( const DateTime& other ) $/;"	f	struct:DateTime
@@ -1267,23 +1304,30 @@ set	include/time/datetime.h	/^  void set( int date, int time ) { m_date = date; 
 set	src/seda/timerstage.cpp	/^TimerToken::set(const struct timeval& t, u64_t n)$/;"	f	class:TimerToken
 setAllocType	src/net/iovec.cpp	/^void IoVec::setAllocType(alloc_t alloc)$/;"	f	class:IoVec
 setBase	src/net/iovec.cpp	/^void IoVec::setBase(void *base)$/;"	f	class:IoVec
+setBaseDir	include/io/selectdir.h	/^    virtual void setBaseDir(std::string baseDir) {};$/;"	f	class:CSelectDir
+setBaseDir	src/io/rollselectdir.cpp	/^void CRollSelectDir::setBaseDir(std::string baseDir)$/;"	f	class:CRollSelectDir
 setBufSize	src/net/sockutil.cpp	/^Sock::setBufSize(int sock, int sndsz, int rcvsz)$/;"	f	class:Sock
 setCallback	src/net/iovec.cpp	/^void IoVec::setCallback(callback_t callback, void *param)$/;"	f	class:IoVec
 setCancelToken	src/seda/timerstage.cpp	/^TimerRegisterEvent::setCancelToken(const TimerToken& t)$/;"	f	class:TimerRegisterEvent
 setCfgFilename	src/seda/sedaconfig.cpp	/^SedaConfig::setCfgFilename(const char* filename)$/;"	f	class:SedaConfig
 setCfgString	src/seda/sedaconfig.cpp	/^SedaConfig::setCfgString(const char* configStr)$/;"	f	class:SedaConfig
 setCloExec	src/net/sockutil.cpp	/^Sock::setCloExec(int sock)$/;"	f	class:Sock
+setCommStage	src/net/conn.cpp	/^void Conn::setCommStage(Stage *commStage)$/;"	f	class:Conn
 setCount	src/seda/sedastats.cpp	/^void SedaStats::setCount(int count)$/;"	f	class:SedaStats
 setCurrent	include/time/datetime.h	/^  void setCurrent() $/;"	f	class:TimeStamp
 setCurrent	include/time/datetime.h	/^  void setCurrent()$/;"	f	class:Date
 setCurrent	include/time/datetime.h	/^  void setCurrent()$/;"	f	class:Time
+setDefaultLocation	src/net/endpoint.cpp	/^void EndPoint::setDefaultLocation(const char *location)$/;"	f	class:EndPoint
+setDeserializable	src/comm/commstage.cpp	/^void CommStage::setDeserializable(Deserializable *deserializer)$/;"	f	class:CommStage
+setDeserializable	src/net/conn.cpp	/^void Conn::setDeserializable(Deserializable *deserializer)$/;"	f	class:Conn
+setDeserializer	test/test.cpp	/^void setDeserializer()$/;"	f
 setErrMsg	include/comm/response.h	/^    void setErrMsg(const char *errMsg)$/;"	f	class:Response
 setHMS	include/time/datetime.h	/^  void setHMS( int hour, int minute, int second, int millis )$/;"	f	struct:DateTime
 setHeader	include/comm/packageinfo.h	/^    void setHeader(const char* hdrType,$/;"	f	struct:_packHeader
 setHostName	src/net/endpoint.cpp	/^void EndPoint::setHostName(const char *hostname)$/;"	f	class:EndPoint
 setInit	src/linit.cpp	/^void setInit(bool value)$/;"	f
 setKeepalive	src/net/sockutil.cpp	/^Sock::setKeepalive(int sock)$/;"	f	class:Sock
-setLocalEp	src/net/conn.cpp	/^bool Conn::setLocalEp(std::map<std::string, std::string> &section,$/;"	f	class:Conn
+setLocalEp	src/net/conn.cpp	/^bool Conn::setLocalEp(std::map<std::string, std::string> &section, bool server)$/;"	f	class:Conn
 setLocation	src/net/endpoint.cpp	/^void EndPoint::setLocation(const char *location)$/;"	f	class:EndPoint
 setLsnRcvBufSz	src/net/conn.cpp	/^void Conn::setLsnRcvBufSz(int size)$/;"	f	class:Conn
 setLsnSndBufSz	src/net/conn.cpp	/^void Conn::setLsnSndBufSz(int size)$/;"	f	class:Conn
@@ -1291,6 +1335,7 @@ setMaxBlockSize	src/net/conn.cpp	/^void Conn::setMaxBlockSize(int size)$/;"	f	cl
 setNextRecv	src/net/conn.cpp	/^void Conn::setNextRecv(nextrecv_t nr)$/;"	f	class:Conn
 setNoDelay	src/net/sockutil.cpp	/^Sock::setNoDelay(int sock)$/;"	f	class:Sock
 setNonBlocking	src/net/sockutil.cpp	/^Sock::setNonBlocking(int fd)$/;"	f	class:Sock
+setPeerEp	include/net/conn.h	/^    void      setPeerEp(EndPoint &ep) { mPeerEp = ep; }$/;"	f	class:Conn
 setPool	include/seda/stage.h	/^inline void Stage::setPool(Threadpool* th) {$/;"	f	class:Stage
 setPort	src/net/endpoint.cpp	/^void EndPoint::setPort(s32_t port)$/;"	f	class:EndPoint
 setPort	src/net/netserver.cpp	/^void NetServer::setPort(unsigned short port)$/;"	f	class:NetServer
@@ -1308,11 +1353,15 @@ setRequestMsg	src/comm/commevent.cpp	/^void CommEvent::setRequestMsg(Message* re
 setResponse	src/comm/commevent.cpp	/^void CommEvent::setResponse(MsgDesc *resp)$/;"	f	class:CommEvent
 setResponseMsg	src/comm/commevent.cpp	/^void CommEvent::setResponseMsg(Message* respMsg)$/;"	f	class:CommEvent
 setReuseAddr	src/net/sockutil.cpp	/^Sock::setReuseAddr(int sock)$/;"	f	class:Sock
+setSelectDir	src/comm/commstage.cpp	/^void CommStage::setSelectDir(CSelectDir *selectDir)$/;"	f	class:CommStage
+setSelectDir	src/net/conn.cpp	/^void Conn::setSelectDir(CSelectDir *selectDir)$/;"	f	class:Conn
+setSelectDir	test/test.cpp	/^void setSelectDir()$/;"	f
 setServerGen	src/comm/commevent.cpp	/^void CommEvent::setServerGen()$/;"	f	class:CommEvent
 setService	src/net/endpoint.cpp	/^void EndPoint::setService(const char *service)$/;"	f	class:EndPoint
 setSigFunc	src/os/lsignal.cpp	/^void setSigFunc(int sig, sighandler_t func)$/;"	f
 setSignalHandlingFunc	src/os/lsignal.cpp	/^void setSignalHandlingFunc(sighandler_t func)$/;"	f
 setSize	src/net/iovec.cpp	/^void IoVec::setSize(size_t size)$/;"	f	class:IoVec
+setSleepTime	test/triggertestevent.h	/^    void setSleepTime(int sleepTime)$/;"	f	class:TriggerTestEvent
 setSndBufSz	src/net/conn.cpp	/^void Conn::setSndBufSz(int size)$/;"	f	class:Conn
 setSock	src/net/conn.cpp	/^void Conn::setSock(int sock)$/;"	f	class:Conn
 setSocketProperty	src/net/conn.cpp	/^void Conn::setSocketProperty(std::map<std::string, std::string> &section)$/;"	f	class:Conn
@@ -1357,25 +1406,25 @@ stageName	include/seda/stage.h	/^    char*         stageName;   \/\/!< name of s
 stage_names	include/seda/sedametric.h	/^    static std::vector<std::string> stage_names;$/;"	m	class:SedaQueueInfo
 stage_names	src/seda/sedametric.cpp	/^std::vector<std::string> SedaQueueInfo::stage_names;$/;"	m	class:SedaQueueInfo	file:
 start	src/seda/sedaconfig.cpp	/^SedaConfig::start()$/;"	f	class:SedaConfig
+startTest	test/test.cpp	/^void startTest()$/;"	f
 startThreads	src/net/net.cpp	/^int Net::startThreads()$/;"	f	class:Net
 startTimerThread	src/seda/timerstage.cpp	/^TimerStage::startTimerThread(void* arg)$/;"	f	class:TimerStage
 started	src/net/iovec.cpp	/^bool IoVec::started()$/;"	f	class:IoVec
 stat	include/seda/sedastats.h	/^    SedaStats* stat;$/;"	m	class:StatCbCtx
-state	include/math/md5.h	/^  UINT4 state[4];       \/* state (ABCD) *\/$/;"	m	struct:__anon6
-state_t	include/net/iovec.h	/^    } state_t;$/;"	t	class:IoVec	typeref:enum:IoVec::__anon13
-state_t	include/net/net.h	/^    } state_t;$/;"	t	class:Net	typeref:enum:Net::__anon20
+state	include/math/md5.h	/^  UINT4 state[4];       \/* state (ABCD) *\/$/;"	m	struct:__anon7
+state_t	include/net/iovec.h	/^    } state_t;$/;"	t	class:IoVec	typeref:enum:IoVec::__anon14
 statsIdMap	include/seda/sedastatsstage.h	/^    IDStoreMap  statsIdMap;$/;"	m	class:SedaStatsMap
 statsStoreLock	include/seda/sedastatsstage.h	/^    mutable pthread_mutex_t statsStoreLock;\/\/!< Lock for storing stats$/;"	m	class:SedaStatsStage
 statsStrIdMap	include/seda/sedastatsstage.h	/^    StrStoreMap statsStrIdMap;$/;"	m	class:SedaStatsMap
 status	include/comm/commevent.h	/^    status_t          status;         \/\/!< completion status of event$/;"	m	class:CommEvent
 statusStr	include/comm/commevent.h	/^    static std::string statusStr(int status){$/;"	f	class:CommEvent
 status_t	include/comm/commevent.h	/^    } status_t;$/;"	t	class:CommEvent	typeref:enum:CommEvent::__anon1
-status_t	include/net/conn.h	/^    } status_t;$/;"	t	class:Conn	typeref:enum:Conn::__anon7
-status_t	include/net/connmgr.h	/^    } status_t;$/;"	t	class:ConnMgr	typeref:enum:ConnMgr::__anon12
-status_t	include/net/net.h	/^    }status_t;$/;"	t	class:Net	typeref:enum:Net::__anon16
-status_t	include/net/sockutil.h	/^    } status_t;$/;"	t	class:Sock	typeref:enum:Sock::__anon22
-status_t	include/seda/eventdispatcher.h	/^    } status_t;$/;"	t	class:EventDispatcher	typeref:enum:EventDispatcher::__anon25
-status_t	include/seda/sedaconfig.h	/^    } status_t;$/;"	t	class:SedaConfig	typeref:enum:SedaConfig::__anon26
+status_t	include/net/conn.h	/^    } status_t;$/;"	t	class:Conn	typeref:enum:Conn::__anon8
+status_t	include/net/connmgr.h	/^    } status_t;$/;"	t	class:ConnMgr	typeref:enum:ConnMgr::__anon13
+status_t	include/net/net.h	/^    }status_t;$/;"	t	class:Net	typeref:enum:Net::__anon17
+status_t	include/net/sockutil.h	/^    } status_t;$/;"	t	class:Sock	typeref:enum:Sock::__anon20
+status_t	include/seda/eventdispatcher.h	/^    } status_t;$/;"	t	class:EventDispatcher	typeref:enum:EventDispatcher::__anon23
+status_t	include/seda/sedaconfig.h	/^    } status_t;$/;"	t	class:SedaConfig	typeref:enum:SedaConfig::__anon24
 storeStats	src/seda/sedastatsstage.cpp	/^SedaStatsStage::storeStats(SedaStatsEvent* statsEv)$/;"	f	class:SedaStatsStage
 strId	include/seda/sedastats.h	/^                std::string                       strId;$/;"	m	class:SedaStats::StatsId
 strToLower	src/lang/lstring.cpp	/^std::string& CLstring::strToLower(std::string& s)$/;"	f	class:CLstring
@@ -1412,6 +1461,9 @@ timer_thread_id	include/seda/timerstage.h	/^    pthread_t timer_thread_id; \/\/!
 timer_when	include/seda/timerstage.h	/^    struct timeval timer_when;$/;"	m	class:TimerRegisterEvent	typeref:struct:TimerRegisterEvent::timeval
 tmInfo	include/seda/stageevent.h	/^    TimeoutInfo* tmInfo;        \/\/!< the timeout info for this event$/;"	m	class:StageEvent
 toHostPortStr	src/net/endpoint.cpp	/^void EndPoint::toHostPortStr(std::string &output)$/;"	f	class:EndPoint
+toString	include/comm/message.h	/^    void toString(std::string &output)$/;"	f	class:Message
+toString	include/comm/request.h	/^    void toString(std::string &output)$/;"	f	class:Request
+toString	include/comm/response.h	/^    void toString(std::string &output)$/;"	f	class:Response
 toString	include/os/mutex.h	/^            std::string toString()$/;"	f	class:CLockTrace::CLockID
 toString	src/net/endpoint.cpp	/^void EndPoint::toString(std::string &output)$/;"	f	class:EndPoint
 toString	src/os/mutex.cpp	/^void CLockTrace::toString(std::string& result)$/;"	f	class:CLockTrace
@@ -1424,6 +1476,7 @@ toXmlDateTime	src/time/datetime.cpp	/^std::string DateTime::toXmlDateTime()$/;"	
 token	include/seda/timerstage.h	/^    TimerToken token;$/;"	m	class:TimerCancelEvent
 token	include/seda/timerstage.h	/^    TimerToken token;$/;"	m	class:TimerRegisterEvent
 touch	src/io/io.cpp	/^int touch(const std::string &path)$/;"	f
+triggerTestEvent	test/teststage.cpp	/^void CTestStage::triggerTestEvent(StageEvent *event)$/;"	f	class:CTestStage
 triggerTimerCheck	src/seda/timerstage.cpp	/^TimerStage::triggerTimerCheck()$/;"	f	class:TimerStage
 tryLock	src/os/mutex.cpp	/^void CLockTrace::tryLock(pthread_mutex_t *mutex, const int threadId, const char *file, const int line)$/;"	f	class:CLockTrace
 trylock	src/net/connmgr.cpp	/^ConnMgr::status_t ConnMgr::trylock()$/;"	f	class:ConnMgr
@@ -1448,10 +1501,13 @@ waitForSignals	src/os/lsignal.cpp	/^void waitForSignals(sigset_t *signal_set, in
 wakeupEvent	src/seda/eventdispatcher.cpp	/^EventDispatcher::wakeupEvent(std::string hashkey)$/;"	f	class:EventDispatcher
 writeBlocking	src/net/sockutil.cpp	/^Sock::writeBlocking(int fd, const char *buf, int buflen, int& nwritten)$/;"	f	class:Sock
 writePidFile	src/os/pidfile.cpp	/^int writePidFile(const char *progName)$/;"	f
+writeToFile	src/io/io.cpp	/^int writeToFile(const std::string &fileName, const char *data, u32_t dataSize, const char *openMode)$/;"	f
 xferred	include/net/iovec.h	/^    size_t xferred;         \/\/!< number of transferred bytes$/;"	m	class:IoVec
 ~CIni	src/conf/ini.cpp	/^CIni::~CIni()$/;"	f	class:CIni
 ~CLmpool	include/mm/lmpool.h	/^    ~CLmpool()$/;"	f	class:CLmpool
 ~CLog	src/trace/log.cpp	/^CLog::~CLog(void)$/;"	f	class:CLog
+~CRollSelectDir	include/io/rollselectdir.h	/^    ~CRollSelectDir(){MUTEX_DESTROY(&mMutex);}$/;"	f	class:CRollSelectDir
+~CSimpleDeserializer	test/simpledeserializer.cpp	/^CSimpleDeserializer::~CSimpleDeserializer()$/;"	f	class:CSimpleDeserializer
 ~CTestStage	test/teststage.cpp	/^CTestStage::~CTestStage()$/;"	f	class:CTestStage
 ~CallbackContext	include/seda/callback.h	/^    virtual ~CallbackContext() {}$/;"	f	class:CallbackContext
 ~CallbackContextEvent	include/seda/callback.h	/^    ~CallbackContextEvent(){}$/;"	f	class:CallbackContextEvent
@@ -1467,6 +1523,7 @@ xferred	include/net/iovec.h	/^    size_t xferred;         \/\/!< number of trans
 ~EndPoint	src/net/endpoint.cpp	/^EndPoint::~EndPoint()$/;"	f	class:EndPoint
 ~EventDispatcher	src/seda/eventdispatcher.cpp	/^EventDispatcher::~EventDispatcher()$/;"	f	class:EventDispatcher
 ~IoVec	src/net/iovec.cpp	/^IoVec::~IoVec()$/;"	f	class:IoVec
+~Message	include/comm/message.h	/^    virtual ~Message() {}$/;"	f	class:Message
 ~Net	src/net/net.cpp	/^Net::~Net()$/;"	f	class:Net
 ~NetServer	src/net/netserver.cpp	/^NetServer::~NetServer()$/;"	f	class:NetServer
 ~SedaConfig	src/seda/sedaconfig.cpp	/^SedaConfig::~SedaConfig() $/;"	f	class:SedaConfig
@@ -1485,4 +1542,5 @@ xferred	include/net/iovec.h	/^    size_t xferred;         \/\/!< number of trans
 ~TimerEvent	include/seda/timerstage.h	/^    virtual ~TimerEvent() { return; }$/;"	f	class:TimerEvent
 ~TimerRegisterEvent	src/seda/timerstage.cpp	/^TimerRegisterEvent::~TimerRegisterEvent()$/;"	f	class:TimerRegisterEvent
 ~TimerStage	src/seda/timerstage.cpp	/^TimerStage::~TimerStage()$/;"	f	class:TimerStage
+~TriggerTestEvent	test/triggertestevent.h	/^    ~TriggerTestEvent(){}$/;"	f	class:TriggerTestEvent
 ~UserData	include/seda/stageevent.h	/^    virtual ~UserData() { return; }$/;"	f	class:UserData

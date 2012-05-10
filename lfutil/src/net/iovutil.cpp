@@ -126,6 +126,7 @@ int prepareIovecs(MsgDesc &md, IoVec** iovs, CommEvent* cev)
     iovs[0] = makeRpcMessage(md);
     if (!iovs[0])
     {
+        LOG_ERROR("No memory to make rpc message");
         return -1;
     }
 

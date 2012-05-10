@@ -28,6 +28,8 @@
 class Message : public Serializable
 {
 public:
+    Message(int type):mType(type){}
+    virtual ~Message() {}
     /*
      * inherit from serializble
      */
@@ -41,7 +43,7 @@ public:
 
         char *temp = buffer;
 
-        *(u32_t *) temp = mType;
+        *(s32_t *) temp = mType;
         temp += sizeof(mType);
 
         *(u32_t *) temp = mVersion;
@@ -63,7 +65,7 @@ public:
 
         const char *temp = buffer;
 
-        mType = *(u32_t *) temp;
+        //mType = *(s32_t *) temp;
         temp += sizeof(mType);
 
         mVersion = *(u32_t *) temp;
@@ -77,7 +79,7 @@ public:
 
     int getSerialSize()
     {
-        int size = Message::getSerialSize();
+        int size = 0;
 
         size += sizeof(mType);
         size += sizeof(mVersion);
@@ -94,16 +96,16 @@ public:
         output += ("type:" + tempStr);
 
         CLstring::valToStr(mVersion, tempStr);
-        output += ("version:" + tempStr);
+        output += (",version:" + tempStr);
 
         CLstring::valToStr(mId, tempStr);
-        output += ("id:" + tempStr);
+        output += (",id:" + tempStr);
 
         return ;
     }
 
 public:
-    u32_t       mType;
+    const s32_t mType;
     u32_t       mVersion;
     u64_t       mId;
 

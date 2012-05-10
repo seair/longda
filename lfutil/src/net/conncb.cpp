@@ -507,13 +507,13 @@ int Conn::recvPrepareFileIov(cb_param_t* cbp, Conn *conn)
         return Conn::CONN_ERR_NOMEM;
     }
 
-    cbp->remainVecs = (cbp->fileLen + gMaxBlockSize - 1)/gMaxBlockSize;
     IoVec * iov = new IoVec(base, blockSize, recvCallback, cbp);
     if (iov == NULL)
     {
         LOG_ERROR("No memory for iovec");
         return Conn::CONN_ERR_NOMEM;
     }
+    cbp->remainVecs = (cbp->fileLen + gMaxBlockSize - 1)/gMaxBlockSize;
 
     conn->setNextRecv(Conn::ATTACHFILE);
     conn->postRecv(iov);
@@ -577,7 +577,7 @@ int Conn::recvReqMsg(Request *msg, IoVec *iov, cb_param_t* cbp, Conn *conn)
     cev->setServerGen();
     // Record the id of the incoming request
     cev->setRequestId(msg->mId);
-    cev->getTargetEp() = ((Request *)msg)->mSourceEp;
+    cev->getTargetEp() = conn->getPeerEp();
 
     cbp->cev = cev;
 

@@ -131,7 +131,7 @@ Conn::status_t Conn::connect(EndPoint& ep, int &sock)
     }
     else if (rc == Sock::SUCCESS)
     {
-        LOG_INFO("Successfully connect to %s @ %d is underway",
+        LOG_INFO("Successfully connect to %s @ %d",
                 ep.getHostName(), ep.getPort());
         return SUCCESS;
     }
@@ -200,7 +200,7 @@ void Conn::cleanupVec(IoVec *iov, cleanup_t how)
     LOG_TRACE( "%s", "exit");
 }
 
-bool Conn::cleanup(cleanup_t how)
+int Conn::cleanup(cleanup_t how)
 {
     LOG_TRACE("enter");
     int rv;
@@ -228,7 +228,7 @@ bool Conn::cleanup(cleanup_t how)
 
         LOG_TRACE("exit");
 
-        return false;
+        return CONN_ERR_BUSY;
     }
 
     rv = MUTEX_UNLOCK(&mMutex);
@@ -270,17 +270,17 @@ bool Conn::cleanup(cleanup_t how)
     }
 
     // Call disconnect callback set by Net
-    bool succ = true;
-    succ = connCallback(Conn::ON_DISCONNECT);
+    int rc = SUCCESS;
+    rc = connCallback(Conn::ON_DISCONNECT);
 
-    LOG_INFO("Successfully cleanup connection %:%d",
+    LOG_INFO("Successfully cleanup connection %s:%d",
             mPeerEp.getHostName(), mPeerEp.getPort());
 
     delete this;
 
     LOG_TRACE("exit");
 
-    return succ;
+    return rc;
 }
 
 //! Release connection
@@ -657,7 +657,7 @@ Conn::status_t Conn::recvvecProgress()
 
     if (rc != SUCCESS && rc != CONN_ERR_UNAVAIL)
     {
-        LOG_ERROR("Failed to send data to %s@%d, rc %d:%s, conn_rc:%d",
+        LOG_ERROR("Failed to receive data from %s@%d, rc %d:%s, conn_rc:%d",
                 mPeerEp.getHostName(), mPeerEp.getPort(), errno, strerror(errno), rc);
     }
 
@@ -999,6 +999,11 @@ void Conn::setSelectDir(CSelectDir *selectDir)
 CSelectDir *Conn::getSelectDir()
 {
     return gSelectDir;
+}
+
+void Conn::setCommStage(Stage *commStage)
+{
+    gCommStage = commStage;
 }
 
 bool Conn::setLocalEp(std::map<std::string, std::string> &section, bool server)

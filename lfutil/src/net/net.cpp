@@ -9,7 +9,6 @@
 // it is provided by or on behalf of Longda.
 // __CR__
 
-
 #include <iostream>
 #include <sys/epoll.h>
 #include <arpa/inet.h>
@@ -22,8 +21,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
-
-
 
 #include "trace/log.h"
 #include "os/mutex.h"
@@ -38,8 +35,6 @@
 #include "net/connmgr.h"
 #include "comm/commdataevent.h"
 
-
-
 //! Implementation of Net
 /**
  * @file
@@ -48,13 +43,8 @@
  * 
  */
 
-
-
 Net::Net(Stage *commStage) :
-    initFlag(false),
-    shutdownFlag(false),
-    connMgr(),
-    mCommStage(commStage)
+        initFlag(false), shutdownFlag(false), connMgr(), mCommStage(commStage)
 
 {
     LOG_TRACE("enter");
@@ -80,7 +70,8 @@ int Net::setupSelectors()
 
     // Create notification pipe for receiver thread
     rc = pipe(recvPfd);
-    if( rc < 0) {
+    if (rc < 0)
+    {
 
         LOG_ERROR("reader pipe failed, %d:%s", rc, strerror(rc));
         return rc;
@@ -88,7 +79,8 @@ int Net::setupSelectors()
 
     // Create a selector for receiver side of sockets
     rc = Sock::createSelector(recvPfd[0], recvEpfd);
-    if(rc != Sock::SUCCESS) {
+    if (rc != Sock::SUCCESS)
+    {
 
         LOG_ERROR("recv selector creation failed");
         return rc;
@@ -96,7 +88,7 @@ int Net::setupSelectors()
 
     // Create notification pipe for sender thread
     rc = pipe(sendPfd);
-    if( rc < 0)
+    if (rc < 0)
     {
         LOG_ERROR("writer pipe failed, %d:%s", rc, strerror(rc));
         return rc;
@@ -104,7 +96,8 @@ int Net::setupSelectors()
 
     // Create a selector for sender side of sockets
     rc = Sock::createSelector(sendPfd[0], sendEpfd);
-    if(rc != Sock::SUCCESS) {
+    if (rc != Sock::SUCCESS)
+    {
 
         LOG_ERROR("send selector creation failed");
         return rc;
@@ -117,20 +110,20 @@ int Net::startThreads()
 {
     int rc;
     rc = pthread_create(&recvThreadId, NULL, RecvThread, this);
-    if(rc != 0) {
+    if (rc != 0)
+    {
         LOG_ERROR("create recv thread failed, %d:%s", rc, strerror(rc));
         return rc;
     }
     rc = pthread_create(&sendThreadId, NULL, SendThread, this);
-    if(rc != 0) {
+    if (rc != 0)
+    {
         LOG_ERROR("create send thread failed, %d:%s", rc, strerror(rc));
         return rc;
     }
 
     return 0;
 }
-
-
 
 int Net::setup()
 {
@@ -139,7 +132,8 @@ int Net::setup()
     LOG_TRACE("enter");
 
     MUTEX_LOCK(&netMutex);
-    if(initFlag) {
+    if (initFlag)
+    {
         MUTEX_UNLOCK(&netMutex);
 
         LOG_WARN("Net has been already setup");
@@ -147,14 +141,16 @@ int Net::setup()
     }
 
     rc = setupSelectors();
-    if(rc != SUCCESS) {
+    if (rc != SUCCESS)
+    {
         MUTEX_UNLOCK(&netMutex);
         LOG_ERROR("setup selectors failed");
         return NET_ERR_EPOLL;
     }
 
     rc = startThreads();
-    if(rc != SUCCESS) {
+    if (rc != SUCCESS)
+    {
         LOG_ERROR("start threads failed");
 
         MUTEX_UNLOCK(&netMutex);
@@ -175,17 +171,19 @@ int Net::shutdown()
     LOG_TRACE("enter");
 
     MUTEX_LOCK(&netMutex);
-    if(!initFlag || shutdownFlag) {
+    if (!initFlag || shutdownFlag)
+    {
         MUTEX_UNLOCK(&netMutex);
         LOG_ERROR("Havn't init or already shutdown");
         return -EINVAL;
     }
 
-    char thInfo[THREAD_INFO_LEN] = {0};
+    char thInfo[THREAD_INFO_LEN] =
+    { 0 };
     strncpy(thInfo, THREAD_INFO_EXIT, THREAD_INFO_LEN - 1);
 
-    ssize_t s = write(sendPfd[1], (const char *)thInfo, THREAD_INFO_LEN);
-    s = write(recvPfd[1], (const char *)thInfo, THREAD_INFO_LEN);
+    ssize_t s = write(sendPfd[1], (const char *) thInfo, THREAD_INFO_LEN);
+    s = write(recvPfd[1], (const char *) thInfo, THREAD_INFO_LEN);
 
     pthread_join(recvThreadId, NULL);
     pthread_join(sendThreadId, NULL);
@@ -208,16 +206,14 @@ int Net::shutdown()
     return 0;
 }
 
-
 void*
 Net::SendThread(void *arg)
 {
     Net* net = static_cast<Net*>(arg);
 
-    int epfd        = net->sendEpfd;
-    int notifyFd    = net->sendPfd[0];
-    ConnMgr* cm     = &net->connMgr;
-
+    int epfd = net->sendEpfd;
+    int notifyFd = net->sendPfd[0];
+    ConnMgr* cm = &net->connMgr;
 
     int nfds, fd, i;
     bool exitCmd;
@@ -226,17 +222,19 @@ Net::SendThread(void *arg)
 
     LOG_INFO("Start network send thread");
 
-    while(true) {
+    while (true)
+    {
         nfds = epoll_wait(epfd, events, MAX_EPOLL_EVENTS, -1);
 
         exitCmd = false;
 
         // We need a scheme to ensure fairness of fd processing. Starting
         // always from event[0] allows for potential starvation.
-        for(i = 0; i < nfds; i++)
+        for (i = 0; i < nfds; i++)
         {
             fd = events[i].data.fd;
-            if(fd == notifyFd) {
+            if (fd == notifyFd)
+            {
                 char info[THREAD_INFO_LEN];
                 int nread;
 
@@ -245,17 +243,19 @@ Net::SendThread(void *arg)
                 LOG_INFO("received info signal: %s", info);
 
                 // Record exit command but process all events before exiting
-                if(strcmp(info, THREAD_INFO_EXIT) == 0)
+                if (strcmp(info, THREAD_INFO_EXIT) == 0)
                     exitCmd = true;
                 continue;
             }
 
             cm->lock();
             Conn* conn = cm->find(fd);
-            if(conn == NULL) {
+            if (conn == NULL)
+            {
                 LOG_INFO("conn has been removed");
 
-                if(epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL) == 0) {
+                if (epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL) == 0)
+                {
                     LOG_INFO("sock still in send epfd; closing sock");
                 }
                 cm->unlock();
@@ -263,10 +263,11 @@ Net::SendThread(void *arg)
             }
 
             // Check for error events
-            if (events[i].events & (EPOLLHUP | EPOLLERR)) {
+            if (events[i].events & (EPOLLHUP | EPOLLERR))
+            {
                 // Error on socket - remove the corresponding conn
                 LOG_ERROR("detected broken inet socket %s:%d - removing conn",
-                    conn->getPeerEp().getHostName(), conn->getPeerEp().getPort());
+                        conn->getPeerEp().getHostName(), conn->getPeerEp().getPort());
 
                 net->removeConn(fd);
                 conn->release();
@@ -275,13 +276,17 @@ Net::SendThread(void *arg)
             }
 
             // check connect result
-            if (conn->getState() == Conn::CONN_CONNECTING) {
+            if (conn->getState() == Conn::CONN_CONNECTING)
+            {
                 int error = 0;
                 socklen_t len = sizeof(error);
 
                 getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len);
-                if (error) {
-                    LOG_ERROR("detect connect error, removing conn, socket error:%d", error);
+                if (error)
+                {
+                    LOG_ERROR(
+                            "detect connect error, removing conn, socket error:%d",
+                            error);
                     net->removeConn(fd);
                     conn->release();
                     cm->unlock();
@@ -299,32 +304,32 @@ Net::SendThread(void *arg)
         }
 
         // Check whether the thread has received exit notification
-        if(exitCmd)
+        if (exitCmd)
             break;
     }
 
-    delete [] events;
+    delete[] events;
 
     LOG_INFO("exit send thread");
 
     pthread_exit(0);
 }
 
-
 void*
 Net::RecvThread(void *arg)
 {
-    Net* net     = static_cast<Net*>(arg);
+    Net* net = static_cast<Net*>(arg);
 
-    int epfd     = net->recvEpfd;
+    int epfd = net->recvEpfd;
     int notifyFd = net->recvPfd[0];
 
-    ConnMgr* cm  = &net->connMgr;
+    ConnMgr* cm = &net->connMgr;
 
     int listenSock = Sock::DISCONNECTED;
 
     // The following parameters are of interest only to servers
-    if(NetServer *netsrv = dynamic_cast<NetServer*>(net)) {
+    if (NetServer *netsrv = dynamic_cast<NetServer*>(net))
+    {
         listenSock = netsrv->getListenSock();
     }
 
@@ -337,13 +342,16 @@ Net::RecvThread(void *arg)
     ASSERT((epfd && (notifyFd >= 0) && cm), "incorrect arguments");
 
     struct epoll_event* events = new struct epoll_event[MAX_EPOLL_EVENTS];
-    while(true) {
+    while (true)
+    {
         nfds = epoll_wait(epfd, events, MAX_EPOLL_EVENTS, -1);
         exitCmd = false;
 
-        for(i = 0; i < nfds; i++) {
+        for (i = 0; i < nfds; i++)
+        {
             int fd = events[i].data.fd;
-            if(fd == notifyFd) {
+            if (fd == notifyFd)
+            {
                 char info[THREAD_INFO_LEN];
                 int nr;
                 Sock::readBlocking(notifyFd, info, THREAD_INFO_LEN, nr);
@@ -351,23 +359,28 @@ Net::RecvThread(void *arg)
                 LOG_TRACE("received signal: %s", info);
 
                 // Record exit command but process all events before exiting
-                if(strcmp(info, THREAD_INFO_EXIT) == 0)
+                if (strcmp(info, THREAD_INFO_EXIT) == 0)
                     exitCmd = true;
                 continue;
             }
 
             // Get Conn from ConnMgr
-            if(events[i].events & (EPOLLHUP | EPOLLERR)) {
+            if (events[i].events & (EPOLLHUP | EPOLLERR))
+            {
                 LOG_INFO("RecvThread - poll hung up or poll error"
-                    " event:%d, socket:%d", events[i].events, fd);
-                if(fd == listenSock ) {
+                " event:%d, socket:%d", events[i].events, fd);
+                if (fd == listenSock)
+                {
                     // Check if fd with error is listenSock. If yes, need to
                     // re-establish listenSock
-                } else {
+                }
+                else
+                {
                     LOG_INFO("broken socket");
                     cm->lock();
                     conn = cm->find(fd);
-                    if(conn) {
+                    if (conn)
+                    {
                         LOG_INFO("conn found - removing");
                         net->removeConn(fd);
                         conn->release();
@@ -376,13 +389,16 @@ Net::RecvThread(void *arg)
                          * add operation to delete epoll listen?
                          * check whether close(sock) will trigger later or not?
                          */
-                    } else {
+                    }
+                    else
+                    {
 
                         LOG_INFO("conn has already been removed");
                         // The connection was not found - it must have
                         // been removed before. Try to delete the socket
                         // from the receive epoll fd.
-                        if(epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL) == 0) {
+                        if (epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL) == 0)
+                        {
                             LOG_DEBUG("sock still in epfd; closing it");
                         }
                     }
@@ -391,7 +407,8 @@ Net::RecvThread(void *arg)
                 continue;
             }
 
-            if(fd == listenSock) {
+            if (fd == listenSock)
+            {
                 net->acceptConns();
                 continue;
             }
@@ -401,29 +418,27 @@ Net::RecvThread(void *arg)
         }
 
         // Check whether the thread has received exit notification
-        if(exitCmd)
+        if (exitCmd)
             break;
     }
 
-    delete [] events;
+    delete[] events;
     LOG_INFO("exit receive thread");
 
     pthread_exit(0);
 }
 
-
-
-Conn*
-Net::getConn(EndPoint& ep, bool serverSide)
+Conn* Net::getConn(EndPoint& ep, bool serverSide)
 {
     LOG_TRACE("enter");
 
     connMgr.lock();
     Conn* conn = connMgr.find(ep);
-    if(conn)
+    if (conn)
         LOG_DEBUG("getConn - socket of conn:%d", conn->getSocket());
 
-    if(!conn && !serverSide) {
+    if (!conn && !serverSide)
+    {
         LOG_INFO("make conn to: %s:%d", ep.getHostName(), ep.getPort());
 
         conn = new Conn();
@@ -437,7 +452,8 @@ Net::getConn(EndPoint& ep, bool serverSide)
 
         int sock = Sock::DISCONNECTED; // initialize to disconnected state
         Conn::status_t crc = conn->connect(ep, sock);
-        if(crc == Conn::CONN_ERR_CONNECT) {
+        if (crc == Conn::CONN_ERR_CONNECT)
+        {
             connMgr.unlock();
             conn->cleanup(Conn::ON_ERROR);
 
@@ -462,8 +478,7 @@ Net::getConn(EndPoint& ep, bool serverSide)
         // Insert new connection in ConnMgr map. This has to be done before
         // adding the socket to the send and receive selectors
         connMgr.insert(ep, sock, conn);
-
-
+        conn->setPeerEp(ep);
 
         // Add the socket to the send selector
         // We are safe to add sock here even the connection is finished before.
@@ -472,7 +487,8 @@ Net::getConn(EndPoint& ep, bool serverSide)
         // Next time when we call epoll_wait(), this socket will be returned
         // even if we are using the edge-triggered mode.
         Net::status_t rc = addToSendSelector(sock);
-        if(rc != SUCCESS) {
+        if (rc != SUCCESS)
+        {
             //conn->cleanup will be done in connMgr->remove
             removeConn(sock);
             connMgr.unlock();
@@ -481,17 +497,22 @@ Net::getConn(EndPoint& ep, bool serverSide)
 
         // Add the socket to the recv selector
         rc = addToRecvSelector(sock);
-        if(rc != SUCCESS) {
+        if (rc != SUCCESS)
+        {
             //conn->cleanup will be done in connMgr->remove
             removeConn(sock);
             connMgr.unlock();
             throw NetEx(NET_ERR_EPOLL, "cannot add socket to recv selector");
         }
         conn->acquire();
-    } else if (!conn && serverSide) {
+    }
+    else if (!conn && serverSide)
+    {
+        connMgr.list();
         connMgr.unlock();
-        LOG_INFO("client at %s:%d has already closed the connection",
-                     ep.getHostName(), ep.getPort());
+        LOG_WARN("client at %s:%d has already closed the connection",
+                ep.getHostName(), ep.getPort());
+
 
         throw NetEx(NET_ERR_CONN_NOTFOUND, "conn already removed");
     }
@@ -503,15 +524,15 @@ Net::getConn(EndPoint& ep, bool serverSide)
     return conn;
 }
 
-void
-Net::addConn(Conn* conn, EndPoint& ep, int sock)
+void Net::addConn(Conn* conn, EndPoint& ep, int sock)
 {
     LOG_TRACE("enter: adding conn to: %s:%d", ep.getHostName(), ep.getPort());
 
     // Conn is allocated by caller
     connMgr.lock();
     Conn* tconn = connMgr.find(sock);
-    if(tconn) {
+    if (tconn)
+    {
         tconn->release();
         connMgr.unlock();
 
@@ -524,7 +545,7 @@ Net::addConn(Conn* conn, EndPoint& ep, int sock)
 
     // Set connection status
     conn->setState(Conn::CONN_READY);
-    conn->getPeerEp() = ep;
+    conn->setPeerEp(ep);
 
     // Insert connection in ConnMgr map and add connection socket
     // to send and receive selectors. It is important to keep the order
@@ -532,13 +553,15 @@ Net::addConn(Conn* conn, EndPoint& ep, int sock)
     // to the selectors.
     connMgr.insert(ep, sock, conn);
     status_t rc = addToRecvSelector(sock);
-    if (rc != SUCCESS) {
+    if (rc != SUCCESS)
+    {
         removeConn(sock);
         connMgr.unlock();
         throw NetEx(NET_ERR_EPOLL, "Cannot add socket to receive selector");
     }
     rc = addToSendSelector(sock);
-    if (rc != SUCCESS) {
+    if (rc != SUCCESS)
+    {
         removeConn(sock);
         connMgr.unlock();
         throw NetEx(NET_ERR_EPOLL, "Cannot add socket to send selector");
@@ -548,13 +571,13 @@ Net::addConn(Conn* conn, EndPoint& ep, int sock)
     LOG_TRACE("exit");
 }
 
-Net::status_t
-Net::delConn(EndPoint& ep)
+Net::status_t Net::delConn(EndPoint& ep)
 {
     LOG_TRACE("enter");
     connMgr.lock();
     Conn *conn = connMgr.find(ep);
-    if(!conn) {
+    if (!conn)
+    {
         connMgr.unlock();
         return NET_ERR_CONN_NOTFOUND;
     }
@@ -567,10 +590,7 @@ Net::delConn(EndPoint& ep)
     return SUCCESS;
 }
 
-
-
-bool
-Net::initialized()
+bool Net::initialized()
 {
     bool flag;
     MUTEX_LOCK(&netMutex);
@@ -580,8 +600,7 @@ Net::initialized()
     return flag;
 }
 
-bool
-Net::finalized()
+bool Net::finalized()
 {
     bool flag;
     MUTEX_LOCK(&netMutex);
@@ -590,11 +609,11 @@ Net::finalized()
     return flag;
 }
 
-Net::status_t
-Net::addToSendSelector(int sock)
+Net::status_t Net::addToSendSelector(int sock)
 {
     Sock::status_t rc = Sock::addToSelector(sock, Sock::DIR_OUT, sendEpfd);
-    if(rc != Sock::SUCCESS) {
+    if (rc != Sock::SUCCESS)
+    {
         char errbuf[ERR_BUF_SIZE], *errptr;
         errptr = strerror_r(errno, errbuf, ERR_BUF_SIZE);
         LOG_ERROR("Failed to add sock to send epoll fd: %s", errptr);
@@ -607,18 +626,18 @@ Net::addToSendSelector(int sock)
 
 void Net::delSendSelector(int sock)
 {
-   int rc = epoll_ctl(sendEpfd, EPOLL_CTL_DEL, sock, NULL);
-   if (rc)
-   {
-       LOG_ERROR("Failed to close %d epoll listen", sock);
-   }
+    int rc = epoll_ctl(sendEpfd, EPOLL_CTL_DEL, sock, NULL);
+    if (rc)
+    {
+        LOG_ERROR("Failed to close %d epoll listen", sock);
+    }
 }
 
-Net::status_t
-Net::addToRecvSelector(int sock)
+Net::status_t Net::addToRecvSelector(int sock)
 {
     Sock::status_t rc = Sock::addToSelector(sock, Sock::DIR_IN, recvEpfd);
-    if(rc != Sock::SUCCESS) {
+    if (rc != Sock::SUCCESS)
+    {
         char errbuf[ERR_BUF_SIZE], *errptr;
         errptr = strerror_r(errno, errbuf, ERR_BUF_SIZE);
         LOG_ERROR("Failed to add sock to recv epoll fd: %s", errptr);
@@ -631,26 +650,24 @@ Net::addToRecvSelector(int sock)
 
 void Net::delRecvSelector(int sock)
 {
-   int rc = epoll_ctl(recvEpfd, EPOLL_CTL_DEL, sock, NULL);
-   if (rc)
-   {
-       LOG_ERROR("Failed to close %d epoll listen", sock);
-   }
+    int rc = epoll_ctl(recvEpfd, EPOLL_CTL_DEL, sock, NULL);
+    if (rc)
+    {
+        LOG_ERROR("Failed to close %d epoll listen", sock);
+    }
 }
 
 // Has to be called within the context of a locked connMgr
-Net::status_t
-Net::removeConn(Conn* conn)
+Net::status_t Net::removeConn(Conn* conn)
 {
-    if(!conn)
+    if (!conn)
         return NET_ERR_CONN_NOTFOUND;
 
     ConnMgr::status_t rc = connMgr.remove(conn);
     return (rc == ConnMgr::SUCCESS) ? SUCCESS : NET_ERR_CONN_NOTFOUND;
 }
 
-Net::status_t
-Net::removeConn(int sock)
+Net::status_t Net::removeConn(int sock)
 {
     ConnMgr::status_t rc = connMgr.remove(sock);
     return (rc == ConnMgr::SUCCESS) ? SUCCESS : NET_ERR_CONN_NOTFOUND;
@@ -660,7 +677,7 @@ void Net::acceptConns()
 {
     LOG_WARN("Shouldn't receive accept connection event");
 
-    return ;
+    return;
 }
 
 size_t Net::removeInactive()

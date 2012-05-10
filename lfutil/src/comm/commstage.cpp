@@ -127,6 +127,8 @@ bool CommStage::initialize()
         return false;
     }
 
+    Conn::setCommStage(this);
+
     LOG_TRACE("Exit");
     return true;
 }
@@ -316,6 +318,8 @@ void CommStage::sendResponse(CommEvent* cev)
     Message* respMsg = md.message;
     ASSERT(respMsg, "bad response message");
 
+    respMsg->mId = cev->getRequestId();
+
     // Get a connection to the client EndPoint
     EndPoint& cep = cev->getTargetEp();
 
@@ -389,13 +393,29 @@ void CommStage::sendResponse(CommEvent* cev)
 
 void CommStage::sendData(CommSendEvent *event)
 {
-    Conn *conn = (Conn*) (event->mConn);
 
-    conn->sendProgress(true); // true indicates that socket is ready
+    Conn *conn = (Conn*) (event->mConn);
+    bool  exception = false;
+    try{
+
+        conn->sendProgress(true); // true indicates that socket is ready
+    }catch(...)
+    {
+        exception = true;
+        LOG_ERROR("Occur exception");
+    }
     //conn has already been acquire in Net::SendThread
     conn->release();
 
     event->done();
+
+    if (exception)
+    {
+        ConnMgr* cm = &mNet->getConnMgr();
+        cm->lock();
+        mNet->removeConn(conn);
+        cm->unlock();
+    }
 
     return;
 }
@@ -418,7 +438,14 @@ void CommStage::recvData(CommRecvEvent *event)
         return;
     }
 
-    Conn::status_t crc = conn->recvProgress(true);
+    Conn::status_t crc = Conn::CONN_ERR_UNAVAIL;
+    try{
+        crc = conn->recvProgress(true);
+    }catch(...)
+    {
+        LOG_ERROR("Occur exception");
+        crc = Conn::CONN_ERR_BROKEN;
+    }
 
     if (crc == Conn::SUCCESS)
     {

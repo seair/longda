@@ -20,10 +20,20 @@
 #ifndef SERIALIZABLE_H_
 #define SERIALIZABLE_H_
 
+#include <string>
+
+/**
+ * Through this type to determine object type
+ */
+enum {
+    MESSAGE_BASIC          = 100,
+    MESSAGE_BASIC_REQUEST  = 1000,
+    MESSAGE_BASIC_RESPONSE = -1000
+};
+
 class Deserializable
 {
 public:
-    virtual ~Deserializable() = 0;
     /*
      * deserialize buffer to one object
      * @param[in]buffer,     buffer to store the object serialized bytes
@@ -35,7 +45,6 @@ public:
 class Serializable
 {
 public:
-    virtual ~Serializable() = 0;
 
     /*
      * serialize this object to bytes

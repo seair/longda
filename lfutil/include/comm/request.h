@@ -26,7 +26,11 @@
 class Request : public Message
 {
 public:
-    Request(){}
+    Request():
+        Message(MESSAGE_BASIC_REQUEST)
+    {
+
+    }
 
     enum
     {
@@ -93,6 +97,7 @@ public:
     {
         Message::toString(output);
 
+        output += ",";
         mSourceEp.toString(output);
 
         output += ",protocal:";
