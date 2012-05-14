@@ -21,12 +21,13 @@
 #define TRIGGERTESTEVENT_H_
 
 #include "seda/stageevent.h"
+#include "os/mutex.h"
 
 class TriggerTestEvent : public StageEvent
 {
 public:
-    TriggerTestEvent(int sleepTime):mSleepTime(sleepTime){};
-    ~TriggerTestEvent(){}
+    TriggerTestEvent(int sleepTime):mSleepTime(sleepTime), mTimes(0){MUTEX_INIT(&mTestMutex, NULL);};
+    ~TriggerTestEvent(){MUTEX_DESTROY(&mTestMutex);}
 
     int getSleepTime() const
     {
@@ -38,8 +39,10 @@ public:
         mSleepTime = sleepTime;
     }
 
-private:
+public:
     int mSleepTime;
+    int mTimes;
+    pthread_mutex_t           mTestMutex;
 };
 
 

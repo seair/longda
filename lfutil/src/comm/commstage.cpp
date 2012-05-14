@@ -334,7 +334,7 @@ void CommStage::sendResponse(CommEvent* cev)
     Conn *conn = 0;
     try
     {
-        conn = mNet->getConn(cep, true);
+        conn = mNet->getConn(cep, true, cev->getSock());
     } catch (NetEx ex)
     {
         LOG_ERROR("can't get conn to %s:%d: reason: %s\n",
@@ -433,7 +433,6 @@ void CommStage::recvData(CommRecvEvent *event)
     if (NULL == conn)
     {
         LOG_ERROR("No connection with socket %d", sock);
-        conn->release();
         event->done();
         return;
     }
@@ -505,4 +504,12 @@ void CommStage::setSelectDir(CSelectDir *selectDir)
 Stage *CommStage::getNextStage()
 {
     return mNextStage;
+}
+
+void CommStage::clearSelector(int sock)
+{
+    mNet->delRecvSelector(sock);
+
+    mNet->delSendSelector(sock);
+
 }

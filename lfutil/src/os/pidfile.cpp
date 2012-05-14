@@ -36,7 +36,8 @@ int writePidFile(const char *progName)
     assert(progName);
     std::ofstream ostr;
     int rv = 1;
-    path << _PATH_VARRUN << progName << ".pid" << std::ends;
+    //path << _PATH_VARRUN << progName << ".pid" << std::ends;
+    path << _PATH_TMP << progName << ".pid" << std::ends;
     ostr.open(path.str().c_str(), std::ios::trunc);
     if (ostr.good()) {
         ostr << getpid() << std::endl;

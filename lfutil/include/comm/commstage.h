@@ -73,6 +73,8 @@ public:
 
     Stage* getNextStage();
 
+    void clearSelector(int sock);
+
 protected:
     //common function
     CommStage(const char* tag);

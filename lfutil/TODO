@@ -1,5 +1,10 @@
-1. Net work parallem, check whether conn can work or not
-2. memory leak, run long time to check whether exist memory leak
-3. check whether need to delete listen in epoll when disconnect
-4. cbp memory
-5. one node's multiple connections
+1. Net work parallem, check whether conn can work or not             ---------- seems ok, test has been done
+2. memory leak, run long time to check whether exist memory leak 
+3. check whether need to delete listen in epoll when disconnect           -- done
+4. cbp memory                                         -- seems ok
+5. one node's multiple connections                     -- is ok, test has been done
+
+
+6. remove connection will delete epoll/done all events         -- is ok, test has been done
+7. provide automatically remove connection                     -- done
+8. test big file send

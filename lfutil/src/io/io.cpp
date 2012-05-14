@@ -539,3 +539,19 @@ int getFileSize(const char *filePath, u64_t &fileLen)
     fileLen = statBuf.st_size;
     return 0;
 }
+
+std::string getAboslutPath(const char *path)
+{
+    std::string aPath(path);
+    if (path[0] != '/')
+    {
+        char *dirName = get_current_dir_name();
+        if (dirName)
+        {
+            aPath = dirName + std::string("/") + path;
+            free(dirName);
+        }
+    }
+
+    return aPath;
+}

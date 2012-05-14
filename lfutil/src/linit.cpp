@@ -38,6 +38,7 @@
 #include "time/datetime.h"
 #include "os/lprocess.h"
 #include "lang/lstring.h"
+#include "io/io.h"
 
 #include "seda/threadpool.h"
 #include "seda/sedaconfig.h"
@@ -114,15 +115,7 @@ int initLog(CProcessParam *pProcessCfg, CIni &gProperties)
             logFileName = it->second;
         }
 
-        if (logFileName[0] != '/')
-        {
-            char *dirName = get_current_dir_name();
-            if (dirName)
-            {
-                logFileName = dirName + std::string("/") + logFileName;
-                free(dirName);
-            }
-        }
+        logFileName = getAboslutPath(logFileName.c_str());
 
         LOG_LEVEL logLevel = LOG_LEVEL_INFO;
         key = ("LOG_FILE_LEVEL");

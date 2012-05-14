@@ -15,7 +15,6 @@
  * @ func:  provide project common log functions
  */
 
-
 #include <stdio.h>
 #include <assert.h>
 #include <exception>
@@ -25,30 +24,26 @@
 #include "lang/lstring.h"
 #include "io/io.h"
 
-
-CLog::CLog(const std::string &logFileName, 
-           const LOG_LEVEL    logLevel,
-           const LOG_LEVEL    consoleLevel ):
-    mLogName(logFileName),
-    mLogLevel(logLevel),
-    mConsoleLevel(consoleLevel)
+CLog::CLog(const std::string &logFileName, const LOG_LEVEL logLevel,
+        const LOG_LEVEL consoleLevel) :
+        mLogName(logFileName), mLogLevel(logLevel), mConsoleLevel(consoleLevel)
 {
     mPrefixMap[LOG_LEVEL_PANIC] = "PANIC:";
-    mPrefixMap[LOG_LEVEL_ERR]   = "ERROR:";
-    mPrefixMap[LOG_LEVEL_WARN]  = "WARNNING:";
-    mPrefixMap[LOG_LEVEL_INFO]  = "INFO:";
+    mPrefixMap[LOG_LEVEL_ERR] = "ERROR:";
+    mPrefixMap[LOG_LEVEL_WARN] = "WARNNING:";
+    mPrefixMap[LOG_LEVEL_INFO] = "INFO:";
     mPrefixMap[LOG_LEVEL_DEBUG] = "DEBUG:";
     mPrefixMap[LOG_LEVEL_TRACE] = "TRACE:";
 
     pthread_mutex_init(&mLock, NULL);
 
     mLogDate.mYear = -1;
-    mLogDate.mMon  = -1;
-    mLogDate.mDay  = -1;
-    mLogMaxLine    = LOG_MAX_LINE;
-    mLogLine       = -1;
-    mRotateType    = LOG_ROTATE_BYDAY;
-    
+    mLogDate.mMon = -1;
+    mLogDate.mDay = -1;
+    mLogMaxLine = LOG_MAX_LINE;
+    mLogLine = -1;
+    mRotateType = LOG_ROTATE_BYDAY;
+
     CheckParamValid();
 
 }
@@ -65,32 +60,32 @@ CLog::~CLog(void)
     pthread_mutex_destroy(&mLock);
 }
 
-void
-CLog::CheckParamValid()
+void CLog::CheckParamValid()
 {
-    assert( !mLogName.empty() );
+    assert( !mLogName.empty());
     int creatable = touch(mLogName);
     assert(creatable == 0);
-    assert( LOG_LEVEL_PANIC <= mLogLevel && mLogLevel < LOG_LEVEL_LAST );
-    assert( LOG_LEVEL_PANIC <= mConsoleLevel && mConsoleLevel < LOG_LEVEL_LAST );
-    
-    return ;
+    assert( LOG_LEVEL_PANIC <= mLogLevel && mLogLevel < LOG_LEVEL_LAST);
+    assert( LOG_LEVEL_PANIC <= mConsoleLevel && mConsoleLevel < LOG_LEVEL_LAST);
+
+    return;
 }
 
-int 
-CLog::Output( const LOG_LEVEL level, const char *module, const char *prefix, const char *f, ...  )
+int CLog::Output(const LOG_LEVEL level, const char *module, const char *prefix,
+        const char *f, ...)
 {
-    bool   locked = false;
+    bool locked = false;
     try
     {
         va_list args;
-        char    msg[ONE_KILO] = {0};
+        char msg[ONE_KILO] =
+        { 0 };
 
         va_start(args, f);
         vsnprintf(msg, sizeof(msg), f, args);
         va_end(args);
 
-        if ( LOG_LEVEL_PANIC <= level && level <= mConsoleLevel )
+        if (LOG_LEVEL_PANIC <= level && level <= mConsoleLevel)
         {
             std::cout << msg << std::endl;
         }
@@ -99,7 +94,7 @@ CLog::Output( const LOG_LEVEL level, const char *module, const char *prefix, con
             std::cout << msg << std::endl;
         }
 
-        if ( LOG_LEVEL_PANIC <= level && level <= mLogLevel )
+        if (LOG_LEVEL_PANIC <= level && level <= mLogLevel)
         {
             pthread_mutex_lock(&mLock);
             locked = true;
@@ -122,11 +117,10 @@ CLog::Output( const LOG_LEVEL level, const char *module, const char *prefix, con
             mLogLine++;
             pthread_mutex_unlock(&mLock);
             locked = false;
-            
+
         }
 
-    }
-    catch (std::exception &e)
+    } catch (std::exception &e)
     {
         if (locked)
         {
@@ -135,31 +129,28 @@ CLog::Output( const LOG_LEVEL level, const char *module, const char *prefix, con
         std::cerr << e.what() << std::endl;
         return LOG_STATUS_ERR;
     }
-    
+
     return LOG_STATUS_OK;
 }
 
-int 
-CLog::SetConsoleLevel( LOG_LEVEL consoleLevel )
+int CLog::SetConsoleLevel(LOG_LEVEL consoleLevel)
 {
-    if ( LOG_LEVEL_PANIC <= consoleLevel && consoleLevel < LOG_LEVEL_LAST )
+    if (LOG_LEVEL_PANIC <= consoleLevel && consoleLevel < LOG_LEVEL_LAST)
     {
         mConsoleLevel = consoleLevel;
         return LOG_STATUS_OK;
     }
-    
+
     return LOG_STATUS_ERR;
 }
-LOG_LEVEL
-CLog::GetConsoleLevel()
+LOG_LEVEL CLog::GetConsoleLevel()
 {
     return mConsoleLevel;
 }
 
-int 
-CLog::SetLogLevel( LOG_LEVEL logLevel )
+int CLog::SetLogLevel(LOG_LEVEL logLevel)
 {
-    if ( LOG_LEVEL_PANIC <= logLevel && logLevel < LOG_LEVEL_LAST )
+    if (LOG_LEVEL_PANIC <= logLevel && logLevel < LOG_LEVEL_LAST)
     {
         mLogLevel = logLevel;
         return LOG_STATUS_OK;
@@ -168,8 +159,7 @@ CLog::SetLogLevel( LOG_LEVEL logLevel )
     return LOG_STATUS_ERR;
 }
 
-LOG_LEVEL
-CLog::GetLogLevel()
+LOG_LEVEL CLog::GetLogLevel()
 {
     return mLogLevel;
 }
@@ -177,22 +167,20 @@ CLog::GetLogLevel()
 const char *
 CLog::PrefixMsg(LOG_LEVEL level)
 {
-    if ( LOG_LEVEL_PANIC <= level && level < LOG_LEVEL_LAST )
+    if (LOG_LEVEL_PANIC <= level && level < LOG_LEVEL_LAST)
     {
         return mPrefixMap[level].c_str();
     }
-    static const char *emptyPrefix="";
+    static const char *emptyPrefix = "";
     return emptyPrefix;
 }
 
-void
-CLog::SetDefaultModule(const std::string &modules)
+void CLog::SetDefaultModule(const std::string &modules)
 {
-    CLstring::splitString( modules, ",", mDefaultSet);
+    CLstring::splitString(modules, ",", mDefaultSet);
 }
 
-int 
-CLog::SetRotateType(LOG_ROTATE rotateType)
+int CLog::SetRotateType(LOG_ROTATE rotateType)
 {
     if (LOG_ROTATE_BYDAY <= rotateType && rotateType < LOG_ROTATE_LAST)
     {
@@ -201,57 +189,53 @@ CLog::SetRotateType(LOG_ROTATE rotateType)
     return LOG_STATUS_OK;
 }
 
-LOG_ROTATE 
-CLog::GetRotateType()
+LOG_ROTATE CLog::GetRotateType()
 {
     return mRotateType;
 }
 
-int
-CLog::RotateByDay(const int year, const int month, const int day)
+int CLog::RotateByDay(const int year, const int month, const int day)
 {
-    if (mLogDate.mYear == year  &&
-        mLogDate.mMon  == month &&
-        mLogDate.mDay  == day )
+    if (mOfs.is_open() == true && mLogDate.mYear == year
+            && mLogDate.mMon == month && mLogDate.mDay == day)
     {
         //Don't need rotate
         return 0;
     }
-    
-    char date[16] = {0};
+
+    char date[16] =
+    { 0 };
     snprintf(date, sizeof(date), "%04d%02d%02d", year, month, day);
     std::string logFileName = mLogName + "." + date;
-    
-    
+
     if (mOfs.is_open())
     {
         mOfs.close();
     }
-    mOfs.open(logFileName.c_str(), std::ios_base::out|std::ios_base::app);
+    mOfs.open(logFileName.c_str(), std::ios_base::out | std::ios_base::app);
     if (mOfs.good())
     {
         mLogDate.mYear = year;
-        mLogDate.mMon  = month;
-        mLogDate.mDay  = day;
-        
+        mLogDate.mMon = month;
+        mLogDate.mDay = day;
+
         mLogLine = 0;
     }
-    
 
     return 0;
 }
 
-int
-CLog::RenameOldLogs()
+int CLog::RenameOldLogs()
 {
-    int logIndex    = 1;
+    int logIndex = 1;
     int maxLogIndex = 0;
-    char logIndexStr[4] = {0};
-    
-    while(logIndex < 999)
+    char logIndexStr[4] =
+    { 0 };
+
+    while (logIndex < 999)
     {
         snprintf(logIndexStr, sizeof(logIndexStr), "%03d", logIndex);
-        
+
         std::string logName = mLogName + "." + logIndexStr;
         int result = access(logName.c_str(), R_OK);
         if (result)
@@ -264,18 +248,18 @@ CLog::RenameOldLogs()
     }
 
     logIndex = maxLogIndex;
-    while(logIndex > 0)
+    while (logIndex > 0)
     {
         snprintf(logIndexStr, sizeof(logIndexStr), "%03d", logIndex);
-        
+
         std::string logNameOld = mLogName + "." + logIndexStr;
 
         snprintf(logIndexStr, sizeof(logIndexStr), "%03d", logIndex + 1);
-        
+
         std::string logNameNew = mLogName + "." + logIndexStr;
 
         int result = rename(logNameOld.c_str(), logNameNew.c_str());
-        if ( result )
+        if (result)
         {
             return LOG_STATUS_ERR;
         }
@@ -285,13 +269,12 @@ CLog::RenameOldLogs()
     return LOG_STATUS_OK;
 }
 
-int
-CLog::RotateBySize()
+int CLog::RotateBySize()
 {
     if (mLogLine < 0)
     {
         //The first time open log file
-        mOfs.open(mLogName.c_str(), std::ios_base::out|std::ios_base::app);
+        mOfs.open(mLogName.c_str(), std::ios_base::out | std::ios_base::app);
         mLogLine = 0;
         return LOG_STATUS_OK;
     }
@@ -300,9 +283,9 @@ CLog::RotateBySize()
         //Don't need rotate
         return LOG_STATUS_OK;
     }
-    else 
+    else
     {
-        
+
         int result = RenameOldLogs();
         if (result)
         {
@@ -315,16 +298,18 @@ CLog::RotateBySize()
             mOfs.close();
         }
 
-        char logIndexStr[4] = {0};
+        char logIndexStr[4] =
+        { 0 };
         snprintf(logIndexStr, sizeof(logIndexStr), "%03d", 1);
         std::string logNameNew = mLogName + "." + logIndexStr;
         result = rename(mLogName.c_str(), logNameNew.c_str());
-        if ( result )
+        if (result)
         {
-            std::cerr << "Failed to rename " << mLogName << " to " <<  logNameNew << std::endl;
+            std::cerr << "Failed to rename " << mLogName << " to " << logNameNew
+                    << std::endl;
         }
-        
-        mOfs.open(mLogName.c_str(), std::ios_base::out|std::ios_base::app);
+
+        mOfs.open(mLogName.c_str(), std::ios_base::out | std::ios_base::app);
         if (mOfs.good())
         {
             mLogLine = 0;
@@ -334,15 +319,14 @@ CLog::RotateBySize()
             //Error
             mLogLine = mLogMaxLine;
         }
-        
+
         return LOG_STATUS_OK;
     }
 
     return LOG_STATUS_OK;
 }
 
-int 
-CLog::Rotate(const int year, const int month, const int day)
+int CLog::Rotate(const int year, const int month, const int day)
 {
     int result = 0;
     pthread_mutex_lock(&mLock);

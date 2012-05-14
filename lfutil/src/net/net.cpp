@@ -254,10 +254,7 @@ Net::SendThread(void *arg)
             {
                 LOG_INFO("conn has been removed");
 
-                if (epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL) == 0)
-                {
-                    LOG_INFO("sock still in send epfd; closing sock");
-                }
+                net->delSendSelector(fd);
                 cm->unlock();
                 continue;
             }
@@ -284,8 +281,7 @@ Net::SendThread(void *arg)
                 getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len);
                 if (error)
                 {
-                    LOG_ERROR(
-                            "detect connect error, removing conn, socket error:%d",
+                    LOG_ERROR("detect connect error, removing conn, socket error:%d",
                             error);
                     net->removeConn(fd);
                     conn->release();
@@ -384,23 +380,12 @@ Net::RecvThread(void *arg)
                         LOG_INFO("conn found - removing");
                         net->removeConn(fd);
                         conn->release();
-                        /**
-                         * @@@ FIXME
-                         * add operation to delete epoll listen?
-                         * check whether close(sock) will trigger later or not?
-                         */
                     }
                     else
                     {
 
                         LOG_INFO("conn has already been removed");
-                        // The connection was not found - it must have
-                        // been removed before. Try to delete the socket
-                        // from the receive epoll fd.
-                        if (epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL) == 0)
-                        {
-                            LOG_DEBUG("sock still in epfd; closing it");
-                        }
+                        net->delRecvSelector(fd);
                     }
                     cm->unlock();
                 }
@@ -428,12 +413,22 @@ Net::RecvThread(void *arg)
     pthread_exit(0);
 }
 
-Conn* Net::getConn(EndPoint& ep, bool serverSide)
+Conn* Net::getConn(EndPoint& ep, bool serverSide, int sock)
 {
     LOG_TRACE("enter");
 
     connMgr.lock();
-    Conn* conn = connMgr.find(ep);
+    Conn* conn = NULL;
+
+    if (sock != -1)
+    {
+        conn = connMgr.find(sock);
+    }
+    else
+    {
+        conn = connMgr.find(ep);
+    }
+
     if (conn)
         LOG_DEBUG("getConn - socket of conn:%d", conn->getSocket());
 
@@ -480,6 +475,7 @@ Conn* Net::getConn(EndPoint& ep, bool serverSide)
         connMgr.insert(ep, sock, conn);
         conn->setPeerEp(ep);
 
+
         // Add the socket to the send selector
         // We are safe to add sock here even the connection is finished before.
         // During adding, the status of the sock will be checked, if it is
@@ -504,6 +500,7 @@ Conn* Net::getConn(EndPoint& ep, bool serverSide)
             connMgr.unlock();
             throw NetEx(NET_ERR_EPOLL, "cannot add socket to recv selector");
         }
+
         conn->acquire();
     }
     else if (!conn && serverSide)
@@ -626,10 +623,14 @@ Net::status_t Net::addToSendSelector(int sock)
 
 void Net::delSendSelector(int sock)
 {
-    int rc = epoll_ctl(sendEpfd, EPOLL_CTL_DEL, sock, NULL);
-    if (rc)
+    Sock::status_t rc = Sock::rmFromSelector(sock, sendEpfd);
+    if (rc != Sock::SUCCESS)
     {
-        LOG_ERROR("Failed to close %d epoll listen", sock);
+        LOG_ERROR("Failed to close %d send epoll", sendEpfd);
+    }
+    else
+    {
+        LOG_INFO("Dlete %d in send epoll ", sock);
     }
 }
 
@@ -650,10 +651,14 @@ Net::status_t Net::addToRecvSelector(int sock)
 
 void Net::delRecvSelector(int sock)
 {
-    int rc = epoll_ctl(recvEpfd, EPOLL_CTL_DEL, sock, NULL);
-    if (rc)
+    Sock::status_t rc = Sock::rmFromSelector(sock, recvEpfd);
+    if (rc != Sock::SUCCESS)
     {
-        LOG_ERROR("Failed to close %d epoll listen", sock);
+        LOG_ERROR("Failed to close %d recv epoll", sock);
+    }
+    else
+    {
+        LOG_INFO("Dlete %d in recv epoll ", sock);
     }
 }
 

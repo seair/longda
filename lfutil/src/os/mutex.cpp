@@ -22,10 +22,10 @@ std::map<pthread_mutex_t *, CLockTrace::CLockID> CLockTrace::mLocks;
 
 void CLockTrace::check(pthread_mutex_t *mutex, const int threadId, const char *file, const int line)
 {
-    LOG_INFO("Lock mutex %p", mutex);
+    LOG_INFO("Lock mutex %p, %s:%d", mutex, file, line);
     if (mLocks.find(mutex) != mLocks.end())
     {
-        LOG_INFO("mutex %p has been lock already", mutex);
+        LOG_INFO("mutex %p has been lock already", mutex, file, line);
         return;
     }
 }
@@ -57,7 +57,7 @@ void CLockTrace::unlock(pthread_mutex_t *mutex)
     }
 
     mLocks.erase(mutex);
-    LOG_INFO("mutex:%p has been ulocked", mutex);
+
 }
 
 void CLockTrace::toString(std::string& result)

@@ -110,7 +110,6 @@ struct MsgDesc {
 
 class CommEvent : public StageEvent
 {
-#define COMMEVENT_MAX_RETRYCOUNT 3
 public:
     //! CommEvent completion status type
     /**
@@ -120,46 +119,50 @@ public:
      * be SUCCESS indicating that the RPC communication related to the
      * protocol messages has been completed successfully.
      */
-    typedef enum {
-        SUCCESS = 0,        //!< successful local completion
-        INVALID_PARAMETER,  //!< invalid parameter
-        PENDING,            //!< event is being processed
-        CONN_FAILURE,       //!< CommStage failed to connect to peer
-        MALFORMED_MESSAGE,  //!< message contained in event is malformed
-        VERSION_MISMATCH,   //!< version not match
-        SEND_FAILURE,       //!< CommStage reported transmission failure
-        BUFFER_OVERFLOW,    //!< server has replied with more data than posted
-        STAGE_CLEANUP,      //!< CommStage is in a cleanup mode
-        RESOURCE_FAILURE,   //!< local resource failure
-        BAD_TIMEOUT_VAL,    //!< unacceptable timeout value
-        TIMEDOUT            //!< event has timedout
-    } status_t;
-
+    typedef enum
+    {
+        SUCCESS = 0, //!< successful local completion
+        INVALID_PARAMETER, //!< invalid parameter
+        PENDING, //!< event is being processed
+        CONN_FAILURE, //!< CommStage failed to connect to peer
+        MALFORMED_MESSAGE, //!< message contained in event is malformed
+        VERSION_MISMATCH, //!< version not match
+        SEND_FAILURE, //!< CommStage reported transmission failure
+        BUFFER_OVERFLOW, //!< server has replied with more data than posted
+        STAGE_CLEANUP, //!< CommStage is in a cleanup mode
+        RESOURCE_FAILURE, //!< local resource failure
+        BAD_TIMEOUT_VAL, //!< unacceptable timeout value
+        TIMEDOUT
+    } //!< event has timedout
+    status_t;
 
     //! Convert the status id to string
-        /**
-         *  @brief To help report the status to a descriptive string
-         *  @param[in]  status
-         *  @return     The description as a string
-         */
-    static std::string statusStr(int status){
-        switch(status){
-            ID_STR( SUCCESS            ,"Successful local completion");
-            ID_STR( INVALID_PARAMETER  ,"Invalid parameters");
-            ID_STR( PENDING            ,"Event is being processed");
-            ID_STR( CONN_FAILURE       ,"CommStage failed to connect to peer");
-            ID_STR( MALFORMED_MESSAGE  ,"Message contained in event is malformed");
-            ID_STR( SEND_FAILURE       ,"CommStage reported transmission failure");
-            ID_STR( BUFFER_OVERFLOW    ,"Server has replied with more data than posted");
-            ID_STR( STAGE_CLEANUP      ,"CommStage is in a cleanup mode");
-            ID_STR( RESOURCE_FAILURE   ,"Local resource failure");
-            ID_STR( BAD_TIMEOUT_VAL    ,"Unacceptable timeout value");
-            ID_STR( TIMEDOUT           ,"Event has timedout");
+    /**
+     *  @brief To help report the status to a descriptive string
+     *  @param[in]  status
+     *  @return     The description as a string
+     */
+    static std::string statusStr(int status)
+    {
+        switch (status)
+        {
+        ID_STR( SUCCESS, "Successful local completion");
+        ID_STR( INVALID_PARAMETER, "Invalid parameters");
+        ID_STR( PENDING, "Event is being processed");
+        ID_STR( CONN_FAILURE, "CommStage failed to connect to peer");
+        ID_STR( MALFORMED_MESSAGE, "Message contained in event is malformed");
+        ID_STR( SEND_FAILURE, "CommStage reported transmission failure");
+        ID_STR( BUFFER_OVERFLOW,
+                "Server has replied with more data than posted");
+        ID_STR( STAGE_CLEANUP, "CommStage is in a cleanup mode");
+        ID_STR( RESOURCE_FAILURE, "Local resource failure");
+        ID_STR( BAD_TIMEOUT_VAL, "Unacceptable timeout value");
+        ID_STR( TIMEDOUT, "Event has timedout");
 
-            default:
-            {
-                return "Unknown";
-            }
+        default:
+        {
+            return "Unknown";
+        }
         }
     }
 
@@ -168,7 +171,6 @@ public:
      * @post event is contructed and both request and response set to 0
      */
     CommEvent();
-
     //! Constructor
     /**
      * @param[in]   req     pointer to a request message desriptor
@@ -178,7 +180,6 @@ public:
      * @post optionally a response message descriptor
      */
     CommEvent(MsgDesc* req, MsgDesc* resp = 0);
-
     //! Constructor
     /**
      * @param[in]   reqMsg  pointer to a request message 
@@ -188,62 +189,52 @@ public:
      *       optional response message
      */
     CommEvent(Message* reqMsg, Message* respMsg = 0);
-
     //! Destructor
     /**
      * @pre  all processing related to the event is completed
      * @post request and response messages and attachment vectors are freed
      */
     ~CommEvent();
-
     //! Initialize the request message descriptor
     /**
      * @param[in]   req     request message descriptor
      */
     void setRequest(MsgDesc* req);
-
     //! Set the request message
     /**
      * @param[in]   reqMsg  request message
      */
     void setRequestMsg(Message* reqMsg);
-
     //! Initialize the response message descriptor
     /**
      * @param[in]   resp    response message descriptor
      */
     void setResponse(MsgDesc* resp);
-
     //! Set the response message
     /**
      * @param[in]   respMsg response message
      */
-    void setResponseMsg(Message* respMsg); 
-
+    void setResponseMsg(Message* respMsg);
     //! Initialize the request message descriptor
     /**
      * @return  the value of the request message descriptor
      */
     MsgDesc& getRequest();
-
     //! Initialize the request message descriptor
     /**
      * @return  the pointer to the request message
      */
     Message* getRequestMsg();
-
     //! Initialize the request message descriptor
     /**
      * @return  the value of the response message descriptor
      */
     MsgDesc& getResponse();
-
     //! Initialize the request message descriptor
     /**
      * @return  the pointer to the response message
      */
     Message* getResponseMsg();
-
     //! Set request ID
     /**
      * @param[in] reqId the request ID to be set
@@ -251,7 +242,6 @@ public:
      * @post    the member rquestId is set to the value of reqId
      */
     void setRequestId(unsigned int reqId);
-
     //! Get request ID
     /**
      * Get the value of the requestId member set by setRequestId
@@ -259,7 +249,6 @@ public:
      * @return  value of the requestId member
      */
     unsigned int getRequestId();
-
     //! Transfer ownership of the request message descriptor
     /**
      * Similar in functionality to getRequest, except that also detaches
@@ -273,7 +262,6 @@ public:
      * for cleanup. Caller can use cleanupMsgDesc for resource deallocation.
      */
     MsgDesc adoptRequest();
-
     //! Transfer ownership of the response message descriptor
     /**
      * Similar to functionality to getResponse, except that also detaches
@@ -287,7 +275,6 @@ public:
      * for cleanup. Caller can use cleanupMsgDesc for resource deallocation.
      */
     MsgDesc adoptResponse();
-
     //! Set local completion status
     /**
      * Used for indicating failure in the local event processing. Callbacks
@@ -299,7 +286,6 @@ public:
      * @post    event is marked with the completion status
      */
     void setStatus(CommEvent::status_t stat);
-
     //! Get local completion status
     /**
      * Callbacks registered for this event can check if the event has
@@ -310,7 +296,6 @@ public:
      * @return  event's local completion status
      */
     CommEvent::status_t getStatus();
-
     //! Check if the event has failed
     /**
      * Check whether the event's status has been set to a value other 
@@ -319,7 +304,6 @@ public:
      * @return true if the event has failed, false otherwise
      */
     bool isfailed();
-
     //! Sends an error response
     /**
      * This method is semantically equivalent to StageEvent->done(). It must
@@ -339,12 +323,10 @@ public:
      */
     bool doneWithErrorResponse(CommEvent::status_t eventErrCode, int rspErrCode,
             const char* errmsg);
-
     /**
      * just set the status and done
      */
     void completeEvent(CommEvent::status_t stev);
-
     //! Deallocates the resources associated with MsgDesc
     /**
      * Frees the array of pointers to IoVec::vec_t structures, the 
@@ -358,7 +340,6 @@ public:
      * @post    all resources are deallocated
      */
     static void cleanupMsgDesc(MsgDesc& md);
-
     //! Indicates server side created event
     /**
      * Completion of events depends on whether they are created (generated)
@@ -369,7 +350,6 @@ public:
      * @post     event is marked as generated by the server side
      */
     void setServerGen();
-
     //! Check if event is server-side created
     /**
      * Checks if the event has been created by the server side of CommStage.
@@ -378,29 +358,43 @@ public:
      */
     bool isServerGen();
 
+    int getSock() const
+    {
+        return sock;
+    }
+
+    void setSock(int sock)
+    {
+        this->sock = sock;
+    }
+
     //! Get the target host
-    EndPoint& getTargetEp() {return targetEp;}
+    EndPoint& getTargetEp()
+    {
+        return targetEp;
+    }
 
 private:
-    MsgDesc           request;        //!< descriptor of request message
-    MsgDesc           response;       //!< descriptor of response message
-    status_t          status;         //!< completion status of event
-    u32_t             requestId;      //!< at server carries the incoming request id
-    bool              serverGen;      //!< is event creted by the server side
-    EndPoint          targetEp;       //!< target endpoint
+    MsgDesc  request;      //!< descriptor of request message
+    MsgDesc  response;     //!< descriptor of response message
+    status_t status;       //!< completion status of event
+    u32_t    requestId;    //!< at server carries the incoming request id
+    bool     serverGen;    //!< is event creted by the server side
+    int      sock;         //!< socket, setted when serverGen set
+    EndPoint targetEp;     //!< target endpoint
 
 
+private:
     //! Copy constructor
     /**
      * Declared as private to avoid accidental invocation of the default one
      */
     CommEvent(const CommEvent& cev);
-
     //! Assignment operator
     /**
      * Declared as private to avoid accidental invocation of the default one
      */
-    CommEvent& operator= (const CommEvent &cev);
+    CommEvent& operator =(const CommEvent& cev);
 };
 
 #endif // __COMM_EVENT_H__

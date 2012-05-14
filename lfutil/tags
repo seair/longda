@@ -36,7 +36,7 @@ CLockID	include/os/mutex.h	/^            CLockID(const int threadId, const char 
 CLockID	include/os/mutex.h	/^    class CLockID$/;"	c	class:CLockTrace
 CLockTrace	include/os/mutex.h	/^class CLockTrace$/;"	c
 CLog	include/trace/log.h	/^class CLog$/;"	c
-CLog	src/trace/log.cpp	/^CLog::CLog(const std::string &logFileName, $/;"	f	class:CLog
+CLog	src/trace/log.cpp	/^CLog::CLog(const std::string &logFileName, const LOG_LEVEL logLevel,$/;"	f	class:CLog
 CLstring	include/lang/lstring.h	/^namespace CLstring {$/;"	n
 COMMDATAEVENT_H_	include/comm/commdataevent.h	21;"	d
 COMMEVENT_MAX_RETRYCOUNT	include/comm/commevent.h	113;"	d
@@ -88,7 +88,7 @@ CateMap	include/seda/sedastatsstage.h	/^    typedef std::map<SedaStats::sedaStat
 CateMapConstIter	include/seda/sedastatsstage.h	/^    typedef CateMap::const_iterator         CateMapConstIter;$/;"	t	class:SedaStatsStage
 CateMapIter	include/seda/sedastatsstage.h	/^    typedef CateMap::iterator               CateMapIter;$/;"	t	class:SedaStatsStage
 CheckOutput	include/trace/log.h	/^bool CLog::CheckOutput(const LOG_LEVEL level, const char *module)$/;"	f	class:CLog
-CheckParamValid	src/trace/log.cpp	/^CLog::CheckParamValid()$/;"	f	class:CLog
+CheckParamValid	src/trace/log.cpp	/^void CLog::CheckParamValid()$/;"	f	class:CLog
 ClassFactory	include/seda/classfactory.h	/^ClassFactory<T>::ClassFactory(const std::string& tag, FactoryFunc func) :$/;"	f	class:ClassFactory
 ClassFactory	include/seda/classfactory.h	/^class ClassFactory {$/;"	c
 CommEvent	include/comm/commevent.h	/^class CommEvent : public StageEvent$/;"	c
@@ -185,10 +185,10 @@ FILE_PATH_SPLIT_STR	include/io/io.h	/^static const char FILE_PATH_SPLIT_STR[] = 
 FactoryFunc	include/seda/classfactory.h	/^    typedef T* (*FactoryFunc)(const std::string&);$/;"	t	class:ClassFactory
 G	src/math/md5.cpp	41;"	d	file:
 GG	src/math/md5.cpp	59;"	d	file:
-GetConsoleLevel	src/trace/log.cpp	/^CLog::GetConsoleLevel()$/;"	f	class:CLog
+GetConsoleLevel	src/trace/log.cpp	/^LOG_LEVEL CLog::GetConsoleLevel()$/;"	f	class:CLog
 GetEvent	include/seda/callback.h	/^    StageEvent *GetEvent(){return ev;}$/;"	f	class:CallbackContextEvent
-GetLogLevel	src/trace/log.cpp	/^CLog::GetLogLevel()$/;"	f	class:CLog
-GetRotateType	src/trace/log.cpp	/^CLog::GetRotateType()$/;"	f	class:CLog
+GetLogLevel	src/trace/log.cpp	/^LOG_LEVEL CLog::GetLogLevel()$/;"	f	class:CLog
+GetRotateType	src/trace/log.cpp	/^LOG_ROTATE CLog::GetRotateType()$/;"	f	class:CLog
 H	src/math/md5.cpp	42;"	d	file:
 HANDLE_EV	include/seda/stageevent.h	/^        HANDLE_EV = 0,$/;"	e	enum:StageEvent::__anon25
 HDR_ATT_LEN	include/comm/packageinfo.h	/^    HDR_ATT_LEN = HDR_NUM_PRECISION + 1,$/;"	e	enum:__anon2
@@ -266,14 +266,14 @@ MAX_CFG_LINE_LEN	include/conf/ini.h	/^    static const int MAX_CFG_LINE_LEN = 10
 MAX_CONNECTION_NUM	include/defs.h	/^const unsigned int MAX_CONNECTION_NUM  = 12;$/;"	v
 MAX_EPOLL_EVENTS	include/net/net.h	/^        MAX_EPOLL_EVENTS = 64,    \/\/!< maximum epoll events at a time$/;"	e	enum:Net::__anon19
 MAX_ERROR_MSG_LEN	include/comm/response.h	/^        MAX_ERROR_MSG_LEN = 128$/;"	e	enum:Response::__anon4
-MAX_ERR_OUTPUT	src/os/lprocess.cpp	29;"	d	file:
+MAX_ERR_OUTPUT	src/os/lprocess.cpp	30;"	d	file:
 MAX_HOSTNAME_LEN	include/net/endpoint.h	26;"	d
 MAX_LOCATION_LEN	include/net/endpoint.h	27;"	d
 MAX_NUM_CATEGORY	include/seda/sedastats.h	20;"	d
 MAX_NUM_STATS	include/seda/sedastats.h	21;"	d
 MAX_PROTOCAL_LEN	include/comm/request.h	/^        MAX_PROTOCAL_LEN = 32$/;"	e	enum:Request::__anon3
 MAX_SERVICE_LEN	include/net/endpoint.h	28;"	d
-MAX_STD_OUTPUT	src/os/lprocess.cpp	30;"	d	file:
+MAX_STD_OUTPUT	src/os/lprocess.cpp	31;"	d	file:
 MCL_MD5_H	include/math/md5.h	2;"	d
 MD5Buffer	src/math/md5.cpp	/^int MD5Buffer(const char *buffer, unsigned int len, unsigned char digest[16])$/;"	f
 MD5File	src/math/md5.cpp	/^int MD5File(const char *filename,unsigned char digest[16])    $/;"	f
@@ -376,7 +376,7 @@ ON_DISCONNECT	include/net/conn.h	/^        ON_DISCONNECT         \/\/!< callback
 ON_ERROR	include/net/conn.h	/^        ON_ERROR                \/\/!< connection is closed on error$/;"	e	enum:Conn::__anon10
 OTHER_VER	include/version.h	24;"	d
 Out	include/trace/log.h	/^int CLog::Out(const LOG_LEVEL consoleLevel,$/;"	f	class:CLog
-Output	src/trace/log.cpp	/^CLog::Output( const LOG_LEVEL level, const char *module, const char *prefix, const char *f, ...  )$/;"	f	class:CLog
+Output	src/trace/log.cpp	/^int CLog::Output(const LOG_LEVEL level, const char *module, const char *prefix,$/;"	f	class:CLog
 PACKAGEINFO_H_	include/comm/packageinfo.h	21;"	d
 PADDING	src/math/md5.cpp	/^static unsigned char PADDING[64] = {$/;"	v	file:
 PARSEFAIL	include/seda/sedaconfig.h	/^        PARSEFAIL$/;"	e	enum:SedaConfig::__anon24
@@ -390,17 +390,17 @@ REQUEST_H_	include/comm/request.h	21;"	d
 RESOURCE_FAILURE	include/comm/commevent.h	/^        RESOURCE_FAILURE,   \/\/!< local resource failure$/;"	e	enum:CommEvent::__anon1
 RESPONSE_H_	include/comm/response.h	21;"	d
 ROTATE_LEFT	src/math/md5.cpp	48;"	d	file:
-RWRR	src/os/lprocess.cpp	32;"	d	file:
+RWRR	src/os/lprocess.cpp	33;"	d	file:
 RecvThread	src/net/net.cpp	/^Net::RecvThread(void *arg)$/;"	f	class:Net
-RenameOldLogs	src/trace/log.cpp	/^CLog::RenameOldLogs()$/;"	f	class:CLog
+RenameOldLogs	src/trace/log.cpp	/^int CLog::RenameOldLogs()$/;"	f	class:CLog
 Request	include/comm/request.h	/^    Request():$/;"	f	class:Request
 Request	include/comm/request.h	/^class Request : public Message$/;"	c
 Response	include/comm/response.h	/^    Response():$/;"	f	class:Response
 Response	include/comm/response.h	/^    Response(int status, const char *msg):$/;"	f	class:Response
 Response	include/comm/response.h	/^class Response : public Message$/;"	c
-Rotate	src/trace/log.cpp	/^CLog::Rotate(const int year, const int month, const int day)$/;"	f	class:CLog
-RotateByDay	src/trace/log.cpp	/^CLog::RotateByDay(const int year, const int month, const int day)$/;"	f	class:CLog
-RotateBySize	src/trace/log.cpp	/^CLog::RotateBySize()$/;"	f	class:CLog
+Rotate	src/trace/log.cpp	/^int CLog::Rotate(const int year, const int month, const int day)$/;"	f	class:CLog
+RotateByDay	src/trace/log.cpp	/^int CLog::RotateByDay(const int year, const int month, const int day)$/;"	f	class:CLog
+RotateBySize	src/trace/log.cpp	/^int CLog::RotateBySize()$/;"	f	class:CLog
 S11	src/math/md5.cpp	8;"	d	file:
 S12	src/math/md5.cpp	9;"	d	file:
 S13	src/math/md5.cpp	10;"	d	file:
@@ -482,10 +482,10 @@ SedaStatsStore	include/seda/sedastatsstage.h	/^class SedaStatsStore{$/;"	c
 SendThread	src/net/net.cpp	/^Net::SendThread(void *arg)$/;"	f	class:Net
 Serializable	include/lang/serializable.h	/^class Serializable$/;"	c
 SessionsMap	include/conf/ini.h	/^    typedef std::map<std::string, std::map<std::string, std::string> > SessionsMap;$/;"	t	class:CIni
-SetConsoleLevel	src/trace/log.cpp	/^CLog::SetConsoleLevel( LOG_LEVEL consoleLevel )$/;"	f	class:CLog
-SetDefaultModule	src/trace/log.cpp	/^CLog::SetDefaultModule(const std::string &modules)$/;"	f	class:CLog
-SetLogLevel	src/trace/log.cpp	/^CLog::SetLogLevel( LOG_LEVEL logLevel )$/;"	f	class:CLog
-SetRotateType	src/trace/log.cpp	/^CLog::SetRotateType(LOG_ROTATE rotateType)$/;"	f	class:CLog
+SetConsoleLevel	src/trace/log.cpp	/^int CLog::SetConsoleLevel(LOG_LEVEL consoleLevel)$/;"	f	class:CLog
+SetDefaultModule	src/trace/log.cpp	/^void CLog::SetDefaultModule(const std::string &modules)$/;"	f	class:CLog
+SetLogLevel	src/trace/log.cpp	/^int CLog::SetLogLevel(LOG_LEVEL logLevel)$/;"	f	class:CLog
+SetRotateType	src/trace/log.cpp	/^int CLog::SetRotateType(LOG_ROTATE rotateType)$/;"	f	class:CLog
 Sock	include/net/sockutil.h	/^class Sock$/;"	c
 Stage	include/seda/stage.h	/^class Stage {$/;"	c
 Stage	src/seda/stage.cpp	/^Stage::Stage(const char* tag) :$/;"	f	class:Stage
@@ -844,6 +844,7 @@ generateRcvFileName	src/net/conncb.cpp	/^void Conn::generateRcvFileName(std::str
 get	include/mm/lmpool.h	/^    T* get()$/;"	f	class:CLmpool
 get	src/conf/ini.cpp	/^const std::map<std::string, std::string>& CIni::get(const std::string &section)$/;"	f	class:CIni
 get	src/conf/ini.cpp	/^std::string CIni::get(const std::string &key, const std::string &defaultValue,$/;"	f	class:CIni
+getAboslutPath	src/io/io.cpp	/^std::string getAboslutPath(const char *path)$/;"	f
 getActSn	include/net/conn.h	/^    u64_t getActSn() const$/;"	f	class:Conn
 getAllocType	src/net/iovec.cpp	/^IoVec::alloc_t IoVec::getAllocType()$/;"	f	class:IoVec
 getAndRmEvent	src/net/conn.cpp	/^CommEvent* Conn::getAndRmEvent(u32_t msgId)$/;"	f	class:Conn

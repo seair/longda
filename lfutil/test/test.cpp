@@ -67,7 +67,7 @@ int setTestSeda()
 }
 
 
-void startTest()
+void startTest(int sig)
 {
     static Stage *testStage = theSedaConfig()->getStage(TEST_STAGE_NAME);
     if (testStage == NULL)
@@ -76,7 +76,7 @@ void startTest()
         return;
     }
 
-    TriggerTestEvent *event = new TriggerTestEvent(10);
+    TriggerTestEvent *event = new TriggerTestEvent(1);
     if (event == NULL)
     {
         LOG_ERROR("Failed to alloc memory for StageEvent");
@@ -190,11 +190,7 @@ int main(int argc, char** argv)
         {
             return STATUS_FAILED_INIT;
         }
-        rc = writePidFile(processName.c_str());
-        if (rc != 0)
-        {
-            return STATUS_FAILED_INIT;
-        }
+        writePidFile(processName.c_str());
     }
 
     // Block interrupt signals before creating child threads.
@@ -208,7 +204,7 @@ int main(int argc, char** argv)
         return rc;
     }
 
-    startTest();
+    setSignalHandlingFunc(startTest);
 
     // wait interrupt signals
     int signal_number = -1;

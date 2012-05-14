@@ -62,6 +62,8 @@ private:
     Stage                    *mTimerStage;
     Stage                    *mCommStage;
     EndPoint                  mPeerEp;
+    int                       mTestTimes;
+    std::string               mTestFile;
 };
 
 #endif /* CTESTSTAGE_H_ */

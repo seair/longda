@@ -143,7 +143,7 @@ public:
      * @param[in]   serverSide  whether this connection is called on the server
      * @return a Conn object providding communication to ep
      */
-    Conn* getConn(EndPoint& ep, bool serverSide = false);
+    Conn* getConn(EndPoint& ep, bool serverSide = false, int sock = -1);
 
     //! Delete a connection
     /**

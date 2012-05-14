@@ -130,6 +130,7 @@ LOG_INFO("PTHREAD_MUTEX_INITIALIZER");
 ({                                                                 \
     int result = pthread_mutex_unlock(lock);                       \
     CLockTrace::unlock(lock);                                      \
+    LOG_INFO("mutex:%p has been ulocked", lock);                   \
     result;                                                        \
 })
 

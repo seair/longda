@@ -25,9 +25,10 @@
 
 #include "trace/log.h"
 #include "os/lprocess.h"
+#include "io/io.h"
 
-#define MAX_ERR_OUTPUT 100000    // 100k
-#define MAX_STD_OUTPUT 100000    // 100k
+#define MAX_ERR_OUTPUT 10000000    // 10M
+#define MAX_STD_OUTPUT 10000000    // 10M
 
 #define RWRR (S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 
@@ -107,31 +108,36 @@ void sysLogRedirect(const char *stdOutFile, const char *stdErrFile)
     //Always use append-write. And if not exist, create it.
     stdErrFlag = stdOutFlag = O_CREAT | O_APPEND | O_WRONLY;
 
+
+    std::string errFile = getAboslutPath(stdErrFile);
+
     // Redirect stderr to stdErrFile
     struct stat st;
-    rc = stat(stdErrFile, &st);
+    rc = stat(errFile.c_str(), &st);
     if (rc != 0 || st.st_size > MAX_ERR_OUTPUT)
     {
         // file may not exist or oversize
         stdErrFlag |= O_TRUNC; // Remove old content if any.
     }
 
-    int errfd = open(stdErrFile, stdErrFlag, RWRR);
+    int errfd = open(errFile.c_str(), stdErrFlag, RWRR);
     dup2(errfd, STDERR_FILENO);
     close(errfd);
     setvbuf(stderr, NULL, _IONBF, 0); // Make sure stderr is not buffering
     std::cerr << "Process " << getpid() << " built error output at "
             << tv.tv_sec << std::endl;
 
-    // Redirect stdout to stdOutFile
-    rc = stat(stdOutFile, &st);
+    std::string outFile = getAboslutPath(stdOutFile);
+
+    // Redirect stdout to outFile.c_str()
+    rc = stat(outFile.c_str(), &st);
     if (rc != 0 || st.st_size > MAX_STD_OUTPUT)
     {
         // file may not exist or oversize
         stdOutFlag |= O_TRUNC; // Remove old content if any.
     }
 
-    int outfd = open(stdOutFile, stdOutFlag, RWRR);
+    int outfd = open(outFile.c_str(), stdOutFlag, RWRR);
     dup2(outfd, STDOUT_FILENO);
     close(outfd);
     setvbuf(stdout, NULL, _IONBF, 0); // Make sure stdout not buffering

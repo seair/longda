@@ -81,9 +81,10 @@ Conn::Conn() :
     pthread_mutexattr_init(&attr);
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
 
-    pthread_mutex_init(&mMutex, &attr);
-    pthread_mutex_init(&mSendMutex, &attr);
-    pthread_mutex_init(&mRecvMutex, &attr);
+    MUTEX_INIT(&mMutex, &attr);
+    MUTEX_INIT(&mSendMutex, &attr);
+    MUTEX_INIT(&mRecvMutex, &attr);
+    MUTEX_INIT(&mEventMapMutex, &attr);
 
     updateActSn();
 
@@ -98,9 +99,10 @@ Conn::~Conn()
     ASSERT((mCurRecvBlock == 0), "mCurRecvBlock is not 0");
     ASSERT((mRefCount == 0), "connection mMsgCounter not 0");
 
-    pthread_mutex_destroy(&mMutex);
-    pthread_mutex_destroy(&mSendMutex);
-    pthread_mutex_destroy(&mRecvMutex);
+    MUTEX_DESTROY(&mMutex);
+    MUTEX_DESTROY(&mSendMutex);
+    MUTEX_DESTROY(&mRecvMutex);
+    MUTEX_DESTROY(&mEventMapMutex);
 
     LOG_TRACE( "%s", "exit");
 }
@@ -263,18 +265,18 @@ int Conn::cleanup(cleanup_t how)
     rv = MUTEX_UNLOCK(&mSendMutex);
     ASSERT(rv == 0, "thread does not own mutex");
 
+    // Call disconnect callback set by Net
+    int rc = SUCCESS;
+    rc = connCallback(Conn::ON_DISCONNECT);
+
     if (mSock != Sock::DISCONNECTED)
     {
         close(mSock);
         mSock = Sock::DISCONNECTED;
     }
 
-    // Call disconnect callback set by Net
-    int rc = SUCCESS;
-    rc = connCallback(Conn::ON_DISCONNECT);
-
-    LOG_INFO("Successfully cleanup connection %s:%d",
-            mPeerEp.getHostName(), mPeerEp.getPort());
+    LOG_INFO("Successfully cleanup connection %s:%d, %p",
+            mPeerEp.getHostName(), mPeerEp.getPort(), this);
 
     delete this;
 
@@ -300,6 +302,9 @@ void Conn::release()
     ASSERT((rv == 0), "thread already owns mutex");
 
     mRefCount--;
+
+    LOG_DEBUG("Release connection %s:%d, conf count:%d, %p",
+                mPeerEp.getHostName(), mPeerEp.getPort(), mRefCount, this);
 
     if (mRefCount == 0 && mCleaning)
         callCleanup = true;
@@ -331,6 +336,9 @@ void Conn::acquire()
 
     rv = MUTEX_UNLOCK(&mMutex);
     ASSERT((rv == 0), "thread does not own mutex");
+
+    LOG_DEBUG("Acquire connection %s:%d, conf count:%d, %p",
+                    mPeerEp.getHostName(), mPeerEp.getPort(), mRefCount, this);
 
     LOG_TRACE( "%s", "exit");
 }

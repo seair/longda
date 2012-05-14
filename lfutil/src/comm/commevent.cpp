@@ -12,6 +12,7 @@
 #include "comm/commevent.h"
 #include "comm/request.h"
 #include "comm/response.h"
+#include "net/sockutil.h"
 
 //! Implementation of CommEvent
 /**
@@ -21,19 +22,19 @@
  */
 
 CommEvent::CommEvent() :
-        status(SUCCESS), serverGen(false)
+        status(SUCCESS), serverGen(false), sock(Sock::DISCONNECTED)
 {
 }
 
 CommEvent::CommEvent(MsgDesc *req, MsgDesc *resp) :
-        status(SUCCESS), serverGen(false)
+        status(SUCCESS), serverGen(false), sock(Sock::DISCONNECTED)
 {
     setRequest(req);
     setResponse(resp);
 }
 
 CommEvent::CommEvent(Message* reqMsg, Message* respMsg) :
-        status(SUCCESS), serverGen(false)
+        status(SUCCESS), serverGen(false), sock(Sock::DISCONNECTED)
 {
     setRequestMsg(reqMsg);
     setResponseMsg(respMsg);

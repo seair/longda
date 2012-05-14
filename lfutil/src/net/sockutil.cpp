@@ -322,6 +322,15 @@ Sock::addToSelector(int sock, dir_t dir, int epfd)
 }
 
 Sock::status_t
+Sock::rmFromSelector(int sock, int epfd)
+{
+    if (epoll_ctl(epfd, EPOLL_CTL_DEL, sock, NULL))
+        return ERR_EPOLL_DEL;
+
+    return SUCCESS;
+}
+
+Sock::status_t
 Sock::connectTo(const char* hostname, unsigned int port, int& sock)
 {
     int rc = create(PF_INET, SOCK_STREAM, 0, sock);

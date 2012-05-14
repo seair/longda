@@ -470,7 +470,7 @@ protected:
 
     static void checkEventReady(bool eventReady, Conn *conn, IoVec *iov, cb_param_t *cbp);
 
-    static void sendBadMsgErr(Conn* conn, CommEvent::status_t errCode, const char *errMsg);
+    static void sendBadMsgErr(Conn* conn, char *base, CommEvent::status_t errCode, const char *errMsg);
 
     static int recvDrain(IoVec *iov, cb_param_t* cbp, Conn *conn);
 
@@ -525,11 +525,6 @@ protected:
      * @return status of vector processing
      */
     status_t recvvecProgress();
-
-
-
-
-
 
 
 private:
@@ -595,8 +590,6 @@ private:
 
     std::map<u32_t, CommEvent*> mSendEventMap;        //!< map(requestID, send event)
     pthread_mutex_t             mEventMapMutex;
-
-
 
 
 };

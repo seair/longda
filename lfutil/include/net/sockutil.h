@@ -199,6 +199,7 @@ public:
      * specified by dir
      */
     static Sock::status_t addToSelector(int sock, Sock::dir_t dir, int epfd);
+    static Sock::status_t rmFromSelector(int sock, int epfd);
 
     //! Creates, binds, and listens to a INET socket
     /**

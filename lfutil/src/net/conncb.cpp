@@ -82,6 +82,8 @@ int Conn::connCallback(Conn::conn_t state)
             mRecvCb = NULL;
         }
 
+        ((CommStage *)gCommStage)->clearSelector(mSock);
+
         return SUCCESS;
     }
     else
@@ -353,9 +355,6 @@ void Conn::prepare2Drain(IoVec *iov, cb_param_t* cbp, Conn *conn, u64_t leftSize
         rc = repostReusedIoVec(leftSize, iov, cbp);
         if (rc)
         {
-            /**
-             * @@@ FIXME delete cbp?
-             */
             throw NetEx(Conn::CONN_ERR_NOMEM, "No memory to drain");
         }
         conn->setNextRecv(Conn::DRAIN);
@@ -367,9 +366,6 @@ void Conn::prepare2Drain(IoVec *iov, cb_param_t* cbp, Conn *conn, u64_t leftSize
         rc = repostIoVec(conn, iov, HDR_LEN);
         if (rc)
         {
-            /**
-             * @@@ FIXME delete cbp?
-             */
             throw NetEx(Conn::CONN_ERR_NOMEM, "No memory to drain");
         }
         conn->setNextRecv(Conn::HEADER);
@@ -501,9 +497,6 @@ int Conn::recvPrepareFileIov(cb_param_t* cbp, Conn *conn)
     {
         LOG_ERROR("No memory for file download buffer %u", blockSize);
 
-        /**
-         * @@@ FIXME
-         */
         return Conn::CONN_ERR_NOMEM;
     }
 
@@ -545,9 +538,7 @@ int Conn::recvReqMsg(Request *msg, IoVec *iov, cb_param_t* cbp, Conn *conn)
         rc = pushAttachMessage(conn, md, cbp);
         if (rc)
         {
-            /**
-             * @@@ FIXME repostIoVec exist problem
-             */
+            LOG_ERROR("Failed to push iovs when receive reqest");
             cleanMdAttach(md);
 
             return rc;
@@ -574,6 +565,7 @@ int Conn::recvReqMsg(Request *msg, IoVec *iov, cb_param_t* cbp, Conn *conn)
     ASSERT((cbp->cev == 0), "cev must be 0");
 
     CommEvent *cev = new CommEvent(&md);
+    cev->setSock(conn->getSocket());
     cev->setServerGen();
     // Record the id of the incoming request
     cev->setRequestId(msg->mId);
@@ -754,6 +746,7 @@ int Conn::recvRspMsg(Response *rsp, IoVec *iov, cb_param_t* cbp, Conn *conn)
 //            msg->source = reqMsg->target;
 //            msg->target = reqMsg->source;
 //        }
+        cev->setStatus((CommEvent::status_t)rsp->mStatus);
     }
 
 
@@ -840,8 +833,17 @@ void Conn::eventDone(CommEvent *cev, Conn *conn)
     return ;
 }
 
-void Conn::sendBadMsgErr(Conn* conn, CommEvent::status_t errCode, const char *errMsg)
+void Conn::sendBadMsgErr(Conn* conn, char * base, CommEvent::status_t errCode, const char *errMsg)
 {
+    // in order to get reqId
+    Message *req = new Message(MESSAGE_BASIC);
+    int rc = req->deserialize(base, req->getSerialSize());
+    if (rc)
+    {
+        LOG_ERROR("Failed to get reqId from bad msg");
+        return;
+    }
+
     Response *rsp = new Response(errCode, errMsg);
     if (rsp == NULL)
     {
@@ -857,9 +859,15 @@ void Conn::sendBadMsgErr(Conn* conn, CommEvent::status_t errCode, const char *er
         return ;
     }
 
+    rspCev->setRequestId(req->mId);
+    delete req;
+    req = NULL;
+
     rspCev->setStatus(errCode);
     rspCev->setServerGen();
+    rspCev->setSock(conn->getSocket());
     rspCev->getTargetEp() = conn->getPeerEp();
+
 
     ((CommStage *)gCommStage)->sendResponse(rspCev);
 
@@ -965,7 +973,13 @@ int Conn::recvFile(IoVec *iov, cb_param_t* cbp, Conn *conn)
 int Conn::recvDrain(IoVec *iov, cb_param_t* cbp, Conn *conn)
 {
     cbp->remainVecs--;
-    if (cbp->remainVecs == 1)
+    if (cbp->remainVecs == 0)
+    {
+        recvErrCb(iov, cbp, IoVec::ERROR, false);
+        conn->setNextRecv(Conn::HEADER);
+        repostIoVec(conn, iov, HDR_LEN);
+    }
+    else if (cbp->remainVecs == 1)
     {
         // the last block
         u32_t lastBlockSize = (cbp->drainLen % gMaxBlockSize);
@@ -974,12 +988,6 @@ int Conn::recvDrain(IoVec *iov, cb_param_t* cbp, Conn *conn)
         iov->setSize(lastBlockSize);
 
         conn->postRecv(iov);
-    }
-    else if(cbp->remainVecs == 0)
-    {
-        recvErrCb(iov, cbp, IoVec::ERROR, false);
-        conn->setNextRecv(Conn::HEADER);
-        repostIoVec(conn, iov, HDR_LEN);
     }
     else
     {
@@ -1035,7 +1043,7 @@ int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)
             LOG_ERROR("can't deserialize message\n");
 
             // Send malformed error response
-            sendBadMsgErr(conn, CommEvent::MALFORMED_MESSAGE,
+            sendBadMsgErr(conn, (char *)iov->getBase(), CommEvent::MALFORMED_MESSAGE,
                     "Failed to deserialize message");
 
             u64_t leftSize = cbp->attLen + cbp->fileLen;

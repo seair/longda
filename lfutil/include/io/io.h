@@ -70,12 +70,16 @@ void        getFileName(const char *path, std::string &fileName);
 std::string getDirName(const std::string &fullPath);
 void        getDirName(const char *path, std::string &parent);
 
+std::string getAboslutPath(const char *path);
+
 int touch(const std::string &fileName);
 
 /**
  * get file size
  */
 int getFileSize(const char *filePath, u64_t &fileLen);
+
+
 
 
 #endif /* IO_H_ */

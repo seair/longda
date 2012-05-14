@@ -38,13 +38,16 @@
 CTestStage::CTestStage(const char* tag) :
         Stage(tag),
         mTimerStage(NULL),
-        mCommStage(NULL)
+        mCommStage(NULL),
+        mTestTimes(0)
 {
+
 }
 
 //! Destructor
 CTestStage::~CTestStage()
 {
+
 }
 
 //! Parse properties, instantiate a stage object
@@ -94,6 +97,28 @@ bool CTestStage::setProperties()
     {
         LOG_ERROR("Not set port");
         return false;
+    }
+
+    key = "TestTime";
+    it = section.find(key);
+    if (it != section.end())
+    {
+        CLstring::strToVal(it->second, mTestTimes);
+    }
+    else
+    {
+        mTestTimes = -1;
+    }
+
+    key = "TestFile";
+    it = section.find(key);
+    if (it != section.end())
+    {
+        mTestFile = it->second;
+    }
+    else
+    {
+        mTestFile = "common.def";
     }
 
     return true;
@@ -193,7 +218,7 @@ void CTestStage::sendRequest()
     cev->getTargetEp() = mPeerEp;
     MsgDesc &md = cev->getRequest();
 
-    std::string confPath = theProcessParam()->mProperties;
+    std::string confPath = mTestFile;
     u64_t fileSize = 0;
     int rc = getFileSize(confPath.c_str(), fileSize);
     if (rc)
@@ -314,6 +339,27 @@ void CTestStage::triggerTestEvent(StageEvent *event)
     sendRequest();
 
     TriggerTestEvent *tev = dynamic_cast<TriggerTestEvent *>(event);
+
+    bool finished = false;
+
+    MUTEX_LOCK(&tev->mTestMutex);
+    tev->mTimes++;
+    if ( mTestTimes == -1)
+    {
+        finished = false;
+    }
+    else if(tev->mTimes > mTestTimes)
+    {
+        finished = true;
+    }
+    MUTEX_UNLOCK(&tev->mTestMutex);
+
+    LOG_INFO("Finish issue %d times", tev->mTimes);
+    if (finished == true)
+    {
+        event->done();
+        return ;
+    }
 
     CompletionCallback *cb = new CompletionCallback(this, NULL);
     if (cb == NULL)
