@@ -191,27 +191,6 @@ ConnMgr::status_t ConnMgr::remove(const int& sock)
     return rc;
 }
 
-ConnMgr::status_t ConnMgr::remove(Conn* conn)
-{
-    LOG_TRACE("enter");
-
-    int sock = -1;
-    std::map<int, Conn*>::iterator ci;
-    for (ci = sockConnMap.begin(); ci != sockConnMap.end(); ++ci)
-    {
-        if (ci->second == conn)
-            sock = ci->first;
-    }
-
-    status_t rv = ERR_NOT_FOUND;
-    if (sock > 0)
-        rv = remove(sock);
-
-    LOG_TRACE("exit");
-
-    return rv;
-}
-
 size_t ConnMgr::removeInactive()
 {
     // activity sn -- socket map
@@ -314,22 +293,5 @@ void ConnMgr::list()
         }
         std::cout << std::endl;
     }
-}
-
-int ConnMgr::initConnPool(int initSize)
-{
-    return connPool.init(initSize);
-}
-
-Conn* ConnMgr::allocConn()
-{
-    return connPool.get();
-}
-
-void ConnMgr::freeConn(Conn * conn)
-{
-    conn->cleanup(Conn::ON_CLEANUP);
-
-    connPool.put(conn);
 }
 

@@ -281,7 +281,7 @@ public:
      * @param[in] ready     is the Conn's socket ready for send
      * @return  status (SUCCESS, CONN_ERR_UNAVAIL)
      */
-    Conn::status_t sendProgress(bool ready = false);
+    Conn::status_t sendProgress();
 
     //! Start receiving an array ov vectors
     /**
@@ -332,6 +332,14 @@ public:
      */
     Conn::status_t recvProgress(bool ready = false);
 
+    int  sendLock();
+
+    void sendUnlock();
+
+    int  recvLock();
+
+    void recvUnlock();
+
     //! Get conection socket
     /**
      * @return  conncetion's socket
@@ -362,6 +370,8 @@ public:
      * @param[in]   nr  next packet component
      */
     void setNextRecv(nextrecv_t nr);
+
+    void setReadyToSend(bool readyToSend);
 
     //! Flow control management
     void messageOut();

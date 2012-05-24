@@ -28,22 +28,30 @@
 CommStage::CommStage(const char* tag) :
         Stage(tag), mServer(false), mNet(NULL), mNextStage(NULL)
 {
+    LOG_TRACE("enter");
+
     pthread_mutexattr_t attr;
     pthread_mutexattr_init(&attr);
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
 
     MUTEX_INIT(&mCounterMutex, &attr);
+
+    LOG_TRACE("exit");
 }
 
 //! Destructor
 CommStage::~CommStage()
 {
+    LOG_TRACE("enter");
     MUTEX_DESTROY(&mCounterMutex);
+    LOG_TRACE("exit");
 }
 
 //! Parse properties, instantiate a stage object
 Stage* CommStage::makeStage(const std::string& tag)
 {
+    LOG_TRACE("enter");
+
     CommStage* stage = new CommStage(tag.c_str());
     if (stage == NULL)
     {
@@ -58,12 +66,16 @@ Stage* CommStage::makeStage(const std::string& tag)
         delete stage;
         return NULL;
     }
+
+    LOG_TRACE("exit");
     return stage;
 }
 
 //! Set properties for this object set in stage specific properties
 bool CommStage::setProperties()
 {
+    LOG_TRACE("enter");
+
     std::string stageNameStr(stageName);
     std::map<std::string, std::string> section = theGlobalProperties()->get(
             stageNameStr);
@@ -86,11 +98,13 @@ bool CommStage::setProperties()
 
     if (Conn::setLocalEp(section, mServer) == false)
     {
+        LOG_ERROR("Failed to set local Endpoint");
         return false;
     }
 
     Conn::setSocketProperty(section);
 
+    LOG_TRACE("exit");
     return true;
 }
 
@@ -163,14 +177,14 @@ void CommStage::handleEvent(StageEvent* event)
     }
     else if ((sev = dynamic_cast<CommSendEvent *>(event)))
     {
-        sendData(sev);
-        LOG_TRACE("Exit");
+        LOG_ERROR("Unexcepted CommSendEvent");
+        event->done();
         return;
     }
     else if ((rev = dynamic_cast<CommRecvEvent *>(event)))
     {
-        recvData(rev);
-        LOG_TRACE("Exit");
+        LOG_ERROR("Unexcepted CommRecvEvent");
+        event->done();
         return;
     }
     else
@@ -208,19 +222,26 @@ void CommStage::callbackEvent(StageEvent* event, CallbackContext* context)
 void CommStage::cleanupFailedResp(MsgDesc &md, CommEvent* cev, Conn *conn,
         CommEvent::status_t errCode)
 {
-    cev->completeEvent(errCode);
+    LOG_TRACE("enter");
 
     conn->release();
+
+    cev->completeEvent(errCode);
+
+    LOG_TRACE("exit");
 }
 
 void CommStage::cleanupFailedReq(MsgDesc &md, CommEvent* cev, Conn *conn,
         CommEvent::status_t errCode)
 {
+    LOG_TRACE("enter");
+
     conn->removeEventEntry(cev->getRequestId());
+    conn->release();
 
     cev->completeEvent(errCode);
 
-    conn->release();
+    LOG_TRACE("exit");
 }
 
 void CommStage::sendRequest(CommEvent *cev)
@@ -235,6 +256,8 @@ void CommStage::sendRequest(CommEvent *cev)
     if (reqMsg == NULL || dynamic_cast<Request *>(reqMsg) == NULL)
     {
         cev->completeEvent(CommEvent::INVALID_PARAMETER);
+
+        LOG_ERROR("CommEvent's request is invalid");
         return;
     }
 
@@ -265,8 +288,8 @@ void CommStage::sendRequest(CommEvent *cev)
     // Enter the event in a map so we can match it when the response arrives
     // We use the map's mutex for protecting the counter too.
     MUTEX_LOCK(&mCounterMutex);
-    req.mId = mMsgCounter;
-    mMsgCounter++;
+    req.mId = mSendCounter;
+    mSendCounter++;
     MUTEX_UNLOCK(&mCounterMutex);
     cev->setRequestId(req.mId);
 
@@ -282,6 +305,7 @@ void CommStage::sendRequest(CommEvent *cev)
         return;
     }
 
+
     if (prepareReqIovecs(md, iovs, cev, conn, this))
     {
         LOG_ERROR("Failed to create rpc IoVec buffer");
@@ -290,19 +314,20 @@ void CommStage::sendRequest(CommEvent *cev)
         return;
     }
 
-    Conn::status_t rc = conn->send(md.attachMems.size() + 1, iovs);
+    Conn::status_t rc = conn->postSend(md.attachMems.size() + 1, iovs);
     if (rc != Conn::SUCCESS)
     {
         cleanupFailedReq(md, cev, conn, CommEvent::SEND_FAILURE);
         // the iovs buffer have been put into Conn::mSendQ
         // whatever success or not, Conn will free the iovs buffer
         delete[] iovs;
+        LOG_ERROR("Failed to send event");
         return;
     }
 
     // send success
+    mNet->prepareSend(conn->getSocket());
     conn->messageOut();
-
     conn->release();
     delete[] iovs;
 
@@ -328,8 +353,8 @@ void CommStage::sendResponse(CommEvent* cev)
      */
 //    MUTEX_LOCK(&mCounterMutex);
 //
-//    resp.mId = (mMsgCounter);
-//    mMsgCounter++;
+//    resp.mId = (mSendCounter);
+//    mSendCounter++;
 //    MUTEX_UNLOCK(&mCounterMutex);
     Conn *conn = 0;
     try
@@ -354,6 +379,7 @@ void CommStage::sendResponse(CommEvent* cev)
         return;
     }
 
+
     if (prepareRespIovecs(md, iovs, cev, this))
     {
         LOG_ERROR("Failed to create rpc IoVec buffer");
@@ -362,7 +388,7 @@ void CommStage::sendResponse(CommEvent* cev)
         return;
     }
 
-    Conn::status_t st = conn->send(md.attachMems.size() + 1, iovs);
+    Conn::status_t st = conn->postSend(md.attachMems.size() + 1, iovs);
     if (st != Conn::SUCCESS)
     {
         if (st == Conn::CONN_ERR_BROKEN)
@@ -384,6 +410,9 @@ void CommStage::sendResponse(CommEvent* cev)
             LOG_ERROR("unknown send failure reason\n");
         }
     }
+
+    mNet->prepareSend(conn->getSocket());
+
     delete[] iovs;
     conn->messageOut();
     conn->release();
@@ -391,105 +420,6 @@ void CommStage::sendResponse(CommEvent* cev)
     LOG_TRACE("exit\n");
 }
 
-void CommStage::sendData(CommSendEvent *event)
-{
-
-    Conn *conn = (Conn*) (event->mConn);
-    bool  exception = false;
-    try{
-
-        conn->sendProgress(true); // true indicates that socket is ready
-    }catch(...)
-    {
-        exception = true;
-        LOG_ERROR("Occur exception");
-    }
-    //conn has already been acquire in Net::SendThread
-    conn->release();
-
-    event->done();
-
-    if (exception)
-    {
-        ConnMgr* cm = &mNet->getConnMgr();
-        cm->lock();
-        mNet->removeConn(conn);
-        cm->unlock();
-    }
-
-    return;
-}
-
-void CommStage::recvData(CommRecvEvent *event)
-{
-    // Read from socket
-    ConnMgr* cm = &mNet->getConnMgr();
-    Conn *conn = NULL;
-    int sock = event->mSocket;
-
-    cm->lock();
-    conn = cm->find(sock);
-    cm->unlock();
-    if (NULL == conn)
-    {
-        LOG_ERROR("No connection with socket %d", sock);
-        event->done();
-        return;
-    }
-
-    Conn::status_t crc = Conn::CONN_ERR_UNAVAIL;
-    try{
-        crc = conn->recvProgress(true);
-    }catch(...)
-    {
-        LOG_ERROR("Occur exception");
-        crc = Conn::CONN_ERR_BROKEN;
-    }
-
-    if (crc == Conn::SUCCESS)
-    {
-        conn->release();
-        event->done();
-        return;
-    }
-    else if (crc == Conn::CONN_READY)
-    {
-        // There is more data on this connection.
-
-        // old logic is add the socket/connection to recv thread's readyConns
-
-        //here just add it to epoll
-
-        conn->release();
-
-        mNet->addToRecvSelector(sock);
-
-        event->done();
-        return;
-    }
-    else if (crc == Conn::CONN_ERR_BROKEN)
-    {
-        LOG_DEBUG("removing broken conn");
-
-        cm->lock();
-        mNet->removeConn(sock);
-        cm->unlock();
-        conn->release();
-
-        event->done();
-        return;
-    }
-    else
-    {
-        // other error
-        // CONN_ERR_UNAVAIL
-        conn->release();
-        LOG_ERROR("recvProgress error: %d", crc);
-
-        event->done();
-        return;
-    }
-}
 
 void CommStage::setDeserializable(Deserializable *deserializer)
 {

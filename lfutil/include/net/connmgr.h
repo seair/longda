@@ -96,17 +96,6 @@ public:
      */
     ConnMgr::status_t remove(const int& sock);
 
-    //! Removes a connection by connection object pointer
-    /**
-     * Removes a connection from the ConnMgr's maps by the connection
-     * pointer. This is the slowest of all three methods from the remove
-     * family becasuse it does two reverse linear searches.
-     * 
-     * @param[in]   conn    connection to be removed
-     * @return  status (SUCCESS, ERR_NOT_FOUND)
-     */
-    ConnMgr::status_t remove(Conn* conn);
-
     //! Remove connections not active for the longest time
     /**
      * @return the number of removed connections
@@ -143,7 +132,6 @@ public:
      * @return status (SUCCESS, ERR_LOCK_NOTOWNED, ERR_LOCK)
      */
     ConnMgr::status_t unlock();
-
     //! Lists all members of the connection map
     /**
      * A helper method to list the content of the connection map
@@ -151,16 +139,9 @@ public:
     void list();
 
     /**
-     * create Conn memory pool
+     * due to debug lock, so put it public
      */
-    int initConnPool(int initSzie);
-
-    /**
-     * alloc Conn from memory pool
-     */
-    Conn* allocConn();
-
-    void freeConn(Conn * conn);
+    pthread_mutex_t mapMutex;     //!< mutex for both maps
 
 private:
     typedef std::map<std::string, std::set<int> > EpSockMap;
@@ -168,7 +149,7 @@ private:
 
 
     EpSockMap epSockMap; //!< map between EndPoint and scoket
-    pthread_mutex_t mapMutex;                          //!< mutex for both maps
+    //pthread_mutex_t mapMutex;     //!< mutex for both maps
 
     CLmpool<Conn > connPool;
 

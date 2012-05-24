@@ -13,6 +13,8 @@
 #define _NETUTIL_HXX_
 
 #include <pthread.h>
+#include <vector>
+#include <deque>
 
 #include "seda/stage.h"
 
@@ -67,6 +69,32 @@
  * @date   5/20/07
  */
 
+class DataThreadParam
+{
+public:
+    DataThreadParam()
+    {
+        MUTEX_INIT(&mutex, NULL);
+        COND_INIT(&cond, NULL);
+    }
+
+    ~DataThreadParam()
+    {
+        if (sockQ.empty() == false)
+        {
+            LOG_ERROR("sockQ isn't empty");
+        }
+        MUTEX_DESTROY(&mutex);
+        COND_DESTROY(&cond);
+    }
+
+public:
+    pthread_t          tid;
+    pthread_mutex_t    mutex;
+    pthread_cond_t     cond;
+    std::deque<int>    sockQ;
+
+};
 
 class Net
 {
@@ -212,10 +240,12 @@ public:
      * @param[in]   conn    connection to be removed 
      * @return      error status
      */
-    Net::status_t removeConn(Conn* conn);
     Net::status_t removeConn(int sock);
 
     ConnMgr& getConnMgr();
+
+    void prepareSend(int sock, Conn *conn = NULL);
+    void prepareRecv(int sock);
 
 private:
 
@@ -249,17 +279,39 @@ protected:
      * Starts the threads that implement the send and receive communication
      * logic of the network layer.
      */
-    int startThreads();
+    int  startThreads();
+    int  startDataThread(int threadIndex, bool isSend);
+    void cleanupThreads();
 
     /*
      * net send data thread
+     *
+     * SendEPoolThread --> EPool thread, receive epoll event
+     * SendThread -->  thread to sending data,
+     *            -->  encapsulate sending function,
+     *            -->  and it is static function
+     * sending    -->  do the job of SendThread, sending all connection's data
+     * sendData   -->  send one connection's data
      */
-    static void* SendThread(void* arg);
+    static void* SendEPollThread(void* arg);
+    static void* SendThread(void *arg);
+           void  sending(int threadIndex);
+           void  sendData(int sock);
 
     /**
      * net receive data thread
+     *
+     * RecvThread --> EPool thread, receive epoll event
+     * RecvThread --> thread to recving data,
+     *            --> encapsulate recving function,
+     *            --> and it is static function
+     * recving    --> do the job of RecvThread, recving all connection's data
+     * recvData   --> recving one connection's data
      */
-    static void* RecvThread(void* arg);
+    static void* RecvEPollThread(void* arg);
+    static void* RecvThread(void *arg);
+           void  recving(int threadIndex);
+           void  recvData(int sock);
 
     //! Accept sockets
     /**
@@ -277,6 +329,9 @@ protected:
     Stage *getCommStage();
 
 protected:
+    std::vector<DataThreadParam *>         sendDataThreads;
+    std::vector<DataThreadParam *>         recvDataThreads;
+
     pthread_t recvThreadId, sendThreadId;   //!< receive and send thread id's
     int       recvPfd[2],   sendPfd[2];     //!< notification pipe descriptors
     int       recvEpfd,     sendEpfd;       //!< receive and send epoll file descriptors

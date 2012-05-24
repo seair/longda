@@ -34,6 +34,7 @@
 #include "net/iovec.h"
 #include "net/connmgr.h"
 #include "comm/commdataevent.h"
+#include "conf/ini.h"
 
 //! Implementation of Net
 /**
@@ -42,6 +43,14 @@
  * @date   5/05/07
  * 
  */
+
+#define INFORM_WITH_SIGNAL  0
+
+typedef struct _DataThreadInputParam
+{
+    Net             *netInstance;
+    int              threadIndex;
+} DataThreadInputParam;
 
 Net::Net(Stage *commStage) :
         initFlag(false), shutdownFlag(false), connMgr(), mCommStage(commStage)
@@ -106,22 +115,103 @@ int Net::setupSelectors()
     return 0;
 }
 
+int Net::startDataThread(int threadIndex, bool isSend)
+{
+    DataThreadParam *dataTParam = new DataThreadParam();
+    if (dataTParam == NULL)
+    {
+        LOG_ERROR("Failed to new DataThreadParam");
+        return -1;
+    }
+
+    DataThreadInputParam *threadParam = new DataThreadInputParam();
+    if (threadParam == NULL)
+    {
+        LOG_ERROR("Failed to new DataThreadInputParam");
+        delete dataTParam;
+        return -1;
+    }
+    threadParam->netInstance = this;
+    threadParam->threadIndex = threadIndex;
+
+    if (isSend)
+    {
+        int rc = pthread_create(&dataTParam->tid, NULL, SendThread, threadParam);
+        if (rc)
+        {
+            LOG_ERROR("Failed to create send data thread, %d:%s",
+                    rc, strerror(rc));
+            delete threadParam;
+            delete dataTParam;
+            return rc;
+        }
+
+        sendDataThreads.push_back(dataTParam);
+
+        LOG_INFO("Successfully start %d send data thread", threadIndex);
+
+        return 0;
+    }
+    else
+    {
+        int rc = pthread_create(&dataTParam->tid, NULL, RecvThread, threadParam);
+        if (rc)
+        {
+            LOG_ERROR("Failed to create recv data thread, %d:%s",
+                    rc, strerror(rc));
+            delete threadParam;
+            delete dataTParam;
+            return rc;
+        }
+
+        recvDataThreads.push_back(dataTParam);
+
+        LOG_INFO("Successfully start %d recv data thread", threadIndex);
+
+        return 0;
+    }
+
+}
+
 int Net::startThreads()
 {
     int rc;
-    rc = pthread_create(&recvThreadId, NULL, RecvThread, this);
+    rc = pthread_create(&recvThreadId, NULL, RecvEPollThread, this);
     if (rc != 0)
     {
-        LOG_ERROR("create recv thread failed, %d:%s", rc, strerror(rc));
+        LOG_ERROR("create recv epoll thread failed, %d:%s", rc, strerror(rc));
         return rc;
     }
-    rc = pthread_create(&sendThreadId, NULL, SendThread, this);
+    rc = pthread_create(&sendThreadId, NULL, SendEPollThread, this);
     if (rc != 0)
     {
-        LOG_ERROR("create send thread failed, %d:%s", rc, strerror(rc));
+        LOG_ERROR("create send thread epoll failed, %d:%s", rc, strerror(rc));
         return rc;
     }
 
+    std::string key = "NetThreadCount";
+    std::string netThreadStr = theGlobalProperties()->get(key, "8", "Default");
+    int         netThreadCount;
+    CLstring::strToVal(netThreadStr, netThreadCount);
+
+    for (int i = 0; i < netThreadCount; i++)
+    {
+        rc = startDataThread(i, true);
+        if (rc)
+        {
+            LOG_ERROR("Failed to create send data thread %d", i);
+            return rc;
+        }
+
+        rc = startDataThread(i, false);
+        if (rc)
+        {
+            LOG_ERROR("Failed to create recv data thread %d", i);
+            return rc;
+        }
+    }
+
+    LOG_INFO("Successfully create network threads");
     return 0;
 }
 
@@ -178,6 +268,8 @@ int Net::shutdown()
         return -EINVAL;
     }
 
+    cleanupThreads();
+
     char thInfo[THREAD_INFO_LEN] =
     { 0 };
     strncpy(thInfo, THREAD_INFO_EXIT, THREAD_INFO_LEN - 1);
@@ -206,8 +298,120 @@ int Net::shutdown()
     return 0;
 }
 
+void Net::cleanupThreads()
+{
+    for(u32_t i = 0; i < sendDataThreads.size(); i++)
+    {
+        DataThreadParam *dataParam = sendDataThreads[i];
+
+        MUTEX_LOCK(&dataParam->mutex);
+        dataParam->sockQ.push_back(-1);
+#if INFORM_WITH_SIGNAL
+        COND_SIGNAL(&dataParam->cond);
+#endif
+        MUTEX_UNLOCK(&dataParam->mutex);
+    }
+
+    for(u32_t i = 0; i < recvDataThreads.size(); i++)
+    {
+        DataThreadParam *dataParam = recvDataThreads[i];
+
+        MUTEX_LOCK(&dataParam->mutex);
+        dataParam->sockQ.push_back(-1);
+#if INFORM_WITH_SIGNAL
+        COND_SIGNAL(&dataParam->cond);
+#endif
+        MUTEX_UNLOCK(&dataParam->mutex);
+    }
+
+    for(u32_t i = 0; i < sendDataThreads.size(); i++)
+    {
+        DataThreadParam *dataParam = sendDataThreads[i];
+
+        pthread_join(dataParam->tid, NULL);
+
+        delete dataParam;
+    }
+    sendDataThreads.clear();
+
+    for(u32_t i = 0; i < recvDataThreads.size(); i++)
+    {
+        DataThreadParam *dataParam = recvDataThreads[i];
+
+        pthread_join(dataParam->tid, NULL);
+
+        delete dataParam;
+    }
+    recvDataThreads.clear();
+
+    return ;
+}
+
+
+void Net::sendData(int sock)
+{
+    LOG_TRACE("enter");
+
+    /**
+     * @@@ Testing code
+     */
+    //connMgr.lock();
+    MUTEX_LOCK(&connMgr.mapMutex);
+    Conn* conn = connMgr.find(sock);
+    //connMgr.unlock();
+    MUTEX_UNLOCK(&connMgr.mapMutex);
+    if (conn == NULL)
+    {
+        LOG_INFO("conn has been removed");
+
+        return;
+    }
+
+    bool  exception = false;
+    try{
+        conn->sendProgress();
+    }catch(...)
+    {
+        exception = true;
+        LOG_ERROR("Occur exception");
+    }
+
+    //conn has already been acquire in Net::SendThread
+    conn->release();
+
+    if (exception)
+    {
+        removeConn(sock);
+    }
+
+    LOG_TRACE("exit");
+    return;
+}
+
+void Net::prepareSend(int sock, Conn *conn)
+{
+    LOG_TRACE("Enter");
+    if (conn)
+    {
+        LOG_DEBUG("Connection is ready to sending");
+        conn->setReadyToSend(true);
+    }
+
+    int threadIndex = sock % sendDataThreads.size();
+    DataThreadParam *dataParam = sendDataThreads[threadIndex];
+
+    MUTEX_LOCK(&dataParam->mutex);
+    dataParam->sockQ.push_back(sock);
+#if INFORM_WITH_SIGNAL
+    COND_SIGNAL(&dataParam->cond);
+#endif
+    MUTEX_UNLOCK(&dataParam->mutex);
+
+    LOG_TRACE("Exit");
+}
+
 void*
-Net::SendThread(void *arg)
+Net::SendEPollThread(void *arg)
 {
     Net* net = static_cast<Net*>(arg);
 
@@ -220,7 +424,7 @@ Net::SendThread(void *arg)
 
     struct epoll_event* events = new struct epoll_event[MAX_EPOLL_EVENTS];
 
-    LOG_INFO("Start network send thread");
+    LOG_INFO("Start network send epoll thread");
 
     while (true)
     {
@@ -248,14 +452,19 @@ Net::SendThread(void *arg)
                 continue;
             }
 
-            cm->lock();
+            /**
+             * @@@ testing code
+             */
+            //cm->lock();
+            MUTEX_LOCK(&cm->mapMutex);
             Conn* conn = cm->find(fd);
             if (conn == NULL)
             {
                 LOG_INFO("conn has been removed");
 
                 net->delSendSelector(fd);
-                cm->unlock();
+                //cm->unlock();
+                MUTEX_UNLOCK(&cm->mapMutex);
                 continue;
             }
 
@@ -266,9 +475,11 @@ Net::SendThread(void *arg)
                 LOG_ERROR("detected broken inet socket %s:%d - removing conn",
                         conn->getPeerEp().getHostName(), conn->getPeerEp().getPort());
 
-                net->removeConn(fd);
+
                 conn->release();
-                cm->unlock();
+                //cm->unlock();
+                MUTEX_UNLOCK(&cm->mapMutex);
+                net->removeConn(fd);
                 continue;
             }
 
@@ -283,9 +494,10 @@ Net::SendThread(void *arg)
                 {
                     LOG_ERROR("detect connect error, removing conn, socket error:%d",
                             error);
-                    net->removeConn(fd);
                     conn->release();
-                    cm->unlock();
+                    //cm->unlock();
+                    MUTEX_UNLOCK(&cm->mapMutex);
+                    net->removeConn(fd);
                     continue;
                 }
 
@@ -293,10 +505,12 @@ Net::SendThread(void *arg)
                 conn->setState(Conn::CONN_READY);
             }
 
-            cm->unlock();
+            net->prepareSend(fd, conn);
 
-            CommSendEvent *event = new CommSendEvent(conn);
-            net->getCommStage()->addEvent(event);
+            conn->release();
+            //cm->unlock();
+            MUTEX_UNLOCK(&cm->mapMutex);
+
         }
 
         // Check whether the thread has received exit notification
@@ -311,8 +525,257 @@ Net::SendThread(void *arg)
     pthread_exit(0);
 }
 
+void Net::sending(int threadIndex)
+{
+    LOG_INFO("%d send data thread has been started", threadIndex);
+
+    DataThreadParam * dataTParam = sendDataThreads[threadIndex];
+
+#if INFORM_WITH_SIGNAL
+    MUTEX_LOCK(&dataTParam->mutex);
+
+    while(true)
+    {
+
+        COND_WAIT(&dataTParam->cond, &dataTParam->mutex);
+        if (dataTParam->sockQ.empty())
+        {
+            continue;
+        }
+
+        while(dataTParam->sockQ.empty() == false)
+        {
+            int sock = dataTParam->sockQ.front();
+            dataTParam->sockQ.pop_front();
+            MUTEX_UNLOCK(&dataTParam->mutex);
+
+            if (sock < 0)
+            {
+                LOG_INFO("%d thread receive quit signal", threadIndex);
+                return ;
+            }
+
+            sendData(sock);
+            MUTEX_LOCK(&dataTParam->mutex);
+        }
+
+    }
+#else
+
+    while (true)
+    {
+        if (dataTParam->sockQ.empty())
+        {
+            usleep(10000);
+            continue;
+        }
+
+        while (dataTParam->sockQ.empty() == false)
+        {
+            int sock = dataTParam->sockQ.front();
+            dataTParam->sockQ.pop_front();
+
+            if (sock < 0)
+            {
+                LOG_INFO("%d thread receive quit signal", threadIndex);
+                return ;
+            }
+
+            sendData(sock);
+        }
+
+    }
+#endif
+
+}
+
+void* Net::SendThread(void *arg)
+{
+    DataThreadInputParam *dataParam = static_cast<DataThreadInputParam *>(arg);
+
+    Net* net = dataParam->netInstance;
+    int  threadIndex = dataParam->threadIndex;
+
+    delete dataParam;
+
+    net->sending(threadIndex);
+    LOG_INFO("%d thread exit", threadIndex);
+
+    pthread_exit(0);
+}
+
+void Net::recvData(int sock)
+{
+    LOG_TRACE("enter");
+
+    // Read from socket
+    ConnMgr* cm = &getConnMgr();
+    Conn *conn = NULL;
+
+    /**
+     * @@@ testing code
+     */
+    //cm->lock();
+    MUTEX_LOCK(&cm->mapMutex);
+    conn = cm->find(sock);
+    MUTEX_UNLOCK(&cm->mapMutex);
+    //cm->unlock();
+    if (NULL == conn)
+    {
+        LOG_ERROR("No connection with socket %d", sock);
+        //delRecvSelector(sock);
+        return;
+    }
+
+    Conn::status_t crc = Conn::CONN_ERR_UNAVAIL;
+    try{
+        crc = conn->recvProgress(true);
+    }catch(...)
+    {
+        LOG_ERROR("Occur exception");
+        crc = Conn::CONN_ERR_BROKEN;
+    }
+
+    LOG_TRACE("After recvProgress");
+    if (crc == Conn::SUCCESS)
+    {
+        conn->release();
+        LOG_TRACE("exit");
+        return;
+    }
+    else if (crc == Conn::CONN_READY)
+    {
+        // There is more data on this connection.
+
+        // old logic is add the socket/connection to recv thread's readyConns
+
+        //here just add it to epoll
+
+        conn->release();
+
+        addToRecvSelector(sock);
+
+        LOG_TRACE("exit");
+        return;
+    }
+    else if (crc == Conn::CONN_ERR_BROKEN)
+    {
+        LOG_DEBUG("removing broken conn");
+
+        conn->release();
+        removeConn(sock);
+
+
+        LOG_TRACE("exit");
+        return;
+    }
+    else
+    {
+        // other error
+        // CONN_ERR_UNAVAIL
+        conn->release();
+        LOG_ERROR("recvProgress error: %d", crc);
+
+        return;
+    }
+}
+
+void Net::recving(int threadIndex)
+{
+    LOG_INFO("%d recving data thread has been started", threadIndex);
+
+    DataThreadParam * dataTParam = recvDataThreads[threadIndex];
+
+#if INFORM_WITH_SIGNAL
+    MUTEX_LOCK(&dataTParam->mutex);
+
+    while (true)
+    {
+        COND_WAIT(&dataTParam->cond, &dataTParam->mutex);
+        if (dataTParam->sockQ.empty())
+        {
+            continue;
+        }
+
+        while (dataTParam->sockQ.empty() == false)
+        {
+            int sock = dataTParam->sockQ.front();
+            dataTParam->sockQ.pop_front();
+            MUTEX_UNLOCK(&dataTParam->mutex);
+
+            if (sock < 0)
+            {
+                LOG_INFO("recv %d thread receive quit signal", threadIndex);
+                return ;
+            }
+
+            recvData(sock);
+            MUTEX_LOCK(&dataTParam->mutex);
+        }
+
+    }
+#else
+
+    while (true)
+    {
+        if (dataTParam->sockQ.empty())
+        {
+            usleep(10000);
+            continue;
+        }
+
+        while (dataTParam->sockQ.empty() == false)
+        {
+            int sock = dataTParam->sockQ.front();
+            dataTParam->sockQ.pop_front();
+
+            if (sock < 0)
+            {
+                LOG_INFO(" recv %d thread receive quit signal", threadIndex);
+                return ;
+            }
+
+            recvData(sock);
+        }
+
+    }
+#endif
+}
+
+void* Net::RecvThread(void *arg)
+{
+    DataThreadInputParam *dataParam = static_cast<DataThreadInputParam *>(arg);
+
+    Net* net = dataParam->netInstance;
+    int threadIndex = dataParam->threadIndex;
+
+    delete dataParam;
+
+    net->recving(threadIndex);
+
+    LOG_INFO("%d thread exit", threadIndex);
+    pthread_exit(0);
+}
+
+void Net::prepareRecv(int sock)
+{
+    LOG_TRACE("Enter");
+
+    int threadIndex = sock % recvDataThreads.size();
+    DataThreadParam *dataParam = recvDataThreads[threadIndex];
+
+    MUTEX_LOCK(&dataParam->mutex);
+    dataParam->sockQ.push_back(sock);
+#if INFORM_WITH_SIGNAL
+    COND_SIGNAL(&dataParam->cond);
+#endif
+    MUTEX_UNLOCK(&dataParam->mutex);
+
+    LOG_TRACE("Exit");
+}
+
 void*
-Net::RecvThread(void *arg)
+Net::RecvEPollThread(void *arg)
 {
     Net* net = static_cast<Net*>(arg);
 
@@ -333,7 +796,7 @@ Net::RecvThread(void *arg)
     Conn *conn;
     bool exitCmd;
 
-    LOG_INFO("Start net receive thread");
+    LOG_INFO("Start net receive epoll thread");
 
     ASSERT((epfd && (notifyFd >= 0) && cm), "incorrect arguments");
 
@@ -373,8 +836,14 @@ Net::RecvThread(void *arg)
                 else
                 {
                     LOG_INFO("broken socket");
-                    cm->lock();
+                    /**
+                     * @@@ testing code
+                     */
+                    MUTEX_LOCK(&cm->mapMutex);
+                    //cm->lock();
                     conn = cm->find(fd);
+                    //cm->unlock();
+                    MUTEX_UNLOCK(&cm->mapMutex);
                     if (conn)
                     {
                         LOG_INFO("conn found - removing");
@@ -387,7 +856,6 @@ Net::RecvThread(void *arg)
                         LOG_INFO("conn has already been removed");
                         net->delRecvSelector(fd);
                     }
-                    cm->unlock();
                 }
                 continue;
             }
@@ -398,8 +866,7 @@ Net::RecvThread(void *arg)
                 continue;
             }
 
-            CommRecvEvent *event = new CommRecvEvent(fd);
-            net->getCommStage()->addEvent(event);
+            net->prepareRecv(fd);
         }
 
         // Check whether the thread has received exit notification
@@ -417,7 +884,11 @@ Conn* Net::getConn(EndPoint& ep, bool serverSide, int sock)
 {
     LOG_TRACE("enter");
 
-    connMgr.lock();
+    /**
+     * @@@ testing code
+     */
+    //connMgr.lock();
+    MUTEX_LOCK(&connMgr.mapMutex);
     Conn* conn = NULL;
 
     if (sock != -1)
@@ -439,7 +910,8 @@ Conn* Net::getConn(EndPoint& ep, bool serverSide, int sock)
         conn = new Conn();
         if (!conn)
         {
-            connMgr.unlock();
+            //connMgr.unlock();
+            MUTEX_UNLOCK(&connMgr.mapMutex);
             LOG_ERROR("Failed to new conn");
             throw NetEx(NET_ERR_CONN_NOTFOUND, "Failed to new conn");
 
@@ -449,7 +921,8 @@ Conn* Net::getConn(EndPoint& ep, bool serverSide, int sock)
         Conn::status_t crc = conn->connect(ep, sock);
         if (crc == Conn::CONN_ERR_CONNECT)
         {
-            connMgr.unlock();
+            //connMgr.unlock();
+            MUTEX_UNLOCK(&connMgr.mapMutex);
             conn->cleanup(Conn::ON_ERROR);
 
             std::string hostPort;
@@ -464,8 +937,10 @@ Conn* Net::getConn(EndPoint& ep, bool serverSide, int sock)
         int connStatus = conn->connCallback(Conn::ON_CONNECT);
         if (connStatus)
         {
+            MUTEX_UNLOCK(&connMgr.mapMutex);
             conn->cleanup(Conn::ON_ERROR);
-            connMgr.unlock();
+            //connMgr.unlock();
+
             std::string msg = "conn callback failed";
             throw NetEx(NET_ERR_CONNECT, msg);
         }
@@ -485,9 +960,11 @@ Conn* Net::getConn(EndPoint& ep, bool serverSide, int sock)
         Net::status_t rc = addToSendSelector(sock);
         if (rc != SUCCESS)
         {
-            //conn->cleanup will be done in connMgr->remove
+            MUTEX_UNLOCK(&connMgr.mapMutex);
+            //conn->cleanup will be done in connMgr.remove
             removeConn(sock);
-            connMgr.unlock();
+            //connMgr.unlock();
+
             throw NetEx(NET_ERR_EPOLL, "cannot add socket to send selector");
         }
 
@@ -495,9 +972,11 @@ Conn* Net::getConn(EndPoint& ep, bool serverSide, int sock)
         rc = addToRecvSelector(sock);
         if (rc != SUCCESS)
         {
-            //conn->cleanup will be done in connMgr->remove
+            //conn->cleanup will be done in connMgr.remove
+            MUTEX_UNLOCK(&connMgr.mapMutex);
             removeConn(sock);
-            connMgr.unlock();
+
+            //connMgr.unlock();
             throw NetEx(NET_ERR_EPOLL, "cannot add socket to recv selector");
         }
 
@@ -506,7 +985,8 @@ Conn* Net::getConn(EndPoint& ep, bool serverSide, int sock)
     else if (!conn && serverSide)
     {
         connMgr.list();
-        connMgr.unlock();
+        //connMgr.unlock();
+        MUTEX_UNLOCK(&connMgr.mapMutex);
         LOG_WARN("client at %s:%d has already closed the connection",
                 ep.getHostName(), ep.getPort());
 
@@ -514,7 +994,8 @@ Conn* Net::getConn(EndPoint& ep, bool serverSide, int sock)
         throw NetEx(NET_ERR_CONN_NOTFOUND, "conn already removed");
     }
 
-    connMgr.unlock();
+    //connMgr.unlock();
+    MUTEX_UNLOCK(&connMgr.mapMutex);
 
     LOG_TRACE("exit");
 
@@ -526,12 +1007,17 @@ void Net::addConn(Conn* conn, EndPoint& ep, int sock)
     LOG_TRACE("enter: adding conn to: %s:%d", ep.getHostName(), ep.getPort());
 
     // Conn is allocated by caller
-    connMgr.lock();
+    /**
+     * @@@ testing code
+     */
+    //connMgr.lock();
+    MUTEX_LOCK(&connMgr.mapMutex);
     Conn* tconn = connMgr.find(sock);
     if (tconn)
     {
         tconn->release();
-        connMgr.unlock();
+        //connMgr.unlock();
+        MUTEX_UNLOCK(&connMgr.mapMutex);
 
         // Cleanup the connection before return
         conn->cleanup(Conn::ON_ERROR);
@@ -552,18 +1038,21 @@ void Net::addConn(Conn* conn, EndPoint& ep, int sock)
     status_t rc = addToRecvSelector(sock);
     if (rc != SUCCESS)
     {
+        MUTEX_UNLOCK(&connMgr.mapMutex);
+        //connMgr.unlock();
         removeConn(sock);
-        connMgr.unlock();
         throw NetEx(NET_ERR_EPOLL, "Cannot add socket to receive selector");
     }
     rc = addToSendSelector(sock);
     if (rc != SUCCESS)
     {
+        MUTEX_UNLOCK(&connMgr.mapMutex);
         removeConn(sock);
-        connMgr.unlock();
+        //connMgr.unlock();
         throw NetEx(NET_ERR_EPOLL, "Cannot add socket to send selector");
     }
-    connMgr.unlock();
+    //connMgr.unlock();
+    MUTEX_UNLOCK(&connMgr.mapMutex);
 
     LOG_TRACE("exit");
 }
@@ -571,17 +1060,22 @@ void Net::addConn(Conn* conn, EndPoint& ep, int sock)
 Net::status_t Net::delConn(EndPoint& ep)
 {
     LOG_TRACE("enter");
-    connMgr.lock();
+    /**
+     * @@@ TESTING CODE
+     */
+    MUTEX_LOCK(&connMgr.mapMutex);
+    //connMgr.lock();
     Conn *conn = connMgr.find(ep);
+    MUTEX_UNLOCK(&connMgr.mapMutex);
+    //connMgr.unlock();
     if (!conn)
     {
-        connMgr.unlock();
         return NET_ERR_CONN_NOTFOUND;
     }
     // remove from ConnMgr and disconnect
-    removeConn(conn);
     conn->release();
-    connMgr.unlock();
+    removeConn(conn->getSocket());
+
     LOG_TRACE("exit");
 
     return SUCCESS;
@@ -630,7 +1124,7 @@ void Net::delSendSelector(int sock)
     }
     else
     {
-        LOG_INFO("Dlete %d in send epoll ", sock);
+        LOG_INFO("Delete %d in send epoll ", sock);
     }
 }
 
@@ -658,23 +1152,20 @@ void Net::delRecvSelector(int sock)
     }
     else
     {
-        LOG_INFO("Dlete %d in recv epoll ", sock);
+        LOG_INFO("Delete %d in recv epoll ", sock);
     }
-}
-
-// Has to be called within the context of a locked connMgr
-Net::status_t Net::removeConn(Conn* conn)
-{
-    if (!conn)
-        return NET_ERR_CONN_NOTFOUND;
-
-    ConnMgr::status_t rc = connMgr.remove(conn);
-    return (rc == ConnMgr::SUCCESS) ? SUCCESS : NET_ERR_CONN_NOTFOUND;
 }
 
 Net::status_t Net::removeConn(int sock)
 {
+    //connMgr.lock();
+    /**
+     * @@@ TESTING CODE
+     */
+    MUTEX_LOCK(&connMgr.mapMutex);
     ConnMgr::status_t rc = connMgr.remove(sock);
+    //connMgr.unlock();
+    MUTEX_UNLOCK(&connMgr.mapMutex);
     return (rc == ConnMgr::SUCCESS) ? SUCCESS : NET_ERR_CONN_NOTFOUND;
 }
 
@@ -687,9 +1178,14 @@ void Net::acceptConns()
 
 size_t Net::removeInactive()
 {
-    connMgr.lock();
+    /**
+     * @@@ TESTING CODE
+     */
+    //connMgr.lock();
+    MUTEX_LOCK(&connMgr.mapMutex);
     size_t ret = connMgr.removeInactive();
-    connMgr.unlock();
+    MUTEX_UNLOCK(&connMgr.mapMutex);
+    //connMgr.unlock();
 
     return ret;
 }

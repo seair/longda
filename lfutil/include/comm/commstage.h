@@ -99,23 +99,15 @@ protected:
 
 
 
-    void sendData(CommSendEvent *event);
-
-    void recvData(CommRecvEvent *event);
-
-
 private:
-
-
 
     bool                        mServer;
     Net                        *mNet;
 
     Stage                      *mNextStage;
 
-    u32_t                       mMsgCounter;    //!< a counter for the messages
+    u32_t                       mSendCounter;    //!< a counter for the messages
     pthread_mutex_t             mCounterMutex;   //!< counter lock
-
 };
 
 

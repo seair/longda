@@ -58,6 +58,8 @@ int Conn::connCallback(Conn::conn_t state)
         // won't free mRecvCb only when disconnect connection
         mRecvCb = (cb_param_t *)iov->getCallbackParam();
 
+        LOG_TRACE("exit\n");
+
         return SUCCESS;
     }
     else if (state == Conn::ON_DISCONNECT)
@@ -84,6 +86,7 @@ int Conn::connCallback(Conn::conn_t state)
 
         ((CommStage *)gCommStage)->clearSelector(mSock);
 
+        LOG_TRACE("exit\n");
         return SUCCESS;
     }
     else
@@ -97,6 +100,7 @@ int Conn::connCallback(Conn::conn_t state)
 
 int Conn::recvErrCb(IoVec *iov, cb_param_t* cbp, IoVec::state_t state, bool freeIov)
 {
+    LOG_TRACE("enter");
     if (freeIov)
     {
         if (iov->getAllocType() == IoVec::SYS_ALLOC)
@@ -296,6 +300,8 @@ int Conn::repostReusedIoVec(const size_t baseLen, IoVec *iov, cb_param_t* cbp)
 
 int Conn::recvHeaderCb(IoVec *iov, cb_param_t* cbp, IoVec::state_t state)
 {
+    LOG_TRACE("enter");
+
     LOG_TRACE(MSG_TYPE_RPC);
 
     PackHeader *hdr = static_cast<PackHeader *>(iov->getBase());
@@ -324,6 +330,9 @@ int Conn::recvHeaderCb(IoVec *iov, cb_param_t* cbp, IoVec::state_t state)
         u64_t leftSize = msgLen + cbp->attLen + cbp->fileLen;
 
         prepare2Drain(iov, cbp, conn, leftSize);
+
+        LOG_TRACE("exit");
+
         return Conn::CONN_ERR_MISMATCH;
     }
 
@@ -340,14 +349,17 @@ int Conn::recvHeaderCb(IoVec *iov, cb_param_t* cbp, IoVec::state_t state)
         u64_t leftSize = msgLen + cbp->attLen + cbp->fileLen;
 
         prepare2Drain(iov, cbp, conn, leftSize);
+        LOG_TRACE("exit");
         return rc;
     }
-
+    LOG_TRACE("exit");
     return SUCCESS;
 }
 
 void Conn::prepare2Drain(IoVec *iov, cb_param_t* cbp, Conn *conn, u64_t leftSize)
 {
+    LOG_TRACE("enter");
+
     int   rc = SUCCESS;
     if (leftSize > 0)
     {
@@ -370,6 +382,8 @@ void Conn::prepare2Drain(IoVec *iov, cb_param_t* cbp, Conn *conn, u64_t leftSize
         }
         conn->setNextRecv(Conn::HEADER);
     }
+
+    LOG_TRACE("exit");
     return ;
 }
 
@@ -516,6 +530,8 @@ int Conn::recvPrepareFileIov(cb_param_t* cbp, Conn *conn)
 
 int Conn::recvReqMsg(Request *msg, IoVec *iov, cb_param_t* cbp, Conn *conn)
 {
+    LOG_TRACE("enter");
+
     // This is a request message
     LOG_DEBUG("received a request message");
 
@@ -575,11 +591,14 @@ int Conn::recvReqMsg(Request *msg, IoVec *iov, cb_param_t* cbp, Conn *conn)
 
     checkEventReady(eventReady, conn, iov, cbp);
 
+    LOG_TRACE("exit");
     return SUCCESS;
 }
 
 int Conn::recvPrepareRspAttach(MsgDesc &mdresp, cb_param_t* cbp, Conn *conn)
 {
+    LOG_TRACE("enter");
+
     bool alloc = true;
     int rc = 0;
     if (mdresp.attachMems.size() == 0)
@@ -664,11 +683,14 @@ int Conn::recvPrepareRspAttach(MsgDesc &mdresp, cb_param_t* cbp, Conn *conn)
 
     conn->setNextRecv(Conn::ATTACHMENT);
 
+    LOG_TRACE("exit");
     return SUCCESS;
 }
 
 void Conn::checkEventReady(bool eventReady, Conn *conn, IoVec *iov, cb_param_t *cbp)
 {
+    LOG_TRACE("enter");
+
     if (eventReady == true)
     {
         eventDone(cbp->cev, conn);
@@ -693,11 +715,14 @@ void Conn::checkEventReady(bool eventReady, Conn *conn, IoVec *iov, cb_param_t *
         delete iov;
     }
 
+    LOG_TRACE("exit");
     return ;
 }
 
 int Conn::recvRspMsg(Response *rsp, IoVec *iov, cb_param_t* cbp, Conn *conn)
 {
+    LOG_TRACE("enter");
+
     // This is a response message
     // We need to check if we have a pre-posted response for scatter
     LOG_TRACE("received a response message");
@@ -790,11 +815,13 @@ int Conn::recvRspMsg(Response *rsp, IoVec *iov, cb_param_t* cbp, Conn *conn)
 
     checkEventReady(eventReady, conn, iov, cbp);
 
+    LOG_TRACE("exit");
     return SUCCESS;
 }
 
 void Conn::eventDone(CommEvent *cev, Conn *conn)
 {
+    LOG_TRACE("enter");
 
     ASSERT(cev, "invalid comm event pointer");
 
@@ -830,11 +857,14 @@ void Conn::eventDone(CommEvent *cev, Conn *conn)
 
     }
 
+    LOG_TRACE("exit");
     return ;
 }
 
 void Conn::sendBadMsgErr(Conn* conn, char * base, CommEvent::status_t errCode, const char *errMsg)
 {
+    LOG_TRACE("enter");
+
     // in order to get reqId
     Message *req = new Message(MESSAGE_BASIC);
     int rc = req->deserialize(base, req->getSerialSize());
@@ -871,11 +901,14 @@ void Conn::sendBadMsgErr(Conn* conn, char * base, CommEvent::status_t errCode, c
 
     ((CommStage *)gCommStage)->sendResponse(rspCev);
 
+    LOG_TRACE("exit");
     return ;
 }
 
 int Conn::recvAttach(IoVec *iov, cb_param_t* cbp, Conn *conn)
 {
+    LOG_TRACE("enter");
+
     bool eventReady = false;
 
     if (cbp->fileLen == 0)
@@ -894,11 +927,14 @@ int Conn::recvAttach(IoVec *iov, cb_param_t* cbp, Conn *conn)
     }
 
     checkEventReady(eventReady, conn, iov, cbp);
+
+    LOG_TRACE("exit");
     return SUCCESS;
 }
 
 void Conn::generateRcvFileName(std::string &fileName, CommEvent *cev)
 {
+
     std::string fileDir = gSelectDir->select();
 
     const char  *peerHost =  cev->getTargetEp().getHostName();
@@ -918,6 +954,8 @@ void Conn::generateRcvFileName(std::string &fileName, CommEvent *cev)
 
 int Conn::recvFile(IoVec *iov, cb_param_t* cbp, Conn *conn)
 {
+    LOG_TRACE("enter");
+
     u32_t blockCount = (cbp->fileLen + gMaxBlockSize - 1)/gMaxBlockSize;
     if (cbp->remainVecs == blockCount)
     {
@@ -966,12 +1004,15 @@ int Conn::recvFile(IoVec *iov, cb_param_t* cbp, Conn *conn)
         checkEventReady(true, conn, iov, cbp);
     }
 
+    LOG_TRACE("exit");
     return SUCCESS;
 
 }
 
 int Conn::recvDrain(IoVec *iov, cb_param_t* cbp, Conn *conn)
 {
+    LOG_TRACE("enter");
+
     cbp->remainVecs--;
     if (cbp->remainVecs == 0)
     {
@@ -996,6 +1037,7 @@ int Conn::recvDrain(IoVec *iov, cb_param_t* cbp, Conn *conn)
         conn->postRecv(iov);
     }
 
+    LOG_TRACE("exit");
     return SUCCESS;
 
 }
@@ -1012,7 +1054,11 @@ int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)
 
     if (state == IoVec::CLEANUP || state == IoVec::ERROR)
     {
-        return recvErrCb(iov, cbp, state, true);
+        int rc =  recvErrCb(iov, cbp, state, true);
+
+        LOG_TRACE("exit");
+
+        return rc;
     }
 
     // Conn and CommStage must be set and valid.
@@ -1026,7 +1072,10 @@ int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)
     {
     case Conn::HEADER:
     {
-        return recvHeaderCb(iov, cbp, state);
+        int rc = recvHeaderCb(iov, cbp, state);
+
+        LOG_TRACE("exit");
+        return rc;
 
     }
         break;
@@ -1049,6 +1098,7 @@ int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)
             u64_t leftSize = cbp->attLen + cbp->fileLen;
             prepare2Drain(iov, cbp, conn, leftSize);
 
+            LOG_TRACE("exit");
             return Conn::CONN_ERR_MISMATCH;
         }
         else if (dynamic_cast<Request *>(msg))
@@ -1059,6 +1109,8 @@ int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)
                 u64_t leftSize = cbp->attLen + cbp->fileLen;
                 prepare2Drain(iov, cbp, conn, leftSize);
             }
+
+            LOG_TRACE("exit");
             return rc;
 
         }
@@ -1070,6 +1122,8 @@ int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)
                 u64_t leftSize = cbp->attLen + cbp->fileLen;
                 prepare2Drain(iov, cbp, conn, leftSize);
             }
+
+            LOG_TRACE("exit");
             return rc;
 
         }
@@ -1080,6 +1134,7 @@ int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)
             u64_t leftSize = cbp->attLen + cbp->fileLen;
             prepare2Drain(iov, cbp, conn, leftSize);
 
+            LOG_TRACE("exit");
             return Conn::CONN_ERR_MISMATCH;
         }
 
@@ -1097,8 +1152,12 @@ int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)
             {
                 u64_t leftSize = cbp->fileLen;
                 prepare2Drain(iov, cbp, conn, leftSize);
+
+                LOG_TRACE("exit");
                 return rc;
             }
+
+            LOG_TRACE("exit");
             return SUCCESS;
         }
         else
@@ -1108,6 +1167,8 @@ int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)
                 delete (char *)iov->getBase();
             }
             delete iov;
+
+            LOG_TRACE("exit");
             return SUCCESS;
         }
     }
@@ -1116,18 +1177,26 @@ int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)
     case Conn::ATTACHFILE:
     {
 
-        return recvFile(iov, cbp, conn);
+        int rc = recvFile(iov, cbp, conn);
+
+        LOG_TRACE("exit");
+
+        return rc;
     }
         break;
 
     case Conn::DRAIN:
     {
-        return recvDrain(iov, cbp, conn);
+
+        int rc = recvDrain(iov, cbp, conn);
+
+        LOG_TRACE("exit");
+        return rc;
     }
         break;
 
     default:
-        LOG_TRACE("unexpected mNextRecvPart parameter");
+        LOG_ERROR("unexpected mNextRecvPart parameter");
         return IoVec::CB_ERROR;
     }
 
@@ -1142,6 +1211,8 @@ int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)
 
 int Conn::sendReqCallback(cb_param_t* cbp, IoVec::state_t state)
 {
+    LOG_TRACE("enter");
+
     Conn *conn = cbp->conn;
     CommEvent *cev = cbp->cev;
 
@@ -1174,12 +1245,16 @@ int Conn::sendReqCallback(cb_param_t* cbp, IoVec::state_t state)
     }
 
     delete cbp;
+
+    LOG_TRACE("exit");
     return SUCCESS;
 
 }
 
 int Conn::sendRspCallback(cb_param_t* cbp, IoVec::state_t state)
 {
+    LOG_TRACE("enter");
+
     CommStage* cs = (CommStage *)cbp->cs;
     ASSERT(cs, "bad CommStage pointer");
 
@@ -1207,11 +1282,14 @@ int Conn::sendRspCallback(cb_param_t* cbp, IoVec::state_t state)
 
     delete cbp;
 
+    LOG_TRACE("exit");
     return SUCCESS;
 }
 
 int Conn::sendCallback(IoVec *iov, void *param, IoVec::state_t state)
 {
+    LOG_TRACE("enter");
+
     char *base = static_cast<char *>(iov->getBase());
     cb_param_t* cbp = static_cast<cb_param_t*>(param);
 
@@ -1221,7 +1299,11 @@ int Conn::sendCallback(IoVec *iov, void *param, IoVec::state_t state)
     delete iov;
 
     if (!cbp) // Nothing to do here
+    {
+        LOG_TRACE("exit");
         return SUCCESS;
+    }
+
 
     //check whether send file
     if (state == IoVec::DONE && cbp->fileLen != 0)
@@ -1240,11 +1322,16 @@ int Conn::sendCallback(IoVec *iov, void *param, IoVec::state_t state)
     CommEvent *cev = cbp->cev;
     if (cev->isServerGen())
     {
-        return sendRspCallback(cbp, state);
+        int rc = sendRspCallback(cbp, state);
+
+        LOG_TRACE("exit");
+        return rc;
     }
     else
     {
-        return sendReqCallback(cbp, state);
+        int rc = sendReqCallback(cbp, state);
+        LOG_TRACE("exit");
+        return rc;
     }
 
 }

@@ -109,9 +109,6 @@ public:
 public:
     EndPoint mSourceEp;
     char     mProtocal[MAX_PROTOCAL_LEN];
-
-
-
 };
 
 

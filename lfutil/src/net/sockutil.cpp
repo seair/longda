@@ -295,7 +295,8 @@ Sock::createSelector(int notifyFd, int& epfd)
     ev.data.fd = notifyFd;
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, notifyFd, &ev) < 0) {
 
-        LOG_ERROR("Sock::createSelector:can't add notifyFd socket\n");
+        LOG_ERROR("Sock::createSelector:can't add notifyFd socket, rc:%d:%s\n",
+                errno, strerror(errno));
         return ERR_EPOLL_ADD;
     }
 
@@ -315,6 +316,7 @@ Sock::addToSelector(int sock, dir_t dir, int epfd)
         ev.events |= EPOLLOUT;
     ev.data.fd = sock;
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, sock, &ev) < 0) {
+        LOG_ERROR("Failed to add sock to epoll, rc :%d:%s", errno, strerror(errno));
         return ERR_EPOLL_ADD;
     } 
 

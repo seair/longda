@@ -8,3 +8,8 @@
 6. remove connection will delete epoll/done all events         -- is ok, test has been done
 7. provide automatically remove connection                     -- done
 8. test big file send
+
+9. connection broken will leading problem
+10. TPS can't bigger than 1000
+11. When enable debug_lock, it will report some lock have been unexcepted unlocked 
+12. sometime occur segment fault when start program

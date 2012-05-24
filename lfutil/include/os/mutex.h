@@ -21,7 +21,12 @@
 #include <pthread.h>
 #include <string>
 #include <map>
+#include <set>
+#include <sstream>
+#include <string.h>
+#include <errno.h>
 
+#define MUTEX_LOG         LOG_DEBUG
 
 class CLockTrace
 {
@@ -29,39 +34,66 @@ public:
     static void check (pthread_mutex_t *mutex, const int threadId, const char *file, const int line);
     static void lock (pthread_mutex_t *mutex, const int threadId, const char *file, const int line);
     static void tryLock(pthread_mutex_t *mutex, const int threadId, const char *file, const int line);
-    static void unlock(pthread_mutex_t *mutex);
+    static void unlock(pthread_mutex_t *mutex, const int threadId, const char *file, const int line);
+
+
 
     static void toString(std::string& result);
 
     class CLockID
+    {
+    public:
+        CLockID(const int threadId, const char *file, const int line) :
+                mFile(file), mThreadId(threadId), mLine(line)
         {
-        public:
-            CLockID(const int threadId, const char *file, const int line):
-                mFile(file),
-                mThreadId(threadId),
-                mLine(line)
-            {
 
-            }
+        }
+        CLockID() :
+                mFile(), mThreadId(0), mLine(0)
+        {
 
-            std::string toString()
-            {
-                std::string result;
+        }
 
-                result += "threaId:" + mThreadId;
-                result += ",file name:" + mFile;
-                result += ",line:" + mLine;
+        std::string toString()
+        {
+            std::ostringstream oss;
 
-                return result;
-            }
-        private:
-            std::string mFile;
-            int mThreadId;
-            int mLine;
-        };
+
+            oss << "threaId:" << mThreadId
+                << ",file name:" << mFile
+                << ",line:" << mLine;
+
+            return oss.str();
+        }
+    public:
+        std::string mFile;
+        int mThreadId;
+        int mLine;
+    };
+
+    static bool deadlockCheck(pthread_mutex_t *mutex, const int threadId,
+            const char *file, const int line);
+
+    static bool checkAllThreadsBlock(pthread_mutex_t *mutex, const char *file,
+            const int line);
+
+    static void insertLock(pthread_mutex_t *mutex, const int threadId,
+            const char *file, const int line);
+
+    static void setMaxBlockThreads(int blockNum)
+    {
+        mMaxBlockTids = blockNum;
+    }
 protected:
 
-    static std::map<pthread_mutex_t *, CLockID> mLocks;
+    static std::map<pthread_mutex_t *, CLockID>        mLocks;
+    static std::map<pthread_mutex_t *, CLockID>        mUnLocks;
+    static std::map<pthread_mutex_t *, int>            mWaitTimes;
+    static std::map<int, pthread_mutex_t *>            mWaitLocks;
+    static std::map<int, std::set<pthread_mutex_t *> > mOwnLocks;
+
+    static pthread_mutex_t                      mMapMutex;
+    static int                                  mMaxBlockTids;
 };
 
 //Open this macro in Makefile
@@ -95,7 +127,7 @@ LOG_INFO("PTHREAD_MUTEX_INITIALIZER");
 
 #define MUTEX_INIT(lock, attr)                                     \
 ({                                                                 \
-    LOG_INFO("pthread_mutex_init");                                \
+    LOG_INFO("pthread_mutex_init %p", lock);                       \
     int result = pthread_mutex_init(lock, attr);                   \
     result;                                                        \
 })
@@ -103,7 +135,7 @@ LOG_INFO("PTHREAD_MUTEX_INITIALIZER");
 #define MUTEX_DESTROY(lock)                                        \
 ({                                                                 \
     int result = pthread_mutex_destroy(lock);                      \
-    LOG_INFO("pthread_mutex_destroy");                             \
+    LOG_INFO("pthread_mutex_destroy %p", lock);                    \
     result;                                                        \
 })
 
@@ -112,6 +144,10 @@ LOG_INFO("PTHREAD_MUTEX_INITIALIZER");
     CLockTrace::check(mutex, (int)gettid(), __FILE__, __LINE__);   \
     int result = pthread_mutex_lock(mutex);                        \
     CLockTrace::lock(mutex, (int)gettid(), __FILE__, __LINE__);    \
+    if (result)                                                    \
+    {                                                              \
+        LOG_ERROR("Failed to lock %p, rc %d:%s", mutex, errno, strerror(errno));\
+    }                                                              \
     result;                                                        \
 })
 
@@ -129,8 +165,12 @@ LOG_INFO("PTHREAD_MUTEX_INITIALIZER");
 #define MUTEX_UNLOCK(lock)                                         \
 ({                                                                 \
     int result = pthread_mutex_unlock(lock);                       \
-    CLockTrace::unlock(lock);                                      \
-    LOG_INFO("mutex:%p has been ulocked", lock);                   \
+    CLockTrace::unlock(lock, (int)gettid(), __FILE__, __LINE__);   \
+    MUTEX_LOG("mutex:%p has been ulocked", lock);                  \
+    if (result)                                                    \
+    {                                                              \
+       LOG_ERROR("Failed to unlock %p, rc %d:%s", lock, errno, strerror(errno));\
+    }                                                              \
     result;                                                        \
 })
 
@@ -150,23 +190,25 @@ LOG_INFO("PTHREAD_MUTEX_INITIALIZER");
 
 #define COND_WAIT(cond, mutex)                                     \
 ({                                                                 \
-    LOG_INFO("pthread_cond_wait, cond:%p, mutex:%p", cond, mutex); \
-    CLockTrace::unlock(mutex);   \
-    int result = pthread_cond_wait(cond, mutex);                       \
-    CLockTrace::lock(mutex, (int)gettid(), __FILE__, __LINE__);     \
-    LOG_INFO("Lock %p under pthread_cond_wait", mutex);            \
+    MUTEX_LOG("pthread_cond_wait, cond:%p, mutex:%p", cond, mutex);\
+    CLockTrace::unlock(mutex, (int)gettid(), __FILE__, __LINE__);  \
+    int result = pthread_cond_wait(cond, mutex);                   \
+    CLockTrace::check(mutex, (int)gettid(), __FILE__, __LINE__);   \
+    CLockTrace::lock(mutex, (int)gettid(), __FILE__, __LINE__);    \
+    MUTEX_LOG("Lock %p under pthread_cond_wait", mutex);           \
     result ;                                                       \
 })
 
 #define COND_WAIT_TIMEOUT(cond, mutex, time, ret)                  \
 ({                                                                 \
-    LOG_INFO("pthread_cond_timedwait, cond:%p, mutex:%p", cond, mutex); \
-    CLockTrace::unlock(mutex);   \
+    MUTEX_LOG("pthread_cond_timedwait, cond:%p, mutex:%p", cond, mutex); \
+    CLockTrace::unlock(mutex, (int)gettid(), __FILE__, __LINE__);  \
     int result = pthread_cond_timedwait(cond, mutex, time);        \
     if (result == 0)                                               \
     {                                                              \
-        CLockTrace::lock(mutex, (int)gettid(), __FILE__, __LINE__); \
-        LOG_INFO("Lock %p under pthread_cond_wait", mutex);        \
+        CLockTrace::check(mutex, (int)gettid(), __FILE__, __LINE__);\
+        CLockTrace::lock(mutex, (int)gettid(), __FILE__, __LINE__);\
+        MUTEX_LOG("Lock %p under pthread_cond_wait", mutex);       \
     }                                                              \
     result;                                                        \
 })
@@ -174,14 +216,14 @@ LOG_INFO("PTHREAD_MUTEX_INITIALIZER");
 #define COND_SIGNAL(cond)                                          \
 ({                                                                 \
     int result = pthread_cond_signal(cond);                        \
-    LOG_INFO("pthread_cond_signal, cond:%p", cond);                \
+    MUTEX_LOG("pthread_cond_signal, cond:%p", cond);               \
     result ;                                                       \
 })
 
 #define COND_BRAODCAST(cond)                                       \
 ({                                                                 \
     int result = pthread_cond_broadcast(cond);                     \
-    LOG_INFO("pthread_cond_broadcast, cond:%p", cond);             \
+    MUTEX_LOG("pthread_cond_broadcast, cond:%p", cond);            \
     result;                                                        \
 })
 

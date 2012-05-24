@@ -29,6 +29,13 @@
 
 #include "net/endpoint.h"
 
+class CTestStatEvent : public StageEvent
+{
+public:
+    CTestStatEvent(){}
+    ~CTestStatEvent(){}
+};
+
 /**
  *
  */
@@ -58,12 +65,23 @@ protected:
     void triggerTestEvent(StageEvent *event);
 
     void retriggerTestEvent(StageEvent *event);
+
+    void startTimer(StageEvent *tev, int seconds);
+
+    void outputStat(StageEvent *event);
 private:
     Stage                    *mTimerStage;
     Stage                    *mCommStage;
     EndPoint                  mPeerEp;
     int                       mTestTimes;
     std::string               mTestFile;
+
+    u32_t                     mSendCounter;
+    u32_t                     mLastSendCounter;
+    pthread_mutex_t           mSendMutex;
+    u32_t                     mRecvCounter;
+    u32_t                     mLastRecvCounter;
+    pthread_mutex_t           mRecvMutex;
 };
 
 #endif /* CTESTSTAGE_H_ */
