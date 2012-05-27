@@ -82,6 +82,8 @@ private:
     u32_t                     mRecvCounter;
     u32_t                     mLastRecvCounter;
     pthread_mutex_t           mRecvMutex;
+
+    bool                      mHasOutputState;
 };
 
 #endif /* CTESTSTAGE_H_ */

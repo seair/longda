@@ -23,7 +23,9 @@
 #include "net/iovutil.h"
 #include "net/netex.h"
 #include "comm/commstage.h"
+#include "seda/sedastats.h"
 
+#define CHECK_CONNCB_PERFORMANCE 0
 
 
 int Conn::connCallback(Conn::conn_t state)
@@ -66,7 +68,8 @@ int Conn::connCallback(Conn::conn_t state)
     {
         LOG_TRACE("on disconnect");
 
-        MUTEX_LOCK(&mEventMapMutex);
+        int rv = MUTEX_LOCK(&mEventMapMutex);
+        ASSERT((rv == 0), "thread failed to own mutex");
         for (std::map<u32_t, CommEvent*>::iterator ei = mSendEventMap.begin();
                 ei != mSendEventMap.end(); ei++)
         {
@@ -74,7 +77,8 @@ int Conn::connCallback(Conn::conn_t state)
             cev->completeEvent(CommEvent::CONN_FAILURE);
         }
         mSendEventMap.clear();
-        MUTEX_UNLOCK(&mEventMapMutex);
+        rv = MUTEX_UNLOCK(&mEventMapMutex);
+        ASSERT((rv == 0), "thread failed to release mutex");
 
 
         // release the cbp associated with this connection
@@ -302,16 +306,21 @@ int Conn::recvHeaderCb(IoVec *iov, cb_param_t* cbp, IoVec::state_t state)
 {
     LOG_TRACE("enter");
 
-    LOG_TRACE(MSG_TYPE_RPC);
-
     PackHeader *hdr = static_cast<PackHeader *>(iov->getBase());
 
     ASSERT((iov->getSize() == HDR_LEN), "bad IoVec size");
 
     u64_t msgLen, attLen, fileLen;
+#if RPC_HEAD_USE_STRING
+
     CLstring::strToVal(std::string(hdr->mMsgLen), msgLen);
     CLstring::strToVal(std::string(hdr->mAttLen), attLen);
     CLstring::strToVal(std::string(hdr->mFileLen), fileLen);
+#else
+    msgLen = hdr->mMsgLen;
+    attLen = hdr->mAttLen;
+    fileLen = hdr->mFileLen;
+#endif
 
     // Keep cbp as the callback argument. Should not free it.
     // attLen could be 0 for message with no attachment
@@ -531,9 +540,6 @@ int Conn::recvPrepareFileIov(cb_param_t* cbp, Conn *conn)
 int Conn::recvReqMsg(Request *msg, IoVec *iov, cb_param_t* cbp, Conn *conn)
 {
     LOG_TRACE("enter");
-
-    // This is a request message
-    LOG_DEBUG("received a request message");
 
     bool eventReady = false;
 
@@ -831,7 +837,6 @@ void Conn::eventDone(CommEvent *cev, Conn *conn)
     if (cev->isServerGen())
     {
 
-
         CompletionCallback* cb = new CompletionCallback(gCommStage, NULL);
 
         cev->pushCallback(cb);
@@ -1072,6 +1077,9 @@ int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)
     {
     case Conn::HEADER:
     {
+#if CHECK_CONNCB_PERFORMANCE
+        SedaStats       sedaStats(SedaStats::NET_LATENCY_CAT, SedaStats::RPC_HEADER_STAT);
+#endif
         int rc = recvHeaderCb(iov, cbp, state);
 
         LOG_TRACE("exit");
@@ -1082,8 +1090,15 @@ int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)
     case Conn::MESSAGE:
     {
 
-        Message* msg = (Message *)gDeserializable->deserialize((char *)iov->getBase(),
+        Message* msg = NULL;
+
+        {
+#if CHECK_CONNCB_PERFORMANCE
+            SedaStats       sedaStats(SedaStats::NET_LATENCY_CAT, SedaStats::RPC_DESERIALIZE_MSG_STAT);
+#endif
+            msg = (Message *)gDeserializable->deserialize((char *)iov->getBase(),
                  (int)iov->getSize());
+        }
         if (msg == NULL)
         {
             // Cannot deserialize the message. This may be a message built
@@ -1103,6 +1118,9 @@ int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)
         }
         else if (dynamic_cast<Request *>(msg))
         {
+#if CHECK_CONNCB_PERFORMANCE
+            SedaStats       sedaStats(SedaStats::NET_LATENCY_CAT, SedaStats::RPC_MSG_REQ_STAT);
+#endif
             int rc = recvReqMsg((Request *)msg, iov, cbp, conn);
             if (rc)
             {
@@ -1116,6 +1134,9 @@ int Conn::recvCallback(IoVec *iov, void *param, IoVec::state_t state)
         }
         else if (dynamic_cast<Response *>(msg))
         {
+#if CHECK_CONNCB_PERFORMANCE
+            SedaStats       sedaStats(SedaStats::NET_LATENCY_CAT, SedaStats::RPC_MSG_RSP_STAT);
+#endif
             int rc = recvRspMsg((Response *)msg, iov, cbp, conn);
             if (rc)
             {

@@ -17,8 +17,8 @@
 #include "seda/stage.h"
 #include "seda/callback.h"
 
-#define MAX_NUM_CATEGORY 400
-#define MAX_NUM_STATS   1200
+#define MAX_NUM_CATEGORY 2000
+#define MAX_NUM_STATS    2000
 #define ID_STR(ID,STR)          \
             case(ID):           \
                 return(STR)
@@ -45,9 +45,9 @@ class SedaStats
             CLIENT_JOB              =    200,
 
             NET_LATENCY_CAT         =    300,
-            SVC_LATENCY_CAT         =    301,
-            COMM_CAT                =    302,
-            SVC_CAT                 =    303,
+            SVC_LATENCY_CAT         =    400,
+            COMM_CAT                =    500,
+            SVC_CAT                 =    600,
             
             //The upper limit for the max number of categories
             //Currently set at 4000
@@ -99,11 +99,15 @@ class SedaStats
             CLIENT_CREATE_OBJ          =   200,
             CLIENT_NS_CREATE_OBJ       =   201,
 
-            //Net
+            //Net 300 -400
             NET_LATENCY_STAT           =   300,
-            SVC_LATENCY_STAT           =   302,
-            MAKE_RPC_MSG_STAT          =   303,
-            DUMMY_END_STAT             =  MAX_NUM_STATS // = 1200 defined above
+            RPC_HEADER_STAT            =   301,
+            RPC_DESERIALIZE_MSG_STAT  =    302,
+            RPC_MSG_REQ_STAT           =   303,
+            RPC_MSG_RSP_STAT           =   304,
+
+
+            DUMMY_END_STAT             =  MAX_NUM_STATS
 
         } sedaStatsIdentifier_t;
 
@@ -121,8 +125,10 @@ class SedaStats
                 ID_STR( CLIENT_CREATE_OBJ       ,"Client create an object");
                 ID_STR( CLIENT_NS_CREATE_OBJ    ,"Client Open an object");
                 ID_STR( NET_LATENCY_STAT        ,"Network latency");
-                ID_STR( SVC_LATENCY_STAT        ,"Service latency");
-                ID_STR( MAKE_RPC_MSG_STAT       ,"Make rpc message latency");
+                ID_STR( RPC_HEADER_STAT         ,"RPC Header latency");
+                ID_STR( RPC_DESERIALIZE_MSG_STAT,"RPC deserialize message");
+                ID_STR( RPC_MSG_REQ_STAT        ,"RPC MSG latency");
+                ID_STR( RPC_MSG_RSP_STAT        ,"RPC RSP latency");
                 default:
                 {
                     return "NOT LISTED IN SEDASTATS.H!!!";

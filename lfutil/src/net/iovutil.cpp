@@ -77,6 +77,8 @@ IoVec* makeRpcMessage(MsgDesc& md)
     {
         attLen += md.attachMems[i]->size;
     }
+
+#if RPC_HEAD_USE_STRING
     std::string attLenStr = CLstring::sizeToPadStr(attLen, HDR_NUM_PRECISION);
 
     int msgLen = md.message->getSerialSize();
@@ -100,6 +102,23 @@ IoVec* makeRpcMessage(MsgDesc& md)
     PackHeader *pHdr = (PackHeader *)hdr;
     pHdr->setHeader(MSG_TYPE_RPC, msgLenStr.c_str(),
             attLenStr.c_str(), fileLenStr.c_str());
+
+#else
+    int msgLen = md.message->getSerialSize();
+    int msgHdrLen = sizeof(PackHeader) + msgLen;
+    char* hdr = new char[msgHdrLen];
+    if (hdr == NULL)
+    {
+        LOG_ERROR("Failed to alloc %d memory", msgHdrLen);
+        return NULL;
+    }
+    PackHeader *pHdr = (PackHeader *) hdr;
+    strcpy(pHdr->mType, MSG_TYPE_RPC);
+    pHdr->mMsgLen = msgLen;
+    pHdr->mAttLen = attLen;
+    pHdr->mFileLen = md.attachFileLen;
+
+#endif
 
     int rc = md.message->serialize(hdr + sizeof(PackHeader),  msgLen);
     if (rc)

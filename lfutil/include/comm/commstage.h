@@ -95,7 +95,8 @@ protected:
     /**
      * cleanup when send responsne CommEvent failed
      */
-    void cleanupFailedResp(MsgDesc &md, CommEvent* cev, Conn *conn, CommEvent::status_t errCode);
+    void cleanupFailedResp(CommEvent* cev, CommEvent::status_t errCode,
+            IoVec** iovs, int iovsNum);
 
 
 

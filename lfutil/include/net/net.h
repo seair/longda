@@ -295,7 +295,6 @@ protected:
      */
     static void* SendEPollThread(void* arg);
     static void* SendThread(void *arg);
-           void  sending(int threadIndex);
            void  sendData(int sock);
 
     /**
@@ -310,8 +309,9 @@ protected:
      */
     static void* RecvEPollThread(void* arg);
     static void* RecvThread(void *arg);
-           void  recving(int threadIndex);
            void  recvData(int sock);
+
+    void handlingData(int threadIndex, bool isSending);
 
     //! Accept sockets
     /**

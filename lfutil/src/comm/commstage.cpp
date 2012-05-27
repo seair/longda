@@ -219,17 +219,7 @@ void CommStage::callbackEvent(StageEvent* event, CallbackContext* context)
     return;
 }
 
-void CommStage::cleanupFailedResp(MsgDesc &md, CommEvent* cev, Conn *conn,
-        CommEvent::status_t errCode)
-{
-    LOG_TRACE("enter");
 
-    conn->release();
-
-    cev->completeEvent(errCode);
-
-    LOG_TRACE("exit");
-}
 
 void CommStage::cleanupFailedReq(MsgDesc &md, CommEvent* cev, Conn *conn,
         CommEvent::status_t errCode)
@@ -266,19 +256,6 @@ void CommStage::sendRequest(CommEvent *cev)
     // Get a connection to the target end point
     EndPoint& tep = cev->getTargetEp();
 
-    Conn *conn = NULL;
-    try
-    {
-        conn = mNet->getConn(tep);
-    } catch (NetEx ex)
-    {
-        std::string errMsg = "can't open conn:" + ex.message;
-        LOG_ERROR( errMsg.c_str());
-
-        cev->completeEvent(CommEvent::CONN_FAILURE);
-        return;
-    }
-
     req.mSourceEp = Conn::getLocalEp();
     req.mVersion = VERSION_NUM;
 
@@ -293,6 +270,18 @@ void CommStage::sendRequest(CommEvent *cev)
     MUTEX_UNLOCK(&mCounterMutex);
     cev->setRequestId(req.mId);
 
+    Conn *conn = NULL;
+    try
+    {
+        conn = mNet->getConn(tep);
+    } catch (NetEx ex)
+    {
+        std::string errMsg = "can't open conn:" + ex.message;
+        LOG_ERROR( errMsg.c_str());
+
+        cev->completeEvent(CommEvent::CONN_FAILURE);
+        return;
+    }
     conn->addEventEntry(req.mId, cev);
 
     IoVec** iovs = new IoVec*[md.attachMems.size() + 1];
@@ -305,7 +294,6 @@ void CommStage::sendRequest(CommEvent *cev)
         return;
     }
 
-
     if (prepareReqIovecs(md, iovs, cev, conn, this))
     {
         LOG_ERROR("Failed to create rpc IoVec buffer");
@@ -314,16 +302,7 @@ void CommStage::sendRequest(CommEvent *cev)
         return;
     }
 
-    Conn::status_t rc = conn->postSend(md.attachMems.size() + 1, iovs);
-    if (rc != Conn::SUCCESS)
-    {
-        cleanupFailedReq(md, cev, conn, CommEvent::SEND_FAILURE);
-        // the iovs buffer have been put into Conn::mSendQ
-        // whatever success or not, Conn will free the iovs buffer
-        delete[] iovs;
-        LOG_ERROR("Failed to send event");
-        return;
-    }
+    conn->postSend(md.attachMems.size() + 1, iovs);
 
     // send success
     mNet->prepareSend(conn->getSocket());
@@ -332,6 +311,26 @@ void CommStage::sendRequest(CommEvent *cev)
     delete[] iovs;
 
     LOG_TRACE("exit\n");
+}
+
+void CommStage::cleanupFailedResp(CommEvent* cev, CommEvent::status_t errCode,
+        IoVec** iovs, int iovsNum)
+{
+    LOG_TRACE("enter");
+
+    if (iovs)
+    {
+        for(int i = 0; i < iovsNum; i++)
+        {
+            iovs[i]->cleanup();
+            delete iovs[i];
+        }
+        delete[] iovs;
+    }
+
+    cev->completeEvent(errCode);
+
+    LOG_TRACE("exit");
 }
 
 // Send response back to client
@@ -356,25 +355,14 @@ void CommStage::sendResponse(CommEvent* cev)
 //    resp.mId = (mSendCounter);
 //    mSendCounter++;
 //    MUTEX_UNLOCK(&mCounterMutex);
-    Conn *conn = 0;
-    try
-    {
-        conn = mNet->getConn(cep, true, cev->getSock());
-    } catch (NetEx ex)
-    {
-        LOG_ERROR("can't get conn to %s:%d: reason: %s\n",
-                cep.getHostName(), cep.getPort(), ex.message.c_str());
-        cev->completeEvent(CommEvent::CONN_FAILURE);
-        return;
-    }
+
 
     // Prepare response message and attachments
     IoVec** iovs = new IoVec*[md.attachMems.size() + 1];
     if (iovs == NULL)
     {
         LOG_ERROR("Failed to create rpc IoVec list");
-        cleanupFailedResp(md, cev, conn, CommEvent::RESOURCE_FAILURE);
-        delete[] iovs;
+        cleanupFailedResp(cev, CommEvent::RESOURCE_FAILURE, NULL, 0);
 
         return;
     }
@@ -383,39 +371,28 @@ void CommStage::sendResponse(CommEvent* cev)
     if (prepareRespIovecs(md, iovs, cev, this))
     {
         LOG_ERROR("Failed to create rpc IoVec buffer");
-        cleanupFailedResp(md, cev, conn, CommEvent::RESOURCE_FAILURE);
-        delete[] iovs;
+        cleanupFailedResp(cev, CommEvent::RESOURCE_FAILURE, iovs, 0);
         return;
     }
 
-    Conn::status_t st = conn->postSend(md.attachMems.size() + 1, iovs);
-    if (st != Conn::SUCCESS)
+    Conn *conn = 0;
+    try
     {
-        if (st == Conn::CONN_ERR_BROKEN)
-        {
-            LOG_ERROR("failed in sending response: connection broken\n");
-            // don't cleanup the CommEvent here
-            // since it has been deleted in conn->send()
-            // If conn->send() returns with CONN_ERR_BROKEN, the send operation
-            // has failed because the socket was broken, which would have
-            // triggered the iovec's cleanup for the connection. This in turn
-            // will complete all CommEvent's for which iovec's are posted.
-            // See comment above the invocation to conn->send()
-        }
-        else
-        {
-            // Depending on the type of failure, the incoming event may
-            // need to be completed here with
-            // completeEvent(cev, CommEvent::SEND_FAILURE);
-            LOG_ERROR("unknown send failure reason\n");
-        }
+        conn = mNet->getConn(cep, true, cev->getSock());
+    } catch (NetEx ex)
+    {
+        LOG_ERROR("can't get conn to %s:%d: reason: %s\n",
+                cep.getHostName(), cep.getPort(), ex.message.c_str());
+        cleanupFailedResp(cev, CommEvent::CONN_FAILURE, iovs, (int)md.attachMems.size() + 1);
+        return;
     }
 
+    conn->postSend(md.attachMems.size() + 1, iovs);
     mNet->prepareSend(conn->getSocket());
 
-    delete[] iovs;
     conn->messageOut();
     conn->release();
+    delete[] iovs;
 
     LOG_TRACE("exit\n");
 }

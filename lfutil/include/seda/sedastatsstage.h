@@ -99,12 +99,10 @@ public:
         disableCategory(SedaStats::sedaStatsCategory_t category);
 
     //! Dump stats
-#if SEDASTATS_MANAGE
     static bool
         dumpStats(SedaStats::sedaStatsCategory_t category, 
                   const SedaStats::StatsId&      sid,
-                  std::vector<maui::basicStats>& vStats);
-#endif
+                  std::string&                   output);
 
     //! Clear stats
     static bool 
@@ -147,6 +145,9 @@ protected:
     }
 
 private:
+
+    void manageEvent(StageEvent *event);
+
     //! Return an error response to the client
     /**
      *  Implementation notes:
@@ -203,12 +204,12 @@ private:
 
     bool 
         _removeCategory(SedaStats::sedaStatsCategory_t category);
-#if SEDASTATS_MANAGE
+
     bool 
         _dumpStats(SedaStats::sedaStatsCategory_t category,
                    const SedaStats::StatsId&      sid,
-                   std::vector<maui::basicStats>& vStats) const;
-#endif
+                   std::string&                   output) const;
+
     bool
         _clearStats(SedaStats::sedaStatsCategory_t category,
                     const SedaStats::StatsId&      sid);
@@ -300,10 +301,7 @@ public:
      *                  to the stage
      *  @return true if the stat is found, else return false
      */
-#if SEDASTATS_MANAGE
-    bool SedaStatsMapDumpStats(const SedaStats::StatsId& sid,
-                               std::vector<maui::basicStats>& vStats) const;
-#endif
+    bool SedaStatsMapDumpStats(const SedaStats::StatsId& sid, std::string &output) const;
     //! Find the specific stat and clear the record
     /**
      *  @brief If a unique stat id is sent then that stat is cleared
@@ -319,11 +317,9 @@ public:
                              bool  removeflag);
 
 private:
-#if SEDASTATS_MANAGE
-    //! Dump StatsStore into a maui::basicStats structure
-    void dumpStore(SedaStatsStore* store, maui::basicStats& basicSts)
-        const;
-#endif    
+    //! Dump StatsStore into a basicStats structure
+    void dumpStore(SedaStatsStore* store, std::string &output) const;
+
     SedaStats::sedaStatsCategory_t  _category;  /**< \brief category for this map */
 
     typedef std::map<SedaStats::sedaStatsIdentifier_t, SedaStatsStore*> 

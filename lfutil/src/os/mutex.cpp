@@ -27,6 +27,8 @@ std::map<int, std::set<pthread_mutex_t *> > CLockTrace::mOwnLocks;
 pthread_mutex_t CLockTrace::mMapMutex = PTHREAD_MUTEX_INITIALIZER;
 int             CLockTrace::mMaxBlockTids = 8;
 
+#define CHECK_UNLOCK        0
+
 bool CLockTrace::deadlockCheck(pthread_mutex_t *mutex,
         const int threadId,
         const char *file,
@@ -68,6 +70,7 @@ bool CLockTrace::deadlockCheck(pthread_mutex_t *mutex,
                 mLocks.find(otherWaitMutex);
         if (it != mLocks.end())
         {
+#if 0
             CLockID &ownLockId = it->second;
             LOG_ERROR("Thread %d own mutex %p:%s:%d and try to get %p:%s:%d, "
             "other thread %d own mutex %p:%s:%d and try to get %p",
@@ -79,6 +82,7 @@ bool CLockTrace::deadlockCheck(pthread_mutex_t *mutex,
             std::string output;
             toString(output);
             LOG_INFO("Locks information:%s", output.c_str());
+#endif
         }
         else
         {
@@ -105,7 +109,7 @@ bool CLockTrace::checkAllThreadsBlock(pthread_mutex_t *mutex,
 
     int lockTimes = it->second;
     mWaitTimes[mutex] = lockTimes + 1;
-    if (lockTimes >= mMaxBlockTids - 1)
+    if (lockTimes >= mMaxBlockTids)
     {
 
         //std::string          lastLockId = lockId.toString();
@@ -141,7 +145,8 @@ void CLockTrace::insertLock (pthread_mutex_t *mutex, const int threadId, const c
 {
     CLockID  lockID(threadId, file, line);
 
-    mLocks.insert(std::pair<pthread_mutex_t *, CLockID>(mutex, lockID));
+    //mLocks.insert(std::pair<pthread_mutex_t *, CLockID>(mutex, lockID));
+    mLocks[mutex] = lockID;
 
     mWaitLocks.erase(threadId);
 
@@ -185,6 +190,7 @@ void CLockTrace::tryLock(pthread_mutex_t *mutex, const int threadId, const char 
 void CLockTrace::unlock(pthread_mutex_t *mutex, int threadId, const char *file, int line)
 {
     pthread_mutex_lock(&mMapMutex);
+#if CHECK_UNLOCK
     if (mLocks.find(mutex)  == mLocks.end() )
     {
         std::map<pthread_mutex_t *, CLockTrace::CLockID>::iterator it = mUnLocks.find(mutex);
@@ -198,10 +204,11 @@ void CLockTrace::unlock(pthread_mutex_t *mutex, int threadId, const char *file, 
             LOG_WARN("mutex %p:%s:%d doesn't in mLock and mUnlocks", mutex, file, line);
         }
     }
-
-    mLocks.erase(mutex);
     CLockID  lockID(threadId, file, line);
     mUnLocks[mutex] = lockID;
+#endif
+
+    mLocks.erase(mutex);
 
     std::set<pthread_mutex_t *> &ownLockSet = mOwnLocks[threadId];
     ownLockSet.erase(mutex);
@@ -214,6 +221,7 @@ void CLockTrace::toString(std::string& result)
 {
 
     //pthread_mutex_lock(&mMapMutex);
+    result = " mLocks:\n";
     for(std::map<pthread_mutex_t *, CLockID>::iterator it = mLocks.begin();
             it != mLocks.end(); it++)
     {
@@ -222,6 +230,24 @@ void CLockTrace::toString(std::string& result)
         char pointerBuf[24] = {0};
         sprintf(pointerBuf, ",mutex:%p\n", it->first);
 
+        result += pointerBuf;
+    }
+
+    result += "mWaitTimes:\n";
+    for(std::map<pthread_mutex_t *, int>::iterator it = mWaitTimes.begin();
+            it != mWaitTimes.end(); it++)
+    {
+        char pointerBuf[24] = {0};
+        sprintf(pointerBuf, ",mutex:%p, times:%d\n", it->first, it->second);
+        result += pointerBuf;
+    }
+
+    result += "mWaitLocks:\n";
+    for (std::map<int, pthread_mutex_t *>::iterator it = mWaitLocks.begin();
+            it != mWaitLocks.end(); it++)
+    {
+        char pointerBuf[24] = {0};
+        sprintf(pointerBuf, "threadID: %d, mutex:%p\n", it->first, it->second);
         result += pointerBuf;
     }
     //pthread_mutex_unlock(&mMapMutex);

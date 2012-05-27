@@ -9,12 +9,16 @@
 // it is provided by or on behalf of Longda.
 // __CR__
 
+#include <iostream>
+#include <sstream>
 
 #include "defs.h"
 #include "linit.h"
 #include "lang/lstring.h"
 #include "trace/log.h"
 #include "conf/ini.h"
+#include "os/mutex.h"
+
 
 #include "seda/sedastatsstage.h"
 #include "seda/sedastatsevent.h"
@@ -24,52 +28,41 @@ bool SedaStatsStage::externalCategoryEnableMap[MAX_NUM_CATEGORY] = {false};
 bool SedaStatsStage::internalCategoryEnableMap[MAX_NUM_CATEGORY] = {false};
 
 bool SedaStatsStage::collectEnabled = false;
-pthread_mutex_t SedaStatsStage::sedaStageLock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t SedaStatsStage::sedaStageLock = MUTEXT_STATIC_INIT();
 
-//Handle the Stage events sent
-void 
-SedaStatsStage::handleEvent(StageEvent* event)
+
+void SedaStatsStage::manageEvent(StageEvent *event)
 {
-    SedaStatsEvent* statsEv = NULL;
-
-    //Handle the SedaStatsEvent 
-    statsEv = dynamic_cast<SedaStatsEvent*> (event);
-    if (NULL!=statsEv){
-        LOG_ERROR( "%s", "SedaStatsEvent received");
-        storeStats(statsEv);
-        return;
-    }
-
 #if SEDASTATS_MANAGE
 
-    maui::CollectStatsRequest*           collectStatsReq;
-    maui::ClearStatsRequest*             clearStatsReq;
-    maui::EnableStatsCollectionRequest*  enableStatsReq;
-    maui::DisableStatsCollectionRequest* disableStatsReq;
+    CollectStatsRequest*           collectStatsReq;
+    ClearStatsRequest*             clearStatsReq;
+    EnableStatsCollectionRequest*  enableStatsReq;
+    DisableStatsCollectionRequest* disableStatsReq;
 
     //Handle the other commEvents sent
     MgmtEvent* mev = dynamic_cast<MgmtEvent*>(event);
     ASSERT(mev, "Expected management event.");
 
-    maui::Request* request = mev->getRequest();
+    Request* request = mev->getRequest();
     if (NULL != (collectStatsReq = 
-                dynamic_cast<maui::CollectStatsRequest*> (request))){
+                dynamic_cast<CollectStatsRequest*> (request))){
         LOG_ERROR( "%s", "CollectStatsReq received");
         dumpStats(event);
         return;
     }
     else if (NULL != (clearStatsReq =
-                dynamic_cast<maui::ClearStatsRequest*>(request))){
+                dynamic_cast<ClearStatsRequest*>(request))){
         LOG_ERROR( "%s", "clear stats received");
         clearStats(event);
     }
     else if (NULL != (enableStatsReq =
-                dynamic_cast<maui::EnableStatsCollectionRequest*>(request))){
+                dynamic_cast<EnableStatsCollectionRequest*>(request))){
         LOG_ERROR( "%s", "Enable stats received");
         enableCategory(event);
     }
     else if (NULL != (disableStatsReq =
-                dynamic_cast<maui::DisableStatsCollectionRequest*>(request))){
+                dynamic_cast<DisableStatsCollectionRequest*>(request))){
         LOG_ERROR( "%s", "Disable stats received");
         disableCategory(event);
     }
@@ -77,9 +70,25 @@ SedaStatsStage::handleEvent(StageEvent* event)
         TRCERR(CtgLog|CtgTrace, "%s", "Unknown event type in handleEvent");
     }
 #endif
+}
 
-    LOG_ERROR("Unknow event type in handleEvent");
-    event->done();
+//Handle the Stage events sent
+void
+SedaStatsStage::handleEvent(StageEvent* event)
+{
+    SedaStatsEvent* statsEv = NULL;
+
+    if ((statsEv = dynamic_cast<SedaStatsEvent*> (event)))
+    {
+        storeStats(statsEv);
+        return;
+    }
+    else
+    {
+
+        LOG_ERROR("Unknow event type in handleEvent");
+        event->done();
+    }
 
     return ;
     
@@ -126,8 +135,14 @@ SedaStatsStage::setProperties()
         }
     }
 
-    if (!collectEnabled)
+    if (collectEnabled)
+    {
+        LOG_INFO("Enabling stat recording");
+    }
+    else
+    {
         LOG_INFO("Disabling stat recording");
+    }
 
     return true;
 }
@@ -145,7 +160,7 @@ SedaStatsStage::SedaStatsStage(const char* tag) :
     pthread_mutexattr_t attr;
     pthread_mutexattr_init(&attr);
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
-    pthread_mutex_init(&statsStoreLock, &attr);
+    MUTEX_INIT(&statsStoreLock, &attr);
 
     numCatEnabled = 0;
     setTheStatsCollectionStage(this);
@@ -172,7 +187,7 @@ SedaStatsStage::~SedaStatsStage()
     categoryMap.clear();
 
     //Destroy the lock
-    pthread_mutex_destroy(&statsStoreLock);
+    MUTEX_DESTROY(&statsStoreLock);
 }
 
 //! Initialize stage params and validate outputs
@@ -202,7 +217,7 @@ SedaStatsStage::errorResponse(StageEvent* ev,
     MgmtEvent* mev = dynamic_cast<MgmtEvent*>(ev);
     ASSERT(mev, "Expected Management Event");
     
-    maui::MgmtResponse *resp = new maui::MgmtResponse(errcode,errmsg, true);
+    MgmtResponse *resp = new MgmtResponse(errcode,errmsg, true);
     mev->setResponse(resp);
     mev->done();
 #endif
@@ -227,7 +242,7 @@ SedaStatsStage::storeStats(SedaStatsEvent* statsEv)
     SedaStatsMap* pSedaStatsMap = NULL;
 
     //Take a lock
-    pthread_mutex_lock(&statsStoreLock);
+    MUTEX_LOCK(&statsStoreLock);
 
     do {
         //Locate the category sent down
@@ -249,7 +264,7 @@ SedaStatsStage::storeStats(SedaStatsEvent* statsEv)
         pSedaStatsMap->SedaStatsMapStoreStats(statsEv);
     }while(false);
 
-    pthread_mutex_unlock(&statsStoreLock);
+    MUTEX_UNLOCK(&statsStoreLock);
 
     //Complete the event
     statsEv->done();
@@ -264,9 +279,9 @@ SedaStatsStage::enableCategory(StageEvent* ev)
     MgmtEvent* mev = dynamic_cast<MgmtEvent*>(ev);
     ASSERT(mev,"Expected Management Event");
     
-    maui::Request* request = mev->getRequest();
-    maui::EnableStatsCollectionRequest* enableReq = 
-        dynamic_cast<maui::EnableStatsCollectionRequest*> (request);
+    Request* request = mev->getRequest();
+    EnableStatsCollectionRequest* enableReq =
+        dynamic_cast<EnableStatsCollectionRequest*> (request);
     ASSERT(enableReq, "expected enableReq, did not find it");
 
     //Get category
@@ -300,8 +315,8 @@ SedaStatsStage::enableCategory(StageEvent* ev)
     std::string                     errmsg      = "success";
     bool                            exception   = false;
 
-    maui::EnableStatsCollectionResponse* enableStatsResp = 
-        new maui::EnableStatsCollectionResponse(errcode,
+    EnableStatsCollectionResponse* enableStatsResp =
+        new EnableStatsCollectionResponse(errcode,
                                                 errmsg,
                                                 exception);
     ASSERT(enableStatsResp, "Could not create the enable stats response");
@@ -320,9 +335,9 @@ SedaStatsStage::disableCategory(StageEvent* ev)
     MgmtEvent* mev = dynamic_cast<MgmtEvent*>(ev);
     ASSERT(mev, "Expected Management Event");
     
-    maui::Request* request = mev->getRequest();
-    maui::DisableStatsCollectionRequest* disableReq = 
-        dynamic_cast<maui::DisableStatsCollectionRequest*> (request);
+    Request* request = mev->getRequest();
+    DisableStatsCollectionRequest* disableReq =
+        dynamic_cast<DisableStatsCollectionRequest*> (request);
     ASSERT(disableReq, "expected disableReq, did not find it");
 
     //get the category
@@ -364,10 +379,10 @@ SedaStatsStage::disableCategory(StageEvent* ev)
     int                             errcode     = MAUI_SUCCESS;
     std::string                     errmsg      = "success";
     bool                            exception   = false;
-    std::auto_ptr<maui::Response>   response;
+    std::auto_ptr<Response>   response;
 
-    maui::DisableStatsCollectionResponse* disableStatsResp = 
-        new maui::DisableStatsCollectionResponse(errcode,
+    DisableStatsCollectionResponse* disableStatsResp =
+        new DisableStatsCollectionResponse(errcode,
                                                  errmsg,
                                                  exception);
     ASSERT(disableStatsResp, "Could not create the DisableStatsResponse");
@@ -395,9 +410,9 @@ SedaStatsStage::dumpStats(StageEvent* ev)
     MgmtEvent* mev = dynamic_cast<MgmtEvent*>(ev);
     ASSERT(mev, "Expected Management Event");
 
-    maui::Request* request = mev->getRequest();
-    maui::CollectStatsRequest* statsReq = 
-        dynamic_cast<maui::CollectStatsRequest*> (request);
+    Request* request = mev->getRequest();
+    CollectStatsRequest* statsReq =
+        dynamic_cast<CollectStatsRequest*> (request);
     ASSERT(statsReq, "expected statsReq, did not find it");
     
     SedaStats::sedaStatsCategory_t   category = SedaStats::ALL_CATEGORY;
@@ -439,7 +454,7 @@ SedaStatsStage::dumpStats(StageEvent* ev)
     }
 
     bool success;
-    std::vector<maui::basicStats> vStats;
+    std::vector<basicStats> vStats;
     
     //Dump stats for category/stats, no matter category is enabled or not
     if(statsId_present)
@@ -461,8 +476,8 @@ SedaStatsStage::dumpStats(StageEvent* ev)
     int          categoryCount = categoryMap.size(); 
 
     //Create a response which indicates if the category is enabled
-    maui::CollectStatsResponse* statsResp = 
-        new maui::CollectStatsResponse(errcode,
+    CollectStatsResponse* statsResp =
+        new CollectStatsResponse(errcode,
                                        errmsg,
                                        exception,
                                        categoryCount,
@@ -476,7 +491,7 @@ SedaStatsStage::dumpStats(StageEvent* ev)
         (upgradeMgr->checkUpgradeItem(AtmosUpgradeMgr::SEDA_STATS_COUNTER_INFO)))
         includeIncrementStats = true;
     
-    for(std::vector<maui::basicStats>::iterator iter = vStats.begin();
+    for(std::vector<basicStats>::iterator iter = vStats.begin();
         iter != vStats.end(); ++iter) {
         // filter out new counter stat fields as needed
         if (false == includeIncrementStats) {
@@ -503,9 +518,9 @@ SedaStatsStage::clearStats(StageEvent* ev)
     MgmtEvent* mev = dynamic_cast<MgmtEvent*>(ev);
     ASSERT(mev, "Expected Management Event");
     
-    maui::Request* request = mev->getRequest();
-    maui::ClearStatsRequest* statsReq = 
-        dynamic_cast<maui::ClearStatsRequest*> (request);
+    Request* request = mev->getRequest();
+    ClearStatsRequest* statsReq =
+        dynamic_cast<ClearStatsRequest*> (request);
     ASSERT(statsReq, "expected clearStatsReq, did not find it");
 
     SedaStats::sedaStatsCategory_t   category = SedaStats::ALL_CATEGORY;
@@ -561,12 +576,12 @@ SedaStatsStage::clearStats(StageEvent* ev)
         return;
     }
 
-    int                             errcode     = MAUI_SUCCESS;
+    int                             errcode     = SUCCESS;
     std::string                     errmsg      = "success";
     bool                            exception   = false;
 
-    maui::ClearStatsResponse* clearStatsResp = 
-        new maui::ClearStatsResponse(errcode, errmsg, exception);
+    ClearStatsResponse* clearStatsResp =
+        new ClearStatsResponse(errcode, errmsg, exception);
     ASSERT(clearStatsResp, "Could not create the ClearStatsResponse");
 
     mev->setResponse(clearStatsResp);
@@ -606,32 +621,27 @@ SedaStatsStage::disableCategory(SedaStats::sedaStatsCategory_t category)
     }
 }
 
-
-
-#if SEDASTATS_MANAGE
 bool
 SedaStatsStage::dumpStats(SedaStats::sedaStatsCategory_t   category,
                           const SedaStats::StatsId&        sid,
-                          std::vector<maui::basicStats>&   vStats)
+                          std::string&                     output)
 {
     return (NULL != theStatsCollectionStage()) && 
-            theStatsCollectionStage()->_dumpStats(category, sid, vStats);
+            theStatsCollectionStage()->_dumpStats(category, sid, output);
 }
 
 bool
 SedaStatsStage::_dumpStats(SedaStats::sedaStatsCategory_t   category,
                            const SedaStats::StatsId&        sid,
-                           std::vector<maui::basicStats>&   vStats) const
+                           std::string&                     output) const
 {
-    LOG_DEBUG("category=%d, statid=%d, statidstr=%s", 
-            category, sid.id, sid.strId.c_str());
     bool found = true;
-    pthread_mutex_lock(&statsStoreLock);
+    MUTEX_LOCK(&statsStoreLock);
     if(SedaStats::ALL_CATEGORY != category)
     {
         CateMapConstIter cat_it = categoryMap.find(category);
         if (categoryMap.end() != cat_it)
-            found = cat_it->second->SedaStatsMapDumpStats(sid, vStats);
+            found = cat_it->second->SedaStatsMapDumpStats(sid, output);
         else
             found = false;
     }
@@ -640,15 +650,14 @@ SedaStatsStage::_dumpStats(SedaStats::sedaStatsCategory_t   category,
         CateMapConstIter cat_it = categoryMap.begin();
         while(categoryMap.end() != cat_it)
         {
-            cat_it->second->SedaStatsMapDumpStats(sid, vStats);
+            cat_it->second->SedaStatsMapDumpStats(sid, output);
             ++cat_it;
         }
     }
-    pthread_mutex_unlock(&statsStoreLock);
+    MUTEX_UNLOCK(&statsStoreLock);
     return found;
 }
 
-#endif
 
 bool
 SedaStatsStage::clearStats(SedaStats::sedaStatsCategory_t  category,
@@ -665,7 +674,7 @@ SedaStatsStage::_clearStats(SedaStats::sedaStatsCategory_t  category,
     LOG_DEBUG("category=%d, sid=%d, sidstr=%s",
             category, sid.id, sid.strId.c_str());
     bool found = true;
-    pthread_mutex_lock(&statsStoreLock);
+    MUTEX_LOCK(&statsStoreLock);
     if(SedaStats::ALL_CATEGORY != category)
     {
         CateMapIter cat_it = categoryMap.find(category);
@@ -700,7 +709,7 @@ SedaStatsStage::_clearStats(SedaStats::sedaStatsCategory_t  category,
             }
         }
     }
-    pthread_mutex_unlock(&statsStoreLock);
+    MUTEX_UNLOCK(&statsStoreLock);
     return found;
 }
 
@@ -709,7 +718,7 @@ SedaStatsStage::_removeCategory(SedaStats::sedaStatsCategory_t category)
 {
     LOG_DEBUG("category=%d", category);
     bool found = true;
-    pthread_mutex_lock(&statsStoreLock);
+    MUTEX_LOCK(&statsStoreLock);
     if(SedaStats::ALL_CATEGORY != category)
     {
         bool should_remove = !isCategoryEnabled(category);
@@ -740,7 +749,7 @@ SedaStatsStage::_removeCategory(SedaStats::sedaStatsCategory_t category)
                 ++cat_it;
         }
     }
-    pthread_mutex_unlock(&statsStoreLock);
+    MUTEX_UNLOCK(&statsStoreLock);
     return found;
 }
 
@@ -748,13 +757,12 @@ SedaStatsStage::_removeCategory(SedaStats::sedaStatsCategory_t category)
 void 
 SedaStatsStage::addStatsEvent(StageEvent *event)
 {
-    //static unsigned int maxQLen=100;
 
-    //Take lock
-    pthread_mutex_lock(&sedaStageLock);
-    // @@@ add in the future
-    event->done();
-    pthread_mutex_unlock(&sedaStageLock);
+    MUTEX_LOCK(&sedaStageLock);
+
+    theStatsCollectionStage()->addEvent(event);
+
+    MUTEX_UNLOCK(&sedaStageLock);
 }
 
 //Accessory method to the stats stage pointer
@@ -767,9 +775,9 @@ SedaStatsStage::theStatsCollectionStage(){
 //Set the pointer to the pointer to the stats stage
 void
 SedaStatsStage::setTheStatsCollectionStage( SedaStatsStage *stg){
-    pthread_mutex_lock(&sedaStageLock);
+    MUTEX_LOCK(&sedaStageLock);
     theStatsCollectionStage() = stg;
-    pthread_mutex_unlock(&sedaStageLock);
+    MUTEX_UNLOCK(&sedaStageLock);
 }
 
 //! Check if the category is enabled for stats collection
@@ -895,31 +903,30 @@ void SedaStatsMap::SedaStatsMapStoreStats(SedaStatsEvent* statsEv){
  *          statsResp   The Response object in which the stats are copied
  *  @return bool        true if stat is found else false
  */
-#if SEDASTATS_MANAGE
+
 bool 
 SedaStatsMap::SedaStatsMapDumpStats(const SedaStats::StatsId& sid,
-                                    std::vector<maui::basicStats>& vStats) const
+        std::string &output) const
 {
     if(sid.type == SedaStats::StatsId::ALL)
     {
+        output += SedaStats::categoryStr(_category) + "\n";
         // dump statsIdMap
         IDStoreMap::const_iterator it = statsIdMap.begin();
         while (it != statsIdMap.end()){
-            maui::basicStats basicSts(_category, 
-                                      it->first, 
-                                      SedaStats::getIdStr(it->first), 
-                                      0, 0, 0, 0);
-            dumpStore(it->second, basicSts);
-            vStats.push_back(basicSts);
+            output +=  "\t" + SedaStats::getIdStr(it->first) + "\n";
+
+            dumpStore(it->second, output);
             ++it;
         }
 
+        output += "\n";
         // dump statsStrIdMap
         StrStoreMap::const_iterator it2 = statsStrIdMap.begin();
         while (it2 != statsStrIdMap.end()){
-            maui::basicStats basicSts(_category, 0, it2->first, 0, 0, 0, 0);
-            dumpStore(it2->second, basicSts);
-            vStats.push_back(basicSts);
+            output += "\t" + (it2->first) + "\n";
+
+            dumpStore(it2->second, output);
             ++it2;
         }
         return true;
@@ -953,38 +960,36 @@ SedaStatsMap::SedaStatsMapDumpStats(const SedaStats::StatsId& sid,
     }
     if(NULL != store)
     {
-        maui::basicStats basicSts(_category, idInt, idStr, 0, 0, 0, 0);
-        dumpStore(store, basicSts);
-        vStats.push_back(basicSts);
+        output += SedaStats::categoryStr(_category) + "\n";
+        output +=  "\t" + idStr + "\n";
+        dumpStore(store, output);
     }
     return (NULL != store);
 }
 
-void SedaStatsMap::dumpStore(SedaStatsStore* store, 
-                             maui::basicStats& basicSts) const
+void SedaStatsMap::dumpStore(SedaStatsStore* store, std::string &output) const
 {
-    //Avg time
-    basicSts.avgTime(store->getAvgTime());
-    //Max time recorded
-    basicSts.MaxTime(store->getMaxTime());
-    //Min time recorded
-    basicSts.MinTime(store->getMinTime());
-    //Num of timing stats
-    basicSts.numCollected(store->getNumStats());
+    std::ostringstream oss;
+
+    oss << "\t\t" << "AverageTime:" << store->getAvgTime() << "\n"
+        << "\t\t" << "MaxTime:"     << store->getMaxTime() << "\n"
+        << "\t\t" << "MinTIme:"     << store->getMinTime() << "\n"
+        << "\t\t" << "NumStats:"    << store->getNumStats() << "\n";
 
     //If store is used as a counter
     if (store->isCounter()){
         //total counter
-        basicSts.CounterVal(store->getTotalCounter());
-        basicSts.avgIncrementVal(store->getAvgIncrement());
-        basicSts.minIncrementVal(store->getMinIncrement());
-        basicSts.maxIncrementVal(store->getMaxIncrement());
-        //num of times the counter was incremented
-        basicSts.NumIncrements(store->getCounterCount());
+        oss << "\t\t" << "TotalCounter:"   << store->getTotalCounter() << "\n"
+            << "\t\t" << "AverageCounter:" << store->getAvgIncrement() << "\n"
+            << "\t\t" << "MaxCounter:"     << store->getMaxIncrement() << "\n"
+            << "\t\t" << "MinCounter:"     << store->getMinIncrement() << "\n"
+            << "\t\t" << "CounterCount:"   << store->getCounterCount() << "\n";
+
     }
+
+    output += oss.str();
 }
 
-#endif
 
 //! Clear the stat from the Stats Map
 /**

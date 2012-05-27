@@ -35,6 +35,8 @@ enum
     HDR_FILE_LEN_POS = HDR_ATT_LEN_POS + HDR_ATT_LEN
 };
 
+#define RPC_HEAD_USE_STRING    0
+
 typedef struct _packHeader
 {
     _packHeader()
@@ -42,10 +44,14 @@ typedef struct _packHeader
         memset(this, 0, sizeof(*this));
     }
 
+
+
+#if  RPC_HEAD_USE_STRING
     char        mType[HDR_TYPE_LEN];
     char        mMsgLen[HDR_MSG_LEN];
     char        mAttLen[HDR_ATT_LEN];
     char        mFileLen[HDR_FILE_LEN];
+
     void setHeader(const char* hdrType,
                    const char* msgLen,
                    const char* attLen,
@@ -60,6 +66,12 @@ typedef struct _packHeader
         strncpy(mFileLen, attLen, HDR_NUM_PRECISION);
 
     }
+#else
+    char       mType[HDR_TYPE_LEN];
+    u64_t      mMsgLen;
+    u64_t      mAttLen;
+    u64_t      mFileLen;
+#endif
 }PackHeader __attribute__ ((aligned(1)));
 
 #endif /* PACKAGEINFO_H_ */

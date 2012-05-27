@@ -153,7 +153,7 @@ void Conn::setup(int sock)
     LOG_TRACE( "enter");
 
     int rv = MUTEX_LOCK(&mMutex);
-    ASSERT((rv == 0), "thread already owns mutex");
+    ASSERT((rv == 0), "thread failed to own mutex");
 
     this->mSock = sock;
     Sock::setCloExec(sock);
@@ -162,7 +162,7 @@ void Conn::setup(int sock)
     Sock::setNonBlocking(sock);
 
     rv = MUTEX_UNLOCK(&mMutex);
-    ASSERT((rv == 0), "%s", "thread does not own mutex");
+    ASSERT((rv == 0), "%s", "thread failed to release mutex");
 
     LOG_TRACE( "exit");
 }
@@ -208,7 +208,7 @@ int Conn::cleanup(cleanup_t how)
     int rv;
 
     rv = MUTEX_LOCK(&mMutex);
-    ASSERT((rv == 0), "thread already owns mutex");
+    ASSERT((rv == 0), "thread failed to own mutex");
 
     // 2. Indicate intention to cleanup connection. This will also tell us
     // to stop sending and receiving from the conn socket
@@ -223,7 +223,7 @@ int Conn::cleanup(cleanup_t how)
         mCleanType = how;
 
         rv = MUTEX_UNLOCK(&mMutex);
-        ASSERT((rv == 0), "thread does not own mutex");
+        ASSERT((rv == 0), "thread failed to release mutex");
 
         LOG_INFO("Prepare to cleanup %s:%d connection, but not now",
                 mPeerEp.getHostName(), mPeerEp.getPort());
@@ -234,11 +234,11 @@ int Conn::cleanup(cleanup_t how)
     }
 
     rv = MUTEX_UNLOCK(&mMutex);
-    ASSERT((rv == 0), "thread does not own mutex");
+    ASSERT((rv == 0), "thread failed to release mutex");
 
     // Clenaup remaining mRecvQ iovecs and mCurRecvBlock
     rv = MUTEX_LOCK(&mRecvMutex);
-    ASSERT((rv == 0), "thread already owns mutex");
+    ASSERT((rv == 0), "thread failed to own mutex");
 
     while (!mRecvQ.empty())
     {
@@ -248,11 +248,11 @@ int Conn::cleanup(cleanup_t how)
     cleanupVec(mCurRecvBlock, how);
     mCurRecvBlock = 0;
     rv = MUTEX_UNLOCK(&mRecvMutex);
-    ASSERT((rv == 0), "thread already release mutex");
+    ASSERT((rv == 0), "thread failed to release mutex");
 
     // Clenaup remaining mSendQ iovecs and mCurSendBlock
     rv = MUTEX_LOCK(&mSendMutex);
-    ASSERT(rv == 0, "thread does not own mutex");
+    ASSERT((rv == 0), "thread failed to own mutex");
 
     while (!mSendQ.empty())
     {
@@ -263,7 +263,7 @@ int Conn::cleanup(cleanup_t how)
     mCurSendBlock = 0;
 
     rv = MUTEX_UNLOCK(&mSendMutex);
-    ASSERT(rv == 0, "thread does not own mutex");
+    ASSERT((rv == 0), "thread failed to release mutex");
 
     // Call disconnect callback set by Net
     int rc = SUCCESS;
@@ -299,7 +299,7 @@ void Conn::release()
     bool callCleanup = false;
 
     int rv = MUTEX_LOCK(&mMutex);
-    ASSERT((rv == 0), "thread already owns mutex");
+    ASSERT((rv == 0), "thread failed to own mutex");
 
     mRefCount--;
 
@@ -310,7 +310,7 @@ void Conn::release()
         callCleanup = true;
 
     rv = MUTEX_UNLOCK(&mMutex);
-    ASSERT((rv == 0), "thread does not own mutex");
+    ASSERT((rv == 0), "thread failed to release mutex");
 
     if (callCleanup)
         cleanup(mCleanType);
@@ -330,15 +330,12 @@ void Conn::acquire()
     LOG_TRACE( "%s", "enter");
 
     int rv = MUTEX_LOCK(&mMutex);
-    ASSERT((rv == 0), "thread already owns mutex");
+    ASSERT((rv == 0), "thread failed to own mutex");
 
     mRefCount++;
 
     rv = MUTEX_UNLOCK(&mMutex);
-    ASSERT((rv == 0), "thread does not own mutex");
-
-    LOG_DEBUG("Acquire connection %s:%d, conf count:%d, %p",
-                    mPeerEp.getHostName(), mPeerEp.getPort(), mRefCount, this);
+    ASSERT((rv == 0), "thread failed to release mutex");
 
     LOG_TRACE( "%s", "exit");
 }
@@ -346,12 +343,12 @@ void Conn::acquire()
 bool Conn::isIdle()
 {
     int rv = MUTEX_LOCK(&mMutex);
-    ASSERT((rv == 0), "thread already owns mutex");
+    ASSERT((rv == 0), "thread failed to own mutex");
 
     bool idle = (mRefCount == 0);
 
     rv = MUTEX_UNLOCK(&mMutex);
-    ASSERT((rv == 0), "thread does not own mutex");
+    ASSERT((rv == 0), "thread failed to release mutex");
 
     return idle;
 }
@@ -390,7 +387,10 @@ Conn::status_t Conn::postSend(int numVecs, IoVec* msgVecs[])
         mSendQ.push_back(msgVecs[i]);
     }
     if (rv == 0)
-        MUTEX_UNLOCK(&mSendMutex);
+    {
+        rv = MUTEX_UNLOCK(&mSendMutex);
+        ASSERT((rv == 0), "thread failed to release mutex");
+    }
 
     return SUCCESS;
 }
@@ -400,7 +400,10 @@ Conn::status_t Conn::postSend(IoVec* msgVec)
     int rv = MUTEX_LOCK(&mSendMutex);
     mSendQ.push_back(msgVec);
     if (rv == 0)
-        MUTEX_UNLOCK(&mSendMutex);
+    {
+        rv = MUTEX_UNLOCK(&mSendMutex);
+        ASSERT((rv == 0), "thread failed to release mutex");
+    }
 
     return SUCCESS;
 }
@@ -426,7 +429,10 @@ Conn::status_t Conn::postRecv(int numVecs, IoVec* msgVecs[])
     }
 
     if (rv == 0)
-        MUTEX_UNLOCK(&mRecvMutex);
+    {
+        rv = MUTEX_UNLOCK(&mRecvMutex);
+        ASSERT((rv == 0), "thread failed to release mutex");
+    }
     return SUCCESS;
 }
 
@@ -435,7 +441,10 @@ Conn::status_t Conn::postRecv(IoVec* msgVec)
     int rv = MUTEX_LOCK(&mRecvMutex);
     mRecvQ.push_back(msgVec);
     if (rv == 0)
-        MUTEX_UNLOCK(&mRecvMutex);
+    {
+        rv = MUTEX_UNLOCK(&mRecvMutex);
+        ASSERT((rv == 0), "thread failed to release mutex");
+    }
 
     return SUCCESS;
 }
@@ -458,7 +467,7 @@ Conn::status_t Conn::sendvecProgress()
     while (!mCurSendBlock->done())
     {
         int rv = MUTEX_LOCK(&mMutex);
-        ASSERT((rv == 0), "thread already owns mutex");
+        ASSERT((rv == 0), "thread failed to own mutex");
 
         // Check if the connection is not in cleanup. If it is, we should
         // not attempt to send. After we have gotten the
@@ -468,13 +477,13 @@ Conn::status_t Conn::sendvecProgress()
         bool toSend = !mCleaning;
 
         rv = MUTEX_UNLOCK(&mMutex);
-        ASSERT((rv == 0), "thread does not own mutex");
+        ASSERT((rv == 0), "thread failed to release mutex");
 
         if (toSend)
         {
             nw = ::send(mSock, mCurSendBlock->curPtr(), mCurSendBlock->remain(),
                     MSG_NOSIGNAL);
-            LOG_DEBUG("::send by socket, %d", mSock);
+//            LOG_DEBUG("::send by socket, %d", mSock);
         }
         else
         {
@@ -495,7 +504,8 @@ Conn::status_t Conn::sendvecProgress()
     }
     else if (nw < 0 && errno == EAGAIN)
     {
-        LOG_DEBUG("Can't send any more but vector not done");
+        LOG_DEBUG("Can't send any more but vector not done, sendQ size:%d",
+                (int)mSendQ.size());
         mReadyToSend = false;         // Can't send any more but vector not done
         rc = CONN_ERR_UNAVAIL;
     }
@@ -547,6 +557,7 @@ Conn::status_t Conn::sendvecProgress()
 
 void Conn::setReadyToSend(bool readyToSend)
 {
+    LOG_DEBUG("Set ready to send as true");
     mReadyToSend = readyToSend;
 }
 
@@ -557,8 +568,8 @@ Conn::status_t Conn::sendProgress()
 
     do
     {
-//        int rv = MUTEX_LOCK(&mSendMutex);
-//        ASSERT((rv == 0), "thread already owns mutex");
+        int rv = MUTEX_LOCK(&mSendMutex);
+        ASSERT((rv == 0), "thread failed to own mutex");
         if (mReadyToSend)
         {
             rc = sendvecProgress();
@@ -570,16 +581,16 @@ Conn::status_t Conn::sendProgress()
 
         if (rc == CONN_ERR_BROKEN)
         {
-//            rv = MUTEX_UNLOCK(&mSendMutex);
-//            ASSERT((rv == 0), "thread does not own mutex");
+            rv = MUTEX_UNLOCK(&mSendMutex);
+            ASSERT((rv == 0), "thread failed to release mutex");
             LOG_ERROR("connection is broken");
             return rc;
         }
 
         if (rc == CONN_ERR_UNAVAIL)
         {
-//            rv = MUTEX_UNLOCK(&mSendMutex);
-//            ASSERT((rv == 0), "%s", "thread does not own mutex");
+            rv = MUTEX_UNLOCK(&mSendMutex);
+            ASSERT((rv == 0), "thread failed to release mutex");
             break;  // Can't send any more, socket full, mCurSendBlock remains
         }
 
@@ -592,8 +603,8 @@ Conn::status_t Conn::sendProgress()
         }
         else
             sendqEmpty = true;
-//        rv = MUTEX_UNLOCK(&mSendMutex);
-//        ASSERT((rv == 0), "%s", "thread does not own mutex");
+        rv = MUTEX_UNLOCK(&mSendMutex);
+        ASSERT((rv == 0), "thread failed to release mutex");
     } while (!sendqEmpty);
     // We get here if:
     // 1. There are no more send iovec's
@@ -614,18 +625,19 @@ Conn::status_t Conn::recvvecProgress()
     }
     if (!mReadyRecv)
     { // This socket is not marked as available yet
+        LOG_INFO("mReadyRecv is false");
         return CONN_ERR_UNAVAIL;
     }
 
     while (!mCurRecvBlock->done())
     {
         int rv = MUTEX_LOCK(&mMutex);
-        ASSERT((rv == 0), "thread already owns mutex");
+        ASSERT((rv == 0), "thread failed to own mutex");
 
         bool toRecv = !mCleaning;
 
         rv = MUTEX_UNLOCK(&mMutex);
-        ASSERT((rv == 0), "thread does not own mutex");
+        ASSERT((rv == 0), "thread failed to release mutex");
 
         if (toRecv)
             nr = ::recv(mSock, mCurRecvBlock->curPtr(), mCurRecvBlock->remain(),
@@ -646,6 +658,8 @@ Conn::status_t Conn::recvvecProgress()
     }
     else if (nr < 0 && errno == EAGAIN)
     {
+        LOG_DEBUG("Can't receive any more but vector not done, recvQ size %d",
+                (int)mRecvQ.size());
         mReadyRecv = false;    // Can't receive any more but vector not done
         rc = CONN_ERR_UNAVAIL;
     }
@@ -681,7 +695,7 @@ Conn::status_t Conn::recvvecProgress()
         }
         else
         {
-            LOG_INFO("no callback in receive IoVec");
+            LOG_WARN("no callback in receive IoVec");
         }
     }
 
@@ -698,8 +712,8 @@ Conn::status_t Conn::recvProgress(bool ready)
 
     do
     {
-//        int rv = MUTEX_LOCK(&mRecvMutex);
-//        ASSERT((rv == 0), "thread already owns mutex");
+        int rv = MUTEX_LOCK(&mRecvMutex);
+        ASSERT((rv == 0), "thread failed to own mutex");
         if (mReadyRecv || ready)
         {
             mReadyRecv = true;
@@ -710,16 +724,15 @@ Conn::status_t Conn::recvProgress(bool ready)
 
         if (rc == CONN_ERR_BROKEN)
         {
-//            rv = MUTEX_UNLOCK(&mRecvMutex);
-//            ASSERT((rv == 0), "thread does not own mutex");
-            LOG_DEBUG( "connection broken: exit");
+            rv = MUTEX_UNLOCK(&mRecvMutex);
+            ASSERT((rv == 0), "thread failed to release mutex");
             return rc;
         }
 
         if (rc == CONN_ERR_UNAVAIL)
         {
-//            rv = MUTEX_UNLOCK(&mRecvMutex);
-//            ASSERT((rv == 0), "thread does not own mutex");
+            rv = MUTEX_UNLOCK(&mRecvMutex);
+            ASSERT((rv == 0), "thread failed to release mutex");
             break;
         }
 
@@ -735,7 +748,8 @@ Conn::status_t Conn::recvProgress(bool ready)
         if (rc != CONN_ERR_NOVEC)
             nvecs++;
 
-//        MUTEX_UNLOCK(&mRecvMutex);
+        rv = MUTEX_UNLOCK(&mRecvMutex);
+        ASSERT((rv == 0), "thread failed to release mutex");
     //} while (!recvqEmpty && nvecs < VEC_BATCH_NUM);
     } while (!recvqEmpty);
 
@@ -1117,27 +1131,35 @@ EndPoint& Conn::getLocalEp()
 
 void Conn::addEventEntry(u32_t msgId, CommEvent *event)
 {
-    MUTEX_LOCK(&mEventMapMutex);
+    int rv = MUTEX_LOCK(&mEventMapMutex);
 
     mSendEventMap.insert(std::pair<u32_t, CommEvent *>(msgId, event));
 
-    MUTEX_UNLOCK(&mEventMapMutex);
+    if (rv == 0)
+    {
+        rv = MUTEX_UNLOCK(&mEventMapMutex);
+        ASSERT((rv == 0), "thread fail to  release mutex");
+    }
 
 }
 
 void Conn::removeEventEntry(u32_t msgId)
 {
-    MUTEX_LOCK(&mEventMapMutex);
+    int rv = MUTEX_LOCK(&mEventMapMutex);
 
     mSendEventMap.erase(msgId);
 
-    MUTEX_UNLOCK(&mEventMapMutex);
+    if (rv == 0)
+    {
+        rv = MUTEX_UNLOCK(&mEventMapMutex);
+        ASSERT((rv == 0), "thread fail to  release mutex");
+    }
 }
 
 CommEvent* Conn::getAndRmEvent(u32_t msgId)
 {
     CommEvent* ret = NULL;
-    MUTEX_LOCK(&mEventMapMutex);
+    int rv = MUTEX_LOCK(&mEventMapMutex);
 
     std::map<u32_t, CommEvent*>::iterator it = mSendEventMap.find(msgId);
     if (it != mSendEventMap.end())
@@ -1145,7 +1167,12 @@ CommEvent* Conn::getAndRmEvent(u32_t msgId)
         ret = it->second;
         mSendEventMap.erase(it);
     }
-    MUTEX_UNLOCK(&mEventMapMutex);
+
+    if (rv == 0)
+    {
+        rv = MUTEX_UNLOCK(&mEventMapMutex);
+        ASSERT((rv == 0), "thread fail to  release mutex");
+    }
 
     return ret;
 }

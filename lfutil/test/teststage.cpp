@@ -27,23 +27,19 @@
 #include "comm/commevent.h"
 #include "comm/request.h"
 #include "comm/response.h"
+#include "seda/sedastatsstage.h"
 
 #include "teststage.h"
 #include "triggertestevent.h"
 
 
-#define ONE_TIME_NUM 1000
+#define ONE_TIME_NUM 4000
 
 //! Constructor
 CTestStage::CTestStage(const char* tag) :
-        Stage(tag),
-        mTimerStage(NULL),
-        mCommStage(NULL),
-        mTestTimes(0),
-        mSendCounter(0),
-        mLastSendCounter(0),
-        mRecvCounter(0),
-        mLastRecvCounter(0)
+        Stage(tag), mTimerStage(NULL), mCommStage(NULL), mTestTimes(0), mSendCounter(
+                0), mLastSendCounter(0), mRecvCounter(0), mLastRecvCounter(0), mHasOutputState(
+                false)
 {
     MUTEX_INIT(&mSendMutex, NULL);
     MUTEX_INIT(&mRecvMutex, NULL);
@@ -73,7 +69,8 @@ Stage* CTestStage::makeStage(const std::string& tag)
 bool CTestStage::setProperties()
 {
     std::string stageNameStr(stageName);
-    std::map<std::string, std::string> section = theGlobalProperties()->get(stageNameStr);
+    std::map<std::string, std::string> section = theGlobalProperties()->get(
+            stageNameStr);
 
     std::map<std::string, std::string>::iterator it;
 
@@ -133,7 +130,7 @@ bool CTestStage::initialize()
 
     std::list<Stage*>::iterator stgp = nextStageList.begin();
     mTimerStage = *(stgp++);
-    mCommStage  = *(stgp++);
+    mCommStage = *(stgp++);
 
     ASSERT(dynamic_cast<TimerStage *>(mTimerStage),
             "The next stage isn't TimerStage");
@@ -146,6 +143,7 @@ bool CTestStage::initialize()
     }
 
     startTimer(tev, 10);
+    mHasOutputState = true;
     LOG_TRACE("Exit");
     return true;
 }
@@ -163,13 +161,13 @@ void CTestStage::handleEvent(StageEvent* event)
     LOG_TRACE("Enter\n");
 
     TriggerTestEvent *tev = NULL;
-    CommEvent        *cev = NULL;
+    CommEvent *cev = NULL;
 
-    if ((tev = dynamic_cast<TriggerTestEvent *>(event) ))
+    if ((tev = dynamic_cast<TriggerTestEvent *>(event)))
     {
         return triggerTestEvent(event);
     }
-    else if( (cev = dynamic_cast<CommEvent *>(event)) )
+    else if ((cev = dynamic_cast<CommEvent *>(event)))
     {
         return recvRequest(event);
     }
@@ -191,15 +189,15 @@ void CTestStage::callbackEvent(StageEvent* event, CallbackContext* context)
     CommEvent *cev = NULL;
     CTestStatEvent *sev = NULL;
 
-    if ( (tev = dynamic_cast<TriggerTestEvent *>(event)) )
+    if ((tev = dynamic_cast<TriggerTestEvent *>(event)))
     {
         return retriggerTestEvent(event);
     }
-    else if ( (cev = dynamic_cast<CommEvent *>(event)) )
+    else if ((cev = dynamic_cast<CommEvent *>(event)))
     {
         return recvResponse(event);
     }
-    else if( (sev = dynamic_cast<CTestStatEvent *>(event)))
+    else if ((sev = dynamic_cast<CTestStatEvent *>(event)))
     {
         outputStat(event);
     }
@@ -207,7 +205,7 @@ void CTestStage::callbackEvent(StageEvent* event, CallbackContext* context)
     {
         LOG_ERROR("Unknow type event");
         event->done();
-        return ;
+        return;
     }
 
     LOG_TRACE("Exit\n");
@@ -220,14 +218,14 @@ void CTestStage::sendRequest()
     if (req == NULL)
     {
         LOG_ERROR("No memory for req");
-        return ;
+        return;
     }
 
     CommEvent *cev = new CommEvent(req, NULL);
     if (cev == NULL)
     {
         LOG_ERROR("No memory for CommEvent");
-        return ;
+        return;
     }
 
     CompletionCallback *cb = new CompletionCallback(this, NULL);
@@ -254,10 +252,10 @@ void CTestStage::sendRequest()
             LOG_ERROR("Failed to get file size %s", confPath.c_str());
             //req will be delete in cev
             delete cev;
-            return ;
+            return;
         }
         md.attachFilePath = confPath;
-        md.attachFileLen  = fileSize;
+        md.attachFileLen = fileSize;
         md.attachFileOffset = 0;
 
         char *outputData = NULL;
@@ -268,7 +266,7 @@ void CTestStage::sendRequest()
             LOG_ERROR("Failed to read data of %s, rc:%d:%s",
                     confPath.c_str(), errno, strerror(errno));
             delete cev;
-            return ;
+            return;
         }
         IoVec::vec_t *iov = new IoVec::vec_t;
         if (iov == NULL)
@@ -277,19 +275,19 @@ void CTestStage::sendRequest()
             delete cev;
             free(outputData);
 
-            return ;
+            return;
         }
         iov->base = outputData;
-        iov->size = (int)readSize;
+        iov->size = (int) readSize;
 
         md.attachMems.push_back(iov);
     }
 
     mCommStage->addEvent(cev);
 
-    MUTEX_LOCK(&mSendMutex);
+//    MUTEX_LOCK(&mSendMutex);
     mSendCounter++;
-    MUTEX_UNLOCK(&mSendMutex);
+//    MUTEX_UNLOCK(&mSendMutex);
 
     LOG_DEBUG("Successfully issue CommEvent");
 }
@@ -325,17 +323,17 @@ void CTestStage::startTimer(StageEvent *tev, int seconds)
 
 void CTestStage::recvRequest(StageEvent *event)
 {
-    MUTEX_LOCK(&mRecvMutex);
+//    MUTEX_LOCK(&mRecvMutex);
     mRecvCounter++;
-    MUTEX_UNLOCK(&mRecvMutex);
+//    MUTEX_UNLOCK(&mRecvMutex);
 
     CommEvent *cev = dynamic_cast<CommEvent *>(event);
 
-    if (cev->isfailed() == true )
+    if (cev->isfailed() == true)
     {
         LOG_ERROR("CommEvent is failed, status:%d", (int)cev->getStatus());
         cev->done();
-        return ;
+        return;
     }
 
     MsgDesc &md = cev->getRequest();
@@ -350,10 +348,11 @@ void CTestStage::recvRequest(StageEvent *event)
     }
 
     std::vector<IoVec::vec_t*>::iterator it;
-    for(it = md.attachMems.begin(); it != md.attachMems.end(); it++)
+    for (it = md.attachMems.begin(); it != md.attachMems.end(); it++)
     {
         std::string path = md.attachFilePath + "_iov";
-        int rc = writeToFile(path, (const char *)(*it)->base, (*it)->size, "a");
+        int rc = writeToFile(path, (const char *) (*it)->base, (*it)->size,
+                "a");
         if (rc)
         {
             LOG_ERROR("Failed to write %s", path.c_str());
@@ -368,42 +367,42 @@ void CTestStage::recvRequest(StageEvent *event)
 
     cev->done();
 
-    MUTEX_LOCK(&mSendMutex);
+//    MUTEX_LOCK(&mSendMutex);
     mSendCounter++;
-    MUTEX_UNLOCK(&mSendMutex);
+//    MUTEX_UNLOCK(&mSendMutex);
 
     LOG_DEBUG("Successfully handle request");
 
-    return ;
+    return;
 
 }
 
 void CTestStage::recvResponse(StageEvent *event)
 {
-    MUTEX_LOCK(&mRecvMutex);
+//    MUTEX_LOCK(&mRecvMutex);
     mRecvCounter++;
-    MUTEX_UNLOCK(&mRecvMutex);
+//    MUTEX_UNLOCK(&mRecvMutex);
 
     CommEvent *cev = dynamic_cast<CommEvent *>(event);
-    if (cev->isfailed() == true )
+    if (cev->isfailed() == true)
     {
         LOG_ERROR("CommEvent is failed, status:%d", (int)cev->getStatus());
 
     }
 
-    Response *response = (Response *)cev->getResponseMsg();
+    Response *response = (Response *) cev->getResponseMsg();
     if (response == NULL)
     {
         LOG_ERROR("CommEvent no response");
         cev->done();
 
-        return ;
+        return;
     }
 
     LOG_DEBUG("Response status:%d:%s", response->mStatus, response->mErrMsg);
     cev->done();
 
-    return ;
+    return;
 
 }
 
@@ -445,7 +444,6 @@ void CTestStage::triggerTestEvent(StageEvent *event)
         LOG_INFO("Finish issue %d times", tev->mTimes);
     }
 
-
     if (finished == true)
     {
         event->done();
@@ -474,18 +472,33 @@ void CTestStage::outputStat(StageEvent *event)
     u32_t sendTPS = 0;
     u32_t recvTPS = 0;
 
-    MUTEX_LOCK(&mSendMutex);
+//    MUTEX_LOCK(&mSendMutex);
     sendTPS = mSendCounter - mLastSendCounter;
     mLastSendCounter = mSendCounter;
-    MUTEX_UNLOCK(&mSendMutex);
+//    MUTEX_UNLOCK(&mSendMutex);
 
-    MUTEX_LOCK(&mRecvMutex);
+//    MUTEX_LOCK(&mRecvMutex);
     recvTPS = mRecvCounter - mLastRecvCounter;
     mLastRecvCounter = mRecvCounter;
-    MUTEX_UNLOCK(&mRecvMutex);
+//    MUTEX_UNLOCK(&mRecvMutex);
 
     LOG_INFO("Send TPS:%u, Recv TPS:%u, SendTotal:%u, RecvTotal:%u",
             sendTPS/10, recvTPS/10, mLastSendCounter, mLastRecvCounter);
 
+    if (recvTPS == 0)
+    {
+        std::string lockStr;
+        CLockTrace::toString(lockStr);
+        LOG_WARN("Lock information:%s", lockStr.c_str());
+
+    }
+
     startTimer(event, 10);
+
+#if 0
+    std::string sedaStats;
+    SedaStatsStage::dumpStats(SedaStats::ALL_CATEGORY, SedaStats::StatsId(), sedaStats);
+    LOG_INFO("SedaStats\n%s", sedaStats.c_str());
+#endif
+
 }
